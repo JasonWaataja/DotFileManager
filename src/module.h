@@ -34,9 +34,9 @@
 
 #include <sys/queue.h>
 
-struct string_list {
+struct str_list {
 	char	*data;
-	LIST_ENTRY(string_list) entry;
+	LIST_ENTRY(str_list) entry;
 };
 
 struct install_file_list {
@@ -46,31 +46,40 @@ struct install_file_list {
 	char	*install_location;
 	LIST_ENTRY(install_file_list) entry;
 };
-enum module_command_type {
+enum module_cmd_type {
 	DFM_PRINT,
 	DFM_SHELL
 };
 
-struct module_command {
-	enum module_command_type type;
+struct module_cmd {
+	enum module_cmd_type type;
 	char	*message;
 	char	*shell_cmd;
 };
 
-struct module_command_list {
-	struct module_command cmd;
-	LIST_ENTRY(module_command_list) entry;
+
+struct module_cmd_list {
+	struct module_cmd cmd;
+	LIST_ENTRY(module_cmd_list) entry;
 };
 
 struct module_info {
 	/* The list of packages that need to be installed by the user. */
-	LIST_HEAD(string_list_head, string_list) packages;
+	LIST_HEAD(str_list_head, str_list) packages;
 	/* The list of files with their name and install location. */
 	LIST_HEAD(install_file_list_head, install_file_list) files;
-	/* The list of module commands to carry out. */
-	LIST_HEAD(module_command_list_head, module_command_list) commands;
+	/* The list of module cmd to carry out. */
+	LIST_HEAD(module_cmd_list_head, module_cmd_list) cmd;
 };
 
+void	 str_list_add(struct str_list_head *list, const char *str);
+void	 free_str_list(struct str_list_head *list);
+void	 install_file_list_add(struct install_file_list_head *list, const char
+    *file_name, const char *install_location);
+void	 free_install_file_list(struct install_file_list_head *list);
+void	 module_cmd_list_add(struct module_cmd_list_head *list, enum
+    module_cmd_type type, const char *message, const char *shell_cmd);
+void	 free_module_cmd_list(struct module_cmd_list_head *list);
 void	 module_info_init(struct module_info *info);
 void	 module_info_destroy(struct module_info *info);
 
