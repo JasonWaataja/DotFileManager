@@ -36,6 +36,10 @@
 
 #include "module.h"
 
+/*
+ * Initializes a struct module_info that's already been allocated, usually on
+ * the heap.
+ */
 void
 module_info_init(struct module_info *info)
 {
@@ -47,6 +51,10 @@ module_info_init(struct module_info *info)
 	LIST_INIT(&info->cmd);
 }
 
+/*
+ * Cleans up a struct module_info that has been allocated with
+ * module_info_init. It also goes through the lists and deletes them.
+ */
 void
 module_info_destroy(struct module_info *info)
 {
@@ -65,6 +73,7 @@ module_info_destroy(struct module_info *info)
 	free_module_cmd_list(commands);
 }
 
+/* Free a string list. */
 void
 free_str_list(struct str_list_head *list)
 {
@@ -78,6 +87,7 @@ free_str_list(struct str_list_head *list)
 	}
 }
 
+/* Free a install file list. */
 void
 free_install_file_list(struct install_file_list_head *list)
 {
@@ -92,6 +102,7 @@ free_install_file_list(struct install_file_list_head *list)
 	}
 }
 
+/* Free a command list. */
 void
 free_module_cmd_list(struct module_cmd_list_head *list)
 {
@@ -105,6 +116,8 @@ free_module_cmd_list(struct module_cmd_list_head *list)
 		free(cmd_entry);
 	}
 }
+
+/* Add a string to the given list. Copies the string to the new location. */
 void
 str_list_add(struct str_list_head *list, const char *str)
 {
@@ -123,6 +136,10 @@ str_list_add(struct str_list_head *list, const char *str)
 	LIST_INSERT_HEAD(list, entry, entry);
 }
 
+/*
+ * Add a new file to be installed with the given file name and install
+ * location. Copies the strings and allocates memory for them.
+ */
 void
 install_file_list_add(struct install_file_list_head *list, const char
     *file_name, const char *install_location)
@@ -148,6 +165,11 @@ install_file_list_add(struct install_file_list_head *list, const char
 		warnx("Appending NULL install location");
 
 }
+
+/*
+ * Add a new module command to the list. It allocates a new module and sets it
+ * to the given type ans message or shell command.
+ */
 void
 module_cmd_list_add(struct module_cmd_list_head *list, enum module_cmd_type
     type, const char *message, const char *shell_cmd)
