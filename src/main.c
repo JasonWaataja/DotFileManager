@@ -31,10 +31,24 @@
 
 #include <stdio.h>
 
+#include "module.h"
+
 int
 main(int argc, char *argv[])
 {
-	printf("Hello World\n");
+	struct str_list_head head;
+	LIST_INIT(&head);
+
+	str_list_add(&head, "This is the first string.");
+	str_list_add(&head, "This is the second string.");
+	str_list_add(&head, "This is the third string.");
+
+	struct str_list *tmp;
+	LIST_FOREACH(tmp, &head, entry) {
+		printf("%s\n", tmp->data);
+	}
+
+	free_str_list(&head);
 
 	return (0);
 }
