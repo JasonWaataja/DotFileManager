@@ -1,3 +1,3 @@
 bin_PROGRAMS = dfm
 
-dfm_SOURCES = main.c module.c
+dfm_SOURCES = main.cpp
