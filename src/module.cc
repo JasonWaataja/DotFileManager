@@ -2,6 +2,8 @@
 
 #include "module.h"
 
+#include <err.h>
+
 namespace dfm {
 
 Module::Module() : name(defaultModuleName)
@@ -27,24 +29,28 @@ Module::setName(const std::string& name)
 bool
 Module::install()
 {
-    bool noErrors = true;
-    for (int i = 0; i < modules.size() && noErrors; i++) {
-        ModuleComponent* component = modules[i];
-        noErrors = component->install();
+    for (ModuleComponent* component : modules) {
+        bool status = component->install();
+        if (!status) {
+            warnx("failed to install module %s", component->getName().c_str());
+            return false;
+        }
     }
 
-    return noErrors;
+    return true;
 }
 
 bool
 Module::uninstall()
 {
-    bool noErrors = false;
-    for (int i = 0; i < modules.size() && noErrors; i++) {
-        ModuleComponent* component = modules[i];
-        noErrors = component->uninstall();
+    for (ModuleComponent* component : modules) {
+        bool status = component->uninstall();
+        if (!status) {
+            warnx("failed to install module %s", component->getName().c_str());
+            return false;
+        }
     }
 
-    return noErrors;
+    return true;
 }
 }

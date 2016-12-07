@@ -14,7 +14,8 @@ FileModuleComponent::FileModuleComponent()
 FileModuleComponent::FileModuleComponent(const std::string& filename,
     const boost::filesystem::path& sourceDirectory,
     boost::filesystem::path& destinationDirectory)
-    : ModuleComponent(filename), filename(filename),
+    : ModuleComponent(filename),
+      filename(filename),
       sourceDirectory(sourceDirectory),
       destinationDirectory(destinationDirectory)
 {
