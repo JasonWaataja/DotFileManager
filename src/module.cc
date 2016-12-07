@@ -47,3 +47,4 @@ Module::uninstall()
 
     return noErrors;
 }
+}
