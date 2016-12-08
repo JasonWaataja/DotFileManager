@@ -1,4 +1,5 @@
-set (SOURCES main.cc module.cc modulecomponent.cc filemodulecomponent.cc)
+set (SOURCES main.cc module.cc modulecomponent.cc filemodulecomponent.cc
+	options.cc)
 
 add_executable (dfm ${SOURCES})
 

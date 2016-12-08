@@ -8,35 +8,33 @@
 
 namespace dfm {
 
-const char getoptOptions[] = "i:u:";
+/* Inital colon gets getopt to return ":" on missing required argument.  */
+const char getoptOptions[] = ":i:u:";
 
 class DfmOptions {
 public:
     DfmOptions();
-    DfmOptions(int argc, char* argv[]);
     bool loadFromArguments(int argc, char* argv[]);
-    bool getInstallFlag() const;
+    void setToCurrentDirectory();
+    bool isValid() const;
+    bool hasInstallModule() const;
     const std::string& getInstallModuleName() const;
-    bool getUninstallFlag() const;
+    bool hasUninstallModule() const;
     const std::string& getUninstallModuleName() const;
-    /*
-     * Returns the path represented by the final argument to the program. This
-     * is either a path representing a config file or a directory that contains
-     * one.
-     */
-    const std::string& getInitializationPath() const;
-    /*
-     * Returns a path for the given initialization path. If none war provided,
-     * then the default is the current directory.
-     */
-    bool getConfigFile(const boost::filesystem::path& pathToSet);
+    const boost::filesystem::path& getSourceDirectory() const;
+    bool hasConfigFile() const;
+    const std::string& getConfigFileName() const;
+    boost::filesystem::path getConfigFilePath() const;
 
 private:
-    bool installModuleFlag;
+    bool valid;
+    bool installModule;
     std::string installModuleName;
-    bool uninstallModuleFlag;
+    bool uninstallModule;
     std::string uninstallModuleName;
-    std::string initializtionPath;
+    boost::filesystem::path sourceDirectory;
+    bool configFile;
+    std::string configFileName;
 };
 }
 
