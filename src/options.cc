@@ -8,126 +8,113 @@
 namespace dfm {
 
 DfmOptions::DfmOptions()
-    : valid(false),
-      installModule(false),
-      installModuleName(),
-      uninstallModule(false),
-      uninstallModuleName(),
-      sourceDirectory(),
-      configFileName()
+    : installModulesFlag(false),
+      uninstallModulesFlag(false),
+      allFlag(false),
+      remainingArguments(),
+      hasSourceDirectory(false),
+      sourceDirectory()
 {
 }
 
 bool
 DfmOptions::loadFromArguments(int argc, char* argv[])
 {
-    installModule = false;
-    uninstallModule = false;
-    valid = true;
+    installModulesFlag = false;
+    uninstallModulesFlag = false;
+    allFlag = false;
+    remainingArguments.clear();
+    hasSourceDirectory = false;
+    sourceDirectory = boost::filesystem::path();
 
+    /* Print errors when getopt encounters an error. */
     opterr = 1;
 
-    int getoptValue = getopt(argc, argv, getoptOptions);
-
-    while (getoptValue != -1) {
-        switch (getoptValue) {
+    int getoptResult = getopt(argc, argv, GETOPT_OPTIONS);
+    while (getoptResult != -1) {
+        switch (getoptResult) {
         case 'i':
-            installModule = true;
-            installModuleName = std::string(optarg);
+            installModulesFlag = true;
             break;
         case 'u':
-            uninstallModule = true;
-            uninstallModuleName = std::string(optarg);
+            uninstallModulesFlag = true;
             break;
+        case 'a':
+            allFlag = true;
+            break;
+        case 'd':
+            hasSourceDirectory = true;
+            sourceDirectory = boost::filesystem::path(optarg);
         case ':':
-            warnx("missing argument for %c", optopt);
-            valid = false;
+            if (isprint(optopt))
+                warnx("Missing required argument for \"-%c\".", optopt);
+            else
+                warnx("Missing required argument.");
             return false;
         case '?':
-            warnx("unknwon argument %c", optopt);
-            valid = false;
+            warnx("Unknown argument \"-%c\".", optopt);
             return false;
         }
-        getoptValue = getopt(argc, argv, getoptOptions);
+        getoptResult = getopt(argc, argv, GETOPT_OPTIONS);
     }
 
-    configFile = false;
-
-    if (optind >= argc)
-        setToCurrentDirectory();
-    else {
-        boost::filesystem::path pathArgument(argv[optind]);
-        boost::filesystem::path asAbsolute =
-            boost::filesystem::absolute(pathArgument);
-        if (boost::filesystem::is_directory(pathArgument))
-            sourceDirectory = asAbsolute;
-        else {
-            sourceDirectory = asAbsolute.parent_path();
-            configFileName = asAbsolute.filename().string();
-            configFile = true;
-        }
-    }
+    for (int i = optind; i < argc; i++)
+        remainingArguments.push_back(std::string(argv[i]));
 
     return true;
 }
 
-void
-DfmOptions::setToCurrentDirectory()
+bool
+DfmOptions::verifyArguments() const
 {
-    sourceDirectory = boost::filesystem::current_path();
+    if (!verifyFlagsConsistency())
+        return false;
+    if (!verifyFlagsHaveArguments())
+        return false;
+    if (!verifyDirectoryExists())
+        return false;
+    return true;
 }
 
 bool
-DfmOptions::isValid() const
+DfmOptions::verifyFlagsConsistency() const
 {
-    return valid;
+    if (installModulesFlag && uninstallModulesFlag) {
+        warnx("Both install and uninstall flags passed.");
+        return false;
+    }
+    if (allFlag && !installModulesFlag && !uninstallModulesFlag) {
+        warnx(
+            "The \"-a\" flag cannot be used without the \"-i\" or \"-u\" flags.");
+        return false;
+    }
+    return true;
 }
 
 bool
-DfmOptions::hasInstallModule() const
+DfmOptions::verifyFlagsHaveArguments() const
 {
-    return installModule;
-}
-
-const std::string&
-DfmOptions::getInstallModuleName() const
-{
-    return installModuleName;
-}
-
-bool
-DfmOptions::hasUninstallModule() const
-{
-    return uninstallModule;
-}
-
-const std::string&
-DfmOptions::getUninstallModuleName() const
-{
-    return uninstallModuleName;
-}
-
-const boost::filesystem::path&
-DfmOptions::getSourceDirectory() const
-{
-    return sourceDirectory;
+    if ((installModulesFlag || uninstallModulesFlag) && !allFlag) {
+        warnx("Must provide modules to install or uninstall.");
+        return false;
+    }
+    return true;
 }
 
 bool
-DfmOptions::hasConfigFile() const
+DfmOptions::verifyDirectoryExists() const
 {
-    return configFile;
-}
-
-const std::string&
-DfmOptions::getConfigFileName() const
-{
-    return configFileName;
-}
-
-boost::filesystem::path
-DfmOptions::getConfigFilePath() const
-{
-    return sourceDirectory / configFileName;
+    if (hasSourceDirectory) {
+        if (!boost::filesystem::exists(sourceDirectory)) {
+            warnx("Directory doesn't exists: %s.", sourceDirectory.c_str());
+            return false;
+        }
+        if (!boost::filesystem::is_directory(sourceDirectory)) {
+            warnx("Given directory isn't a directory: %s",
+                sourceDirectory.c_str());
+            return false;
+        }
+    }
+    return true;
 }
 }

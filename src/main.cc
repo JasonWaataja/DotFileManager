@@ -11,16 +11,17 @@ main(int argc, char* argv[])
     dfm::DfmOptions options;
     bool status = options.loadFromArguments(argc, argv);
     std::cout << "status: " << status << std::endl;
-    std::cout << "has install: " << options.hasInstallModule() << std::endl;
-    std::cout << "install: " << options.getInstallModuleName() << std::endl;
-    std::cout << "has uninstall: " << options.hasUninstallModule()
+    std::cout << "install modules: " << options.installModulesFlag
               << std::endl;
-    std::cout << "uninstall: " << options.getUninstallModuleName()
+    std::cout << "uninstall modules: " << options.uninstallModulesFlag
               << std::endl;
-    std::cout << "source directory: " << options.getSourceDirectory()
-              << std::endl;
-    std::cout << "config filename: " << options.getConfigFileName()
-              << std::endl;
+    std::cout << "all flag: " << options.allFlag << std::endl;
+    std::cout << "arguments:" << std::endl;
+    std::vector<std::string>::iterator i = options.remainingArguments.begin();
+    for (; i < options.remainingArguments.end(); i++)
+        std::cout << "\t" << *i << std::endl;
+    std::cout << "has directory: " << options.hasSourceDirectory << std::endl;
+    std::cout << "directory: " << options.sourceDirectory << std::endl;
 
     return EXIT_SUCCESS;
 }

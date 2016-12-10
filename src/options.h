@@ -5,36 +5,31 @@
 
 #include <boost/filesystem.hpp>
 #include <string>
+#include <vector>
 
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char getoptOptions[] = ":i:u:";
+const char GETOPT_OPTIONS[] = ":iuad:";
 
 class DfmOptions {
 public:
     DfmOptions();
+
     bool loadFromArguments(int argc, char* argv[]);
-    void setToCurrentDirectory();
-    bool isValid() const;
-    bool hasInstallModule() const;
-    const std::string& getInstallModuleName() const;
-    bool hasUninstallModule() const;
-    const std::string& getUninstallModuleName() const;
-    const boost::filesystem::path& getSourceDirectory() const;
-    bool hasConfigFile() const;
-    const std::string& getConfigFileName() const;
-    boost::filesystem::path getConfigFilePath() const;
+    bool verifyArguments() const;
+
+    bool installModulesFlag;
+    bool uninstallModulesFlag;
+    bool allFlag;
+    std::vector<std::string> remainingArguments;
+    bool hasSourceDirectory;
+    boost::filesystem::path sourceDirectory;
 
 private:
-    bool valid;
-    bool installModule;
-    std::string installModuleName;
-    bool uninstallModule;
-    std::string uninstallModuleName;
-    boost::filesystem::path sourceDirectory;
-    bool configFile;
-    std::string configFileName;
+    bool verifyFlagsConsistency() const;
+    bool verifyFlagsHaveArguments() const;
+    bool verifyDirectoryExists() const;
 };
 }
 
