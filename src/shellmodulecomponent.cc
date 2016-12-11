@@ -4,8 +4,8 @@
 
 #include <err.h>
 #include <iostream>
-#include <stdio.h>
 #include <sstream>
+#include <stdio.h>
 
 namespace dfm {
 
@@ -22,14 +22,14 @@ ShellModuleComponent::getShellCommands()
 bool
 ShellModuleComponent::executeCommands()
 {
-    FILE *shell = popen(shellProcess, "w");
+    FILE* shell = popen(shellProcess, "w");
     if (shell == NULL) {
         perror("Failed to open shell");
         return false;
     }
 
     /* Set the shell to exit on any failed commands. */
-    fprintf(shell, "set -e\n") ;
+    fprintf(shell, "set -e\n");
     /* Execute commands, I'm not sure if this is the best way to do it. */
     for (std::string command : shellCommands) {
         fprintf(shell, "%s\n", command.c_str());
