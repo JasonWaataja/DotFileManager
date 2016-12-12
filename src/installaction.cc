@@ -1,97 +1,105 @@
 
 
-#include "filemodulecomponent.h"
+#include "installaction.h"
 
 #include <err.h>
-#include <iostream>
 
 namespace dfm {
 
-FileModuleComponent::FileModuleComponent()
+InstallAction::InstallAction(const std::string& filename,
+    const boost::filesystem::path& sourceDirectory,
+    const boost::filesystem::path& destinationDirectory)
+    : ModuleAction(filename),
+      filename(filename),
+      sourceDirectory(sourceDirectory),
+      installFilename(filename),
+      destinationDirectory(destinationDirectory)
 {
 }
 
-FileModuleComponent::FileModuleComponent(const std::string& filename,
+InstallAction::InstallAction(const std::string& filename,
     const boost::filesystem::path& sourceDirectory,
-    boost::filesystem::path& destinationDirectory)
-    : ModuleComponent(filename),
+    const std::string& installFilename,
+    const boost::filesystem::path& destinationDirectory)
+    : ModuleAction(filename),
       filename(filename),
       sourceDirectory(sourceDirectory),
+      installFilename(installFilename),
       destinationDirectory(destinationDirectory)
 {
 }
 
 const boost::filesystem::path
-FileModuleComponent::getFilePath() const
+InstallAction::getFilePath() const
 {
     return sourceDirectory / filename;
 }
 
 const boost::filesystem::path
-FileModuleComponent::getInstallationPath() const
+InstallAction::getInstallationPath() const
 {
-    return destinationDirectory / filename;
+    return destinationDirectory / installFilename;
 }
 
 const std::string&
-FileModuleComponent::getFilename() const
+InstallAction::getFilename() const
 {
     return filename;
 }
 
 void
-FileModuleComponent::setFilename(const std::string& filename)
+InstallAction::setFilename(const std::string& filename)
 {
     this->filename = filename;
 }
 
 const boost::filesystem::path&
-FileModuleComponent::getSourceDirectory() const
+InstallAction::getSourceDirectory() const
 {
     return sourceDirectory;
 }
 
 void
-FileModuleComponent::setSourceDirectory(
+InstallAction::setSourceDirectory(
     const boost::filesystem::path& sourceDirectory)
 {
     this->sourceDirectory = sourceDirectory;
 }
 
 const boost::filesystem::path&
-FileModuleComponent::getDestinationDirectory() const
+InstallAction::getDestinationDirectory() const
 {
     return destinationDirectory;
 }
 
 void
-FileModuleComponent::setDestinationDirectory(
+InstallAction::setDestinationDirectory(
     const boost::filesystem::path& destinationDirectory)
 {
     this->destinationDirectory = destinationDirectory;
 }
 
-bool
-FileModuleComponent::getRemoveOnUninstall() const
+const std::string&
+InstallAction::getInstallFilename() const
 {
-    return removeOnUninstall;
+    return installFilename;
 }
 
 void
-FileModuleComponent::setRemoveOnUninstall(bool removeOnUninstall)
+InstallAction::setInstallFilename(const std::string& installFilename)
 {
-    this->removeOnUninstall = removeOnUninstall;
+    this->installFilename = installFilename;
 }
 
 bool
-FileModuleComponent::install()
+InstallAction::performAction()
 {
     boost::filesystem::path sourcePath = getFilePath();
     boost::filesystem::path destinationPath = getInstallationPath();
 
     try {
         if (!boost::filesystem::exists(sourcePath)) {
-            warnx("file %s doesn't exist", sourcePath.c_str());
+            warnx("#ile %s doesn't exist.", sourcePath.c_str());
             return false;
         }
 
@@ -99,14 +107,14 @@ FileModuleComponent::install()
             bool status =
                 boost::filesystem::create_directories(destinationDirectory);
             if (!status) {
-                warnx("failed to create directory %s",
+                warnx("Failed to create directory %s.",
                     destinationDirectory.c_str());
                 return false;
             }
         }
 
         if (!boost::filesystem::is_directory(destinationDirectory)) {
-            warnx("%s isn't a directory", destinationDirectory.c_str());
+            warnx("File%s isn't a directory.", destinationDirectory.c_str());
             return false;
         }
 
@@ -114,27 +122,6 @@ FileModuleComponent::install()
     } catch (boost::filesystem::filesystem_error& e) {
         warnx("%s", e.what());
         return false;
-    }
-
-    return true;
-}
-
-bool
-FileModuleComponent::uninstall()
-{
-    if (removeOnUninstall) {
-        try {
-            bool status = boost::filesystem::remove_all(getInstallationPath());
-
-            if (!status) {
-                warnx(
-                    "failed to remove file %s", getInstallationPath().c_str());
-                return false;
-            }
-        } catch (boost::filesystem::filesystem_error& e) {
-            warnx("%s", e.what());
-            return false;
-        }
     }
 
     return true;

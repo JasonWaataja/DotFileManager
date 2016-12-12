@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "modulecomponent.h"
+#include "moduleaction.h"
 
 namespace dfm {
 
@@ -17,7 +17,8 @@ class Module {
 public:
     Module();
     Module(const std::string& name);
-    void addComponent(std::shared_ptr<ModuleComponent> component);
+    void addInstallAction(std::shared_ptr<ModuleAction> action);
+    void addUninstallAction(std::shared_ptr<ModuleAction> action);
     bool install();
     bool uninstall();
     const std::string& getName() const;
@@ -25,7 +26,8 @@ public:
 
 private:
     std::string name;
-    std::vector<std::shared_ptr<ModuleComponent>> modules;
+    std::vector<std::shared_ptr<ModuleAction>> installActions;
+    std::vector<std::shared_ptr<ModuleAction>> uninstallActions;
 };
 }
 

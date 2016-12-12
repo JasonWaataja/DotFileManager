@@ -1,28 +1,28 @@
 
 
-#include "shellmodulecomponent.h"
+#include "shellaction.h"
 
 #include <err.h>
 #include <iostream>
-#include <sstream>
 #include <stdio.h>
 
 namespace dfm {
 
-ShellModuleComponent::ShellModuleComponent() : shellCommands()
+ShellAction::ShellAction()
+    : ModuleAction(DEFAULT_SHELL_ACTION_NAME), shellCommands()
 {
 }
 
 const std::vector<std::string>&
-ShellModuleComponent::getShellCommands()
+ShellAction::getShellCommands() const
 {
     return shellCommands;
 }
 
 bool
-ShellModuleComponent::executeCommands()
+ShellAction::performAction()
 {
-    FILE* shell = popen(shellProcess, "w");
+    FILE* shell = popen(SHELL_PROCESS, "w");
     if (shell == NULL) {
         perror("Failed to open shell");
         return false;
@@ -48,7 +48,7 @@ ShellModuleComponent::executeCommands()
 }
 
 void
-ShellModuleComponent::addCommand(const std::string& command)
+ShellAction::addCommand(const std::string& command)
 {
     shellCommands.push_back(command);
 }
