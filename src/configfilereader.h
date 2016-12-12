@@ -49,21 +49,12 @@ ConfigFileReader::readModules(OutputIterator output)
         return false;
     }
 
-    std::vector<std::string> lines;
     std::string line;
+    int lineNo = 1;
     while (getline(reader, line)) {
-        lines.push_back(line);
+        lineNo++;
     }
 
-    return readModulesFromLines(lines, output);
-}
-
-/* TODO: Write this implementation. */
-template <class OutputIterator>
-bool
-ConfigFileReader::readModulesFromLines(
-    const std::vector<std::string>& lines, OutputIterator output)
-{
     return true;
 }
 }
