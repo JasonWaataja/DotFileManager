@@ -5,9 +5,16 @@
 
 #include <boost/filesystem.hpp>
 #include <err.h>
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "installaction.h"
+#include "messageaction.h"
+#include "module.h"
+#include "removeaction.h"
+#include "shellaction.h"
 
 namespace dfm {
 
@@ -35,9 +42,19 @@ private:
     boost::filesystem::path path;
     std::ifstream reader;
 
+    bool isEmptyLine(const std::string& line);
+    bool isComment(const std::string& line, int indents);
+    int indentCount(const std::string& line);
+
+    bool inModuleInstall;
+    bool inModuleUninstall;
+    Module* currentModule;
+    bool inShell;
+    ShellAction currentShellAction;
+    int currentLineNo;
+
     template <class OutputIterator>
-    bool readModulesFromLines(
-        const std::vector<std::string>& lines, OutputIterator output);
+    bool processLine(const std::string& line, OutputIterator output);
 };
 
 template <class OutputIterator>
@@ -49,12 +66,26 @@ ConfigFileReader::readModules(OutputIterator output)
         return false;
     }
 
+    currentLineNo = 1;
+    inModuleInstall = false;
+    inModuleUninstall = false;
+    currentModule = nullptr;
+    inShell = false;
+    currentShellAction = nullptr;
+
     std::string line;
-    int lineNo = 1;
     while (getline(reader, line)) {
-        lineNo++;
+        processLine<OutputIterator>(line, output);
     }
 
+    return true;
+}
+
+template <class OutputIterator>
+bool
+ConfigFileReader::processLine(const std::string& line, OutputIterator output)
+{
+    currentLineNo++;
     return true;
 }
 }

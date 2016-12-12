@@ -13,6 +13,11 @@ ShellAction::ShellAction()
 {
 }
 
+ShellAction::ShellAction(const std::string& name)
+    : ModuleAction(name), shellCommands()
+{
+}
+
 const std::vector<std::string>&
 ShellAction::getShellCommands() const
 {

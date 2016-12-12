@@ -35,8 +35,6 @@ BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeBraces: WebKit
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializersBeforeComma: false
-BreakAfterJavaFieldAnnotations: false
-BreakStringLiterals: false
 ColumnLimit:     79
 CommentPragmas:  '^ IWYU pragma:'
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -54,12 +52,9 @@ IncludeCategories:
     Priority:        2
   - Regex:           '^"'
     Priority:        3
-IncludeIsMainRegex: '$'
 IndentCaseLabels: false
 IndentWidth:     4
 IndentWrappedFunctionNames: false
-JavaScriptQuotes: Leave
-JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 MacroBlockBegin: ''
 MacroBlockEnd:   ''
