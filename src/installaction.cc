@@ -118,7 +118,15 @@ InstallAction::performAction()
             return false;
         }
 
-        boost::filesystem::copy(sourcePath, destinationPath);
+        /*
+         * Overwrite if file exists. Copy uses the correct defaults otherwise.
+         */
+        if (boost::filesystem::is_regular_file(sourcePath)) {
+            boost::filesystem::copy_file(sourcePath, destinationPath,
+                boost::filesystem::copy_option::overwrite_if_exists);
+        } else {
+            boost::filesystem::copy(sourcePath, destinationPath);
+        }
     } catch (boost::filesystem::filesystem_error& e) {
         warnx("%s", e.what());
         return false;
