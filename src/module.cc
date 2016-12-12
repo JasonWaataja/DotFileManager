@@ -14,6 +14,12 @@ Module::Module(const std::string& name) : name(name)
 {
 }
 
+void
+Module::addComponent(std::shared_ptr<ModuleComponent> component)
+{
+    modules.push_back(component);
+}
+
 const std::string&
 Module::getName() const
 {
@@ -29,7 +35,7 @@ Module::setName(const std::string& name)
 bool
 Module::install()
 {
-    for (ModuleComponent* component : modules) {
+    for (std::shared_ptr<ModuleComponent> component : modules) {
         bool status = component->install();
         if (!status) {
             warnx("failed to install module %s", component->getName().c_str());
@@ -43,7 +49,7 @@ Module::install()
 bool
 Module::uninstall()
 {
-    for (ModuleComponent* component : modules) {
+    for (std::shared_ptr<ModuleComponent> component : modules) {
         bool status = component->uninstall();
         if (!status) {
             warnx("failed to install module %s", component->getName().c_str());

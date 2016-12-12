@@ -3,6 +3,7 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -16,6 +17,7 @@ class Module {
 public:
     Module();
     Module(const std::string& name);
+    void addComponent(std::shared_ptr<ModuleComponent> component);
     bool install();
     bool uninstall();
     const std::string& getName() const;
@@ -23,7 +25,7 @@ public:
 
 private:
     std::string name;
-    std::vector<ModuleComponent*> modules;
+    std::vector<std::shared_ptr<ModuleComponent>> modules;
 };
 }
 
