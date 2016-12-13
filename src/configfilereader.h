@@ -42,15 +42,25 @@ private:
     boost::filesystem::path path;
     std::ifstream reader;
 
-    bool isEmptyLine(const std::string& line);
-    bool isComment(const std::string& line, int indents);
-    int indentCount(const std::string& line);
+    bool isEmptyLine(const std::string& line) const;
+    bool isComment(const std::string& line, int expectedIndents) const;
+    int indentCount(const std::string& line) const;
+    int getExpectedIndents() const;
+    /*
+     * Tests to see if the line starts a module and sets moduleName to the name
+     * if this is so.
+     */
+    bool isModuleLine(const std::string& line, std::string& moduleName);
+    bool isUninstallLine(const std::string& line);
+    bool isShellLine(const std::string& line);
+
+
 
     bool inModuleInstall;
     bool inModuleUninstall;
     Module* currentModule;
     bool inShell;
-    ShellAction currentShellAction;
+    ShellAction* currentShellAction;
     int currentLineNo;
 
     template <class OutputIterator>
@@ -73,19 +83,34 @@ ConfigFileReader::readModules(OutputIterator output)
     inShell = false;
     currentShellAction = nullptr;
 
+    bool noErrors = true;
     std::string line;
-    while (getline(reader, line)) {
-        processLine<OutputIterator>(line, output);
+    /* Don't read a line if processing the last line wasn't successful. */
+    while (noErrors && getline(reader, line)) {
+        noErrors = processLine<OutputIterator>(line, output);
+        if (noErrors)
+            currentLineNo++;
     }
 
-    return true;
+    if (!noErrors) {
+        warnx("Failed to read config file %s, line %i: %s", getPath(),
+            currentLineNo, line.c_str());
+    }
+
+    return noErrors;
 }
 
 template <class OutputIterator>
 bool
 ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 {
-    currentLineNo++;
+    if (isEmptyLine(line))
+        return true;
+
+    int expectedIndents = getExpectedIndents();
+    if (isComment(line, expectedIndents))
+        return true;
+
     return true;
 }
 }
