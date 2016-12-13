@@ -53,4 +53,16 @@ Module::uninstall()
 
     return true;
 }
+
+void
+Module::addInstallAction(std::shared_ptr<ModuleAction> action)
+{
+    installActions.push_back(action);
+}
+
+void
+Module::addUninstallAction(std::shared_ptr<ModuleAction> action)
+{
+    uninstallActions.push_back(action);
+}
 }

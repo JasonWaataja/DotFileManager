@@ -49,11 +49,28 @@ private:
     std::string stripIndents(const std::string& line, int indents);
     /*
      * Tests to see if the line starts a module and sets moduleName to the name
-     * if this is so.
+     * if this is so. These don't check if the line is blank or a comment and
+     * process as is because it is assumes the checking was already done.
      */
     bool isModuleLine(const std::string& line, std::string& moduleName);
+    bool isModuleLine(const std::string& line);
     bool isUninstallLine(const std::string& line);
     bool isShellLine(const std::string& line);
+
+
+    /* Processing commands that affect obect state. */
+    void addShellAction(const std::string& line);
+    /* Behavior changes if install or uninstall. */
+    void flushShellAction();
+    /* Executes command or starts new shell. */
+    bool processLineAsCommand(const std::string& line);
+    template <class OutputIterator>
+    void flushModule(OutputIterator output);
+    /* These two assume the module has already been flushed. */
+    void startNewModule(const std::string& name);
+    void changeToUninstall();
+
+
     /*
      * Split given line after the given number of indents. The first token must
      * be a word with no spaces. Each remaining token can either be a word on
@@ -135,16 +152,78 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
                 inShell = false;
                 currentShellAction = nullptr;
             }
-        } else {
-            if (indents >= 1) {
-                /* TODO: Write command parser. */
-            } else {
-            }
+        } else if (indents > 1) {
+            warnx("line %i: Unexpected indent: %s", currentLineNo, line);
+            return false;
         }
-
-
+        if (indents == 1) {
+            /* TODO: command parsing stuff. */
+            return true;
+        }
+        if (isModuleLine(line)) {
+            /*
+             * Copy the current module into the output iterator, then delete
+             * the original.
+             */
+            *output = *currentModule;
+            delete currentModule;
+            output++;
+        }
+    } else if (inModuleUninstall) {
+        if (inShell) {
+            if (indents >= 2) {
+                currentShellAction->addCommand(stripIndents(line, 2));
+                return true;
+            } else {
+                currentModule->addInstallAction(
+                    std::shared_ptr<ModuleAction>(currentShellAction));
+                inShell = false;
+                currentShellAction = nullptr;
+            }
+        } else if (indents > 1) {
+            warnx("line %i: Unexpected indent: %s", currentLineNo, line);
+            return false;
+        }
+        if (indents == 1) {
+            /* TODO: command parsing stuff. */
+            return true;
+        }
+        if (isModuleLine(line)) {
+            *output = *currentModule;
+            delete currentModule;
+            output++;
+        }
+    }
+    /* I assume the module was already added to the list above. */
+    std::string moduleName;
+    if (isModuleLine(line, moduleName)) {
+        currentModule = new Module(moduleName);
+        inModuleInstall = true;
         return true;
     }
+    if (isUninstallLine(line)) {
+        if (inModuleInstall) {
+            inModuleInstall = false;
+            inModuleUninstall = true;
+            return true;
+        } else {
+            warnx("line %i: Unexpected uninstall with no previous install: %s",
+                currentLineNo, line);
+            return false;
+        }
+    }
+    return true;
+}
+
+template <class OutputIterator>
+void
+ConfigFileReader::flushModule(OutputIterator output)
+{
+    *output = *currentModule;
+    delete currentModule;
+    inModuleInstall = false;
+    inModuleUninstall = false;
+    output++;
 }
 }
 

@@ -116,6 +116,17 @@ ConfigFileReader::isModuleLine(
 }
 
 bool
+ConfigFileReader::isModuleLine(const std::string& line)
+{
+    if (isEmptyLine(line) || isComment(line, 0))
+        return false;
+    std::regex re("^(\\S+(\\s\\S)*\\s*:\\s*$");
+    if (std::regex_match(line, re))
+        return false;
+    return true;
+}
+
+bool
 ConfigFileReader::isUninstallLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
@@ -142,5 +153,56 @@ ConfigFileReader::stripIndents(const std::string& line, int indents)
         ;
     newLine.erase(0, indentsToErase);
     return newLine;
+}
+
+void
+ConfigFileReader::addShellAction(const std::string& line)
+{
+    if (inShell) {
+        currentShellAction->addCommand(stripIndents(line, 2));
+    }
+}
+
+void
+ConfigFileReader::flushShellAction()
+{
+    if (inModuleInstall) {
+        currentModule->addInstallAction(
+            std::shared_ptr<ModuleAction>(currentShellAction));
+        inShell = false;
+        currentShellAction = nullptr;
+    } else if (inModuleUninstall) {
+        currentModule->addUninstallAction(
+            std::shared_ptr<ModuleAction>(currentShellAction));
+        inShell = false;
+        currentShellAction = nullptr;
+    }
+}
+
+bool
+ConfigFileReader::processLineAsCommand(const std::string& line)
+{
+    /* TODO: Write this code. */
+    return true;
+}
+
+void
+ConfigFileReader::startNewModule(const std::string& name)
+{
+    currentModule = new Module(name);
+    inModuleInstall = true;
+}
+
+void
+ConfigFileReader::changeToUninstall()
+{
+    if (!inModuleInstall) {
+        warnx("line %i: Attempting to uninstall module without module.",
+            currentLineNo);
+        return;
+    }
+
+    inModuleInstall = false;
+    inModuleUninstall = true;
 }
 }
