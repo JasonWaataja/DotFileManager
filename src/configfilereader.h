@@ -46,6 +46,7 @@ private:
     bool isComment(const std::string& line, int expectedIndents) const;
     int indentCount(const std::string& line) const;
     int getExpectedIndents() const;
+    std::string stripIndents(const std::string& line, int indents);
     /*
      * Tests to see if the line starts a module and sets moduleName to the name
      * if this is so.
@@ -53,8 +54,19 @@ private:
     bool isModuleLine(const std::string& line, std::string& moduleName);
     bool isUninstallLine(const std::string& line);
     bool isShellLine(const std::string& line);
-
-
+    /*
+     * Split given line after the given number of indents. The first token must
+     * be a word with no spaces. Each remaining token can either be a word on
+     * its own, or a string surrounded by double-quote characters. Any double
+     * quote characters on the inside will be part of a token. If the command
+     * is successfully parsed, then the command is stored in command. The
+     * arguments vector is cleared regardless, and any arguments are added to
+     * it.
+     *
+     * Returns true on success, false on failure.
+     */
+    bool parseCommandLine(const std::string& line, int indents,
+        std::string& command, std::vector<std::string>& arguments);
 
     bool inModuleInstall;
     bool inModuleUninstall;
@@ -111,7 +123,28 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
     if (isComment(line, expectedIndents))
         return true;
 
-    return true;
+    int indents = indentCount(line);
+    if (inModuleInstall) {
+        if (inShell) {
+            if (indents >= 2) {
+                currentShellAction->addCommand(stripIndents(line, 2));
+                return true;
+            } else {
+                currentModule->addInstallAction(
+                    std::shared_ptr<ModuleAction>(currentShellAction));
+                inShell = false;
+                currentShellAction = nullptr;
+            }
+        } else {
+            if (indents >= 1) {
+                /* TODO: Write command parser. */
+            } else {
+            }
+        }
+
+
+        return true;
+    }
 }
 }
 

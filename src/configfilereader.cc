@@ -130,4 +130,17 @@ ConfigFileReader::isUninstallLine(const std::string& line)
     }
     return false;
 }
+
+std::string
+ConfigFileReader::stripIndents(const std::string& line, int indents)
+{
+    std::string newLine = line;
+    int indentsToErase = 0;
+    for (; indentsToErase < line.length() && indentsToErase < indents
+         && newLine[indentsToErase] == '\t';
+         indentsToErase++)
+        ;
+    newLine.erase(0, indentsToErase);
+    return newLine;
+}
 }
