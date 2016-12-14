@@ -24,12 +24,17 @@ class ConfigFileReader {
 public:
     ConfigFileReader(const std::string& path);
     ConfigFileReader(const boost::filesystem::path& path);
+    /*
+     * This one is included to prevent ambiguity when using a string literal.
+     */
+    ConfigFileReader(const char* path);
     /* TODO: Write destructor that closes file. */
     const boost::filesystem::path& getPath() const;
     void setPath(const std::string& path);
     void setPath(const boost::filesystem::path& path);
 
     bool isOpen();
+    void close();
     /*
      * Read the modules in the given file and write them to the given iterator,
      * which must contain elements of type Module.
@@ -118,6 +123,12 @@ ConfigFileReader::readModules(OutputIterator output)
         if (noErrors)
             currentLineNo++;
     }
+
+    if (inShell)
+        flushShellAction();
+
+    if (inModuleInstall || inModuleUninstall)
+        flushModule(output);
 
     if (!noErrors) {
         warnx("Failed to read config file %s, line %i: %s", getPath(),

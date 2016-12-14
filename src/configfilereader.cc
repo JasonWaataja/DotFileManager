@@ -2,6 +2,7 @@
 
 #include "configfilereader.h"
 
+#include <exception>
 #include <regex>
 
 namespace dfm {
@@ -20,6 +21,11 @@ ConfigFileReader::ConfigFileReader(const std::string& path)
 
 ConfigFileReader::ConfigFileReader(const boost::filesystem::path& path)
     : ConfigFileReader(path.string())
+{
+}
+
+ConfigFileReader::ConfigFileReader(const char* path)
+    : ConfigFileReader(std::string(path))
 {
 }
 
@@ -106,11 +112,18 @@ ConfigFileReader::isModuleLine(
      * whitespace between the colon and the name. The name may include
      * whitespace. There may be trailing whitespace after the colon.
      */
-    std::regex re("^(\\S+(\\s\\S)*\\s*:\\s*$");
+    std::cout << "Module reg" << std::endl << std::endl;
+    try {
+    std::regex re("^(\\S+(?\\s+\\S+)*\\s*:\\s*$",
+        std::regex_constants::extended);
+    std:: cout << "Compiled" << std::endl;
     std::smatch match;
     if (std::regex_match(line, match, re)) {
         moduleName = match.str(1);
         return true;
+    }
+    } catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
     return false;
 }
@@ -120,6 +133,7 @@ ConfigFileReader::isModuleLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
+    std::cout << "Module reg no name" << std::endl;
     std::regex re("^(\\S+(\\s\\S)*\\s*:\\s*$");
     if (std::regex_match(line, re))
         return false;
@@ -135,6 +149,7 @@ ConfigFileReader::isUninstallLine(const std::string& line)
      * The line must start with uninstall, then there must be a colon, which
      * may be surrounded by whitespace.
      */
+    std::cout << "Uninstall reg" << std::endl;
     std::regex re("^uninstall\\s*:\\s$");
     if (std::regex_match(line, re)) {
         return true;
@@ -182,34 +197,35 @@ ConfigFileReader::flushShellAction()
 bool
 ConfigFileReader::processLineAsCommand(const std::string& line)
 {
-    std::string localLine = stripIndents(line, 1);
+    // std::string localLine = stripIndents(line, 1);
     /*
      * Match a string that's not whitespace at the beginning, which is the
      * command. Capture the command.
      */
-    std::regex commandRe("(\\S+).*");
-    std::smatch matchResults;
-    if (!std::regex_match(line, matchResults, commandRe)) {
-        warnx("line %i: No command found for line: %s", currentLineNo,
-            line.c_str());
-        return false;
-    }
+    // std::regex commandRe("(\\S+).*");
+    // std::smatch matchResults;
+    // if (!std::regex_match(line, matchResults, commandRe)) {
+    // warnx("line %i: No command found for line: %s", currentLineNo,
+    // line.c_str());
+    // return false;
+    //}
 
-    std::string command = matchResults.str(1);
-    localLine =
-        localLine.substr(matchResults.position(1), matchResults.length(1));
+    // std::string command = matchResults.str(1);
+    // localLine =
+    // localLine.substr(matchResults.position(1), matchResults.length(1));
     /*
      * Match two quotes with as many characters between them that can be the
      * escape sequence \" as possible. I think the quotation one has to come
      * first in the or statement, otherwise it would always include the quotes.
      */
-    std::regex argumentsRe("\"(?\\\"|[^\"])*\"|\\S+");
-    std::sregex_iterator next(localLine.begin(), localLine.end(), argumentsRe);
-    std::sregex_iterator end;
-    std::vector<std::string> arguments;
-    while (next != end) {
+    // std::regex argumentsRe("\"(?\\\"|[^\"])*\"|\\S+");
+    // std::sregex_iterator next(localLine.begin(), localLine.end(),
+    // argumentsRe);
+    // std::sregex_iterator end;
+    // std::vector<std::string> arguments;
+    // while (next != end) {
 
-    }
+    //}
 
     return true;
 }
@@ -232,5 +248,14 @@ ConfigFileReader::changeToUninstall()
 
     inModuleInstall = false;
     inModuleUninstall = true;
+}
+
+void
+ConfigFileReader::close()
+{
+    if (inModuleInstall || inModuleUninstall)
+        warnx("Attempting to close reader while still readering.");
+
+    reader.close();
 }
 }
