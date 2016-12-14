@@ -182,7 +182,35 @@ ConfigFileReader::flushShellAction()
 bool
 ConfigFileReader::processLineAsCommand(const std::string& line)
 {
-    /* TODO: Write this code. */
+    std::string localLine = stripIndents(line, 1);
+    /*
+     * Match a string that's not whitespace at the beginning, which is the
+     * command. Capture the command.
+     */
+    std::regex commandRe("(\\S+).*");
+    std::smatch matchResults;
+    if (!std::regex_match(line, matchResults, commandRe)) {
+        warnx("line %i: No command found for line: %s", currentLineNo,
+            line.c_str());
+        return false;
+    }
+
+    std::string command = matchResults.str(1);
+    localLine =
+        localLine.substr(matchResults.position(1), matchResults.length(1));
+    /*
+     * Match two quotes with as many characters between them that can be the
+     * escape sequence \" as possible. I think the quotation one has to come
+     * first in the or statement, otherwise it would always include the quotes.
+     */
+    std::regex argumentsRe("\"(?\\\"|[^\"])*\"|\\S+");
+    std::sregex_iterator next(localLine.begin(), localLine.end(), argumentsRe);
+    std::sregex_iterator end;
+    std::vector<std::string> arguments;
+    while (next != end) {
+
+    }
+
     return true;
 }
 

@@ -57,21 +57,13 @@ private:
     bool isUninstallLine(const std::string& line);
     bool isShellLine(const std::string& line);
 
-
     /* Processing commands that affect obect state. */
     void addShellAction(const std::string& line);
     /* Behavior changes if install or uninstall. */
     void flushShellAction();
-    /* Executes command or starts new shell. */
-    bool processLineAsCommand(const std::string& line);
-    template <class OutputIterator>
-    void flushModule(OutputIterator output);
-    /* These two assume the module has already been flushed. */
-    void startNewModule(const std::string& name);
-    void changeToUninstall();
-
-
     /*
+     * Executes command or starts new shell.
+     *
      * Split given line after the given number of indents. The first token must
      * be a word with no spaces. Each remaining token can either be a word on
      * its own, or a string surrounded by double-quote characters. Any double
@@ -82,6 +74,12 @@ private:
      *
      * Returns true on success, false on failure.
      */
+    bool processLineAsCommand(const std::string& line);
+    template <class OutputIterator> void flushModule(OutputIterator output);
+    /* These two assume the module has already been flushed. */
+    void startNewModule(const std::string& name);
+    void changeToUninstall();
+
     bool parseCommandLine(const std::string& line, int indents,
         std::string& command, std::vector<std::string>& arguments);
 
@@ -141,78 +139,43 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         return true;
 
     int indents = indentCount(line);
-    if (inModuleInstall) {
-        if (inShell) {
-            if (indents >= 2) {
-                currentShellAction->addCommand(stripIndents(line, 2));
-                return true;
-            } else {
-                currentModule->addInstallAction(
-                    std::shared_ptr<ModuleAction>(currentShellAction));
-                inShell = false;
-                currentShellAction = nullptr;
-            }
-        } else if (indents > 1) {
-            warnx("line %i: Unexpected indent: %s", currentLineNo, line);
-            return false;
-        }
-        if (indents == 1) {
-            /* TODO: command parsing stuff. */
+
+    if (inShell) {
+        if (indents >= 2) {
+            addShellAction(line);
             return true;
-        }
-        if (isModuleLine(line)) {
-            /*
-             * Copy the current module into the output iterator, then delete
-             * the original.
-             */
-            *output = *currentModule;
-            delete currentModule;
-            output++;
-        }
-    } else if (inModuleUninstall) {
-        if (inShell) {
-            if (indents >= 2) {
-                currentShellAction->addCommand(stripIndents(line, 2));
-                return true;
-            } else {
-                currentModule->addInstallAction(
-                    std::shared_ptr<ModuleAction>(currentShellAction));
-                inShell = false;
-                currentShellAction = nullptr;
-            }
-        } else if (indents > 1) {
-            warnx("line %i: Unexpected indent: %s", currentLineNo, line);
+        } else
+            flushShellAction();
+    }
+
+    if (inModuleInstall || inModuleUninstall) {
+        if (indents == 1)
+            return processLineAsCommand(line);
+        else if (indents >= 1) {
+            warnx("line %i: Unexpected indentation: %s", currentLineNo, line);
             return false;
-        }
-        if (indents == 1) {
-            /* TODO: command parsing stuff. */
-            return true;
-        }
-        if (isModuleLine(line)) {
-            *output = *currentModule;
-            delete currentModule;
-            output++;
         }
     }
-    /* I assume the module was already added to the list above. */
+
     std::string moduleName;
     if (isModuleLine(line, moduleName)) {
-        currentModule = new Module(moduleName);
-        inModuleInstall = true;
+        if (inModuleInstall || inModuleUninstall)
+            flushModule(output);
+        startNewModule(moduleName);
         return true;
     }
     if (isUninstallLine(line)) {
-        if (inModuleInstall) {
-            inModuleInstall = false;
-            inModuleUninstall = true;
-            return true;
-        } else {
-            warnx("line %i: Unexpected uninstall with no previous install: %s",
-                currentLineNo, line);
+        if (!inModuleInstall) {
+            warnx("line %i: Uninstall without named module: %s", currentLineNo,
+                line);
             return false;
         }
+        changeToUninstall();
+        return true;
     }
-    return true;
+
+    warnx("line %i: Unable to process line: %s", currentLineNo, line);
+    return false;
 }
 
 template <class OutputIterator>
