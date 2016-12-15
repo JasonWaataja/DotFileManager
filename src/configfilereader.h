@@ -122,6 +122,7 @@ ConfigFileReader::readModules(OutputIterator output)
         noErrors = processLine<OutputIterator>(line, output);
         if (noErrors)
             currentLineNo++;
+        std::cout << "end of loop" << std::endl;
     }
 
     if (inShell)
@@ -162,7 +163,7 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
     if (inModuleInstall || inModuleUninstall) {
         if (indents == 1)
             return processLineAsCommand(line);
-        else if (indents >= 1) {
+        else if (indents > 1) {
             warnx("line %i: Unexpected indentation: %s", currentLineNo,
                 line.c_str());
             return false;
@@ -171,11 +172,13 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 
     std::string moduleName;
     if (isModuleLine(line, moduleName)) {
+        std::cout << "Processed line" << std::endl;
         if (inModuleInstall || inModuleUninstall)
             flushModule(output);
         startNewModule(moduleName);
         return true;
     }
+    std::cout << "Processed line" << std::endl;
     if (isUninstallLine(line)) {
         if (!inModuleInstall) {
             warnx("line %i: Uninstall without named module: %s", currentLineNo,

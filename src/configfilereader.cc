@@ -114,14 +114,18 @@ ConfigFileReader::isModuleLine(
      */
     std::cout << "Module reg" << std::endl << std::endl;
     try {
-    std::regex re("^(\\S+(?\\s+\\S+)*\\s*:\\s*$",
-        std::regex_constants::extended);
+    std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
     std:: cout << "Compiled" << std::endl;
+    std::cout << "line: " << line << std::endl;
     std::smatch match;
+    std::cout << "About to match" << std::endl;
     if (std::regex_match(line, match, re)) {
+        std::cout << "was matched" << std::endl;
         moduleName = match.str(1);
+        std::cout << "Looking for match" << std::endl;
         return true;
     }
+    std::cout << "No Match" << std::endl;
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
