@@ -163,7 +163,8 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         if (indents == 1)
             return processLineAsCommand(line);
         else if (indents >= 1) {
-            warnx("line %i: Unexpected indentation: %s", currentLineNo, line);
+            warnx("line %i: Unexpected indentation: %s", currentLineNo,
+                line.c_str());
             return false;
         }
     }
@@ -178,14 +179,14 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
     if (isUninstallLine(line)) {
         if (!inModuleInstall) {
             warnx("line %i: Uninstall without named module: %s", currentLineNo,
-                line);
+                line.c_str());
             return false;
         }
         changeToUninstall();
         return true;
     }
 
-    warnx("line %i: Unable to process line: %s", currentLineNo, line);
+    warnx("line %i: Unable to process line: %s", currentLineNo, line.c_str());
     return false;
 }
 
