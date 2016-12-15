@@ -138,7 +138,7 @@ ConfigFileReader::isModuleLine(const std::string& line)
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
     std::cout << "Module reg no name" << std::endl;
-    std::regex re("^(\\S+(\\s\\S)*\\s*:\\s*$");
+    std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
     if (std::regex_match(line, re))
         return false;
     return true;
@@ -222,7 +222,7 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
      * escape sequence \" as possible. I think the quotation one has to come
      * first in the or statement, otherwise it would always include the quotes.
      */
-    // std::regex argumentsRe("\"(?\\\"|[^\"])*\"|\\S+");
+    // std::regex argumentsRe("\"(?:\\\\\"|[^\"])*\"|\\S+");
     // std::sregex_iterator next(localLine.begin(), localLine.end(),
     // argumentsRe);
     // std::sregex_iterator end;

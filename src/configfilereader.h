@@ -125,9 +125,11 @@ ConfigFileReader::readModules(OutputIterator output)
         std::cout << "end of loop" << std::endl;
     }
 
+    std::cout << "About to flush shell action" << std::endl;
     if (inShell)
         flushShellAction();
 
+    std::cout << "about to flush module" << std::endl;
     if (inModuleInstall || inModuleUninstall)
         flushModule(output);
 
@@ -136,6 +138,8 @@ ConfigFileReader::readModules(OutputIterator output)
             currentLineNo, line.c_str());
     }
 
+    std::cout << "About to return from function" << std::endl;
+
     return noErrors;
 }
 
@@ -143,6 +147,7 @@ template <class OutputIterator>
 bool
 ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 {
+    std::cout << "Processing line: " << line << std::endl;
     if (isEmptyLine(line))
         return true;
 
@@ -197,10 +202,14 @@ template <class OutputIterator>
 void
 ConfigFileReader::flushModule(OutputIterator output)
 {
+    std::cout << "Flushing current module" << std::endl;
+    std::cout << "About to set output" << std::endl;
     *output = *currentModule;
+    std::cout << "About to delete current module" << std::endl;
     delete currentModule;
     inModuleInstall = false;
     inModuleUninstall = false;
+    std::cout << "About to increment module" << std::endl;
     output++;
 }
 }

@@ -15,7 +15,7 @@ main(int argc, char* argv[])
     std::cout << reader.isOpen() << std::endl;
 
     std::vector<dfm::Module> modules;
-    bool status = reader.readModules(modules.begin());
+    bool status = reader.readModules(std::back_inserter(modules));
     std::cout << "status: " << status << std::endl;
     std::cout << "size: " << modules.size() << std::endl;
 
