@@ -131,7 +131,7 @@ ConfigFileReader::readModules(OutputIterator output)
         flushModule(output);
 
     if (!noErrors) {
-        warnx("Failed to read config file %s, line %i: %s", getPath(),
+        warnx("Failed to read config file %s, line %i: %s", getPath().c_str(),
             currentLineNo, line.c_str());
     }
 
