@@ -225,11 +225,12 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
      * first in the or statement, otherwise it would always include the
      * quotes.
      */
-    std::regex argumentsRe("\"(?:\\\\\"|[^\"])*\"|\\S+");
+    std::regex argumentsRe("\\s+(\"(?:\\\\\"|[^\"])*\"|\\S+)");
     std::sregex_iterator next(localLine.begin(), localLine.end(), argumentsRe);
     std::sregex_iterator end;
     std::vector<std::string> arguments;
     while (next != end) {
+        std::smatch match = *next;
     }
 
     return true;
