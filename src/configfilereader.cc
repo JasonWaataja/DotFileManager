@@ -2,6 +2,8 @@
 
 #include "configfilereader.h"
 
+#include <ctype.h>
+
 #include <exception>
 #include <regex>
 
@@ -114,18 +116,18 @@ ConfigFileReader::isModuleLine(
      */
     std::cout << "Module reg" << std::endl << std::endl;
     try {
-    std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
-    std:: cout << "Compiled" << std::endl;
-    std::cout << "line: " << line << std::endl;
-    std::smatch match;
-    std::cout << "About to match" << std::endl;
-    if (std::regex_match(line, match, re)) {
-        std::cout << "was matched" << std::endl;
-        moduleName = match.str(1);
-        std::cout << "Looking for match" << std::endl;
-        return true;
-    }
-    std::cout << "No Match" << std::endl;
+        std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
+        std::cout << "Compiled" << std::endl;
+        std::cout << "line: " << line << std::endl;
+        std::smatch match;
+        std::cout << "About to match" << std::endl;
+        if (std::regex_match(line, match, re)) {
+            std::cout << "was matched" << std::endl;
+            moduleName = match.str(1);
+            std::cout << "Looking for match" << std::endl;
+            return true;
+        }
+        std::cout << "No Match" << std::endl;
     } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
     }
@@ -201,35 +203,34 @@ ConfigFileReader::flushShellAction()
 bool
 ConfigFileReader::processLineAsCommand(const std::string& line)
 {
-    // std::string localLine = stripIndents(line, 1);
+    std::string localLine = stripIndents(line, 1);
     /*
      * Match a string that's not whitespace at the beginning, which is the
-     * command. Capture the command.
+     * command. Capture the command and the rest of the line.
      */
-    // std::regex commandRe("(\\S+).*");
-    // std::smatch matchResults;
-    // if (!std::regex_match(line, matchResults, commandRe)) {
-    // warnx("line %i: No command found for line: %s", currentLineNo,
-    // line.c_str());
-    // return false;
-    //}
+    std::regex commandRe("^(\\S+).*$");
+    std::smatch matchResults;
+    if (!std::regex_match(line, matchResults, commandRe)) {
+        warnx("line %i: No command found for line: %s", currentLineNo,
+            line.c_str());
+        return false;
+    }
 
-    // std::string command = matchResults.str(1);
-    // localLine =
-    // localLine.substr(matchResults.position(1), matchResults.length(1));
+    std::string command = matchResults.str(1);
+    localLine =
+        localLine.substr(matchResults.position(1), matchResults.length(1));
     /*
      * Match two quotes with as many characters between them that can be the
      * escape sequence \" as possible. I think the quotation one has to come
-     * first in the or statement, otherwise it would always include the quotes.
+     * first in the or statement, otherwise it would always include the
+     * quotes.
      */
-    // std::regex argumentsRe("\"(?:\\\\\"|[^\"])*\"|\\S+");
-    // std::sregex_iterator next(localLine.begin(), localLine.end(),
-    // argumentsRe);
-    // std::sregex_iterator end;
-    // std::vector<std::string> arguments;
-    // while (next != end) {
-
-    //}
+    std::regex argumentsRe("\"(?:\\\\\"|[^\"])*\"|\\S+");
+    std::sregex_iterator next(localLine.begin(), localLine.end(), argumentsRe);
+    std::sregex_iterator end;
+    std::vector<std::string> arguments;
+    while (next != end) {
+    }
 
     return true;
 }
