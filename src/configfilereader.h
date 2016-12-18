@@ -3,13 +3,16 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
-#include <boost/filesystem.hpp>
 #include <err.h>
+
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
+#include <boost/filesystem.hpp>
+
+#include "command.h"
 #include "installaction.h"
 #include "messageaction.h"
 #include "module.h"
@@ -28,7 +31,6 @@ public:
      * This one is included to prevent ambiguity when using a string literal.
      */
     ConfigFileReader(const char* path);
-    /* TODO: Write destructor that closes file. */
     const boost::filesystem::path& getPath() const;
     void setPath(const std::string& path);
     void setPath(const boost::filesystem::path& path);
@@ -43,26 +45,126 @@ public:
      */
     template <class OutputIterator> bool readModules(OutputIterator output);
 
-private:
-    boost::filesystem::path path;
-    std::ifstream reader;
+    /*
+     * Adds a command with the given action and given names. It takes a list of
+     * null terminated list of C strings. The last argument must be NULL or
+     * else something will go wrong.
+     */
+    void addCommand(std::function<std::shared_ptr<ModuleAction>(
+                        const std::vector<std::string>&)>
+                        createActionFunction,
+        const char* firstName, ...);
+    void addCommand(std::function<std::shared_ptr<ModuleAction>(
+                        const std::vector<std::string>&)>
+                        createActionFunction,
+        Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
+        const char* firstName, ...);
 
+    static std::shared_ptr<ModuleAction> createMessageAction(
+        const std::vector<std::string>& arguments);
+
+private:
+    /* The path to the config file. */
+    boost::filesystem::path path;
+    /* The reader to open path with. */
+    std::ifstream reader;
+    /*
+     * Whether or not the reader is in a module install which determines what
+     * command lines are used for.
+     */
+    bool inModuleInstall;
+    /* Returns whether or not the reader is in a module and whether or not it
+     * was changed to an uninstall.
+     */
+    bool inModuleUninstall;
+    /*
+     * Pointer to a current module being constructed. Set to nullptr when not
+     * currently in a module and is meant to be deleted when the module is
+     * copied to the output.
+     */
+    Module* currentModule;
+    /*
+     * Whether or not the reader should process lines as shell commands to be
+     * added to the current module install or uninstall.
+     */
+    bool inShell;
+    /* The current action to append shell commands to. */
+    ShellAction* currentShellAction;
+    /*
+     * The current line number of the reader, meant to be used with error
+     * messages.
+     */
+    int currentLineNo;
+    /*
+     * The list of commands, which is checked against when processing a normal
+     * command. It looks through these commands in order, so higher priority
+     * commands should be first and if two commands share a name the one first
+     * will be executed.
+     */
+    std::vector<Command> commands;
+
+    void addDefaultCommands();
+
+    /* Equivalent to line.length() == 0. */
     bool isEmptyLine(const std::string& line) const;
+    /*
+     * Tests if the given line is a comment. A line is a comment if the first
+     * character in the line is COMMENT_DELIMITER, or if any of the next
+     * expectedIndents characters are COMMENT_DELIMITER. The reason for this is
+     * to embed the COMMENT_DELIMITER character in commands and in shell
+     * commands.
+     *
+     * Returns whether or not the given line is a comment.
+     */
     bool isComment(const std::string& line, int expectedIndents) const;
+    /* Returns the number of '\t' characters at the start of the line. */
     int indentCount(const std::string& line) const;
+    /*
+     * Gets the expected number of indents based on the current state of the
+     * reader. Being in a shell means it expects two, being in a module install
+     * or uninstall makes it 1, and anything else makes it 0.
+     *
+     * Returns the number of expected indentations based on the reader state.
+     */
     int getExpectedIndents() const;
+    /*
+     * Removes indents indents from the start of line and returns it.
+     *
+     * Returns a new string with indents indents stripped from it.
+     */
     std::string stripIndents(const std::string& line, int indents);
     /*
      * Tests to see if the line starts a module and sets moduleName to the name
      * if this is so. These don't check if the line is blank or a comment and
      * process as is because it is assumes the checking was already done.
+     *
+     * If it does match the module syntax, stores the module name in line. Does
+     * not affect line if the line is not a module line.
+     *
+     * Returns whether or not line matches the syntax for a new module line.
      */
     bool isModuleLine(const std::string& line, std::string& moduleName);
+    /*
+     * Tests to see if the line starts a module and sets moduleName to the name
+     * if this is so. These don't check if the line is blank or a comment and
+     * process as is because it is assumes the checking was already done.
+     *
+     * Returns whether or not line matches the syntax for a new module line.
+     */
     bool isModuleLine(const std::string& line);
+    /*
+     * Tests line to see if it represents a line that uninstalls.
+     *
+     * Returns whether or not line matches the syntax for an uninstall line.
+     */
     bool isUninstallLine(const std::string& line);
-    bool isShellLine(const std::string& line);
+    /*
+     * Tests commandName to see if it's a command that should activate shell
+     * action.
+     */
+    bool isShellCommand(const std::string& commandName);
 
-    /* Processing commands that affect obect state. */
+    /* Processing commands that affect object state. */
     void addShellAction(const std::string& line);
     /* Behavior changes if install or uninstall. */
     void flushShellAction();
@@ -80,21 +182,44 @@ private:
      * Returns true on success, false on failure.
      */
     bool processLineAsCommand(const std::string& line);
+    /* Executes command string with given arguments. */
+    bool processCommand(const std::string& commandName,
+        const std::vector<std::string>& arguments);
+
+    /*
+     * If the reader is in a module install or uninstall, finishes the module
+     * and writes it to output, which must be an output iterator with type
+     * module. This must be called or there will be a memory leak.
+     */
     template <class OutputIterator> void flushModule(OutputIterator output);
-    /* These two assume the module has already been flushed. */
+    /*
+     * Creates a new module with the given name and sets the current module to
+     * it. This assumes that the last module has already be flushed, and don't
+     * forget to do so.
+     */
     void startNewModule(const std::string& name);
+    /*
+     * If in a modul install, change the current state so that actions are
+     * added to the module's uninstall actions. Gives a warning if not in a
+     * module install.
+     */
     void changeToUninstall();
 
-    bool parseCommandLine(const std::string& line, int indents,
-        std::string& command, std::vector<std::string>& arguments);
-
-    bool inModuleInstall;
-    bool inModuleUninstall;
-    Module* currentModule;
-    bool inShell;
-    ShellAction* currentShellAction;
-    int currentLineNo;
-
+    /* The main function for processing a config file. Takes a line, and takes
+     * the appropriate action based on the content of the line.
+     *
+     * This function does not increment currentLineNo. Do that in the method
+     * that reads line the lines from the file reader.
+     *
+     * First checks to see if the line is empty or a comment based on the
+     * expected indents. It then executes the appropriate action based on the
+     * contents of the line, whether that be to add a shell action, flush the
+     * current module, or start a new one. Does a lot of error checking and
+     * gives warnings for malformed config files.
+     *
+     * Returns whether or not parsing the line was successful, which would
+     * likely fail because of a malformed line.
+     */
     template <class OutputIterator>
     bool processLine(const std::string& line, OutputIterator output);
 };
@@ -122,14 +247,11 @@ ConfigFileReader::readModules(OutputIterator output)
         noErrors = processLine<OutputIterator>(line, output);
         if (noErrors)
             currentLineNo++;
-        std::cout << "end of loop" << std::endl;
     }
 
-    std::cout << "About to flush shell action" << std::endl;
     if (inShell)
         flushShellAction();
 
-    std::cout << "about to flush module" << std::endl;
     if (inModuleInstall || inModuleUninstall)
         flushModule(output);
 
@@ -138,8 +260,6 @@ ConfigFileReader::readModules(OutputIterator output)
             currentLineNo, line.c_str());
     }
 
-    std::cout << "About to return from function" << std::endl;
-
     return noErrors;
 }
 
@@ -147,7 +267,6 @@ template <class OutputIterator>
 bool
 ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 {
-    std::cout << "Processing line: " << line << std::endl;
     if (isEmptyLine(line))
         return true;
 
@@ -177,13 +296,11 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 
     std::string moduleName;
     if (isModuleLine(line, moduleName)) {
-        std::cout << "Processed line" << std::endl;
         if (inModuleInstall || inModuleUninstall)
             flushModule(output);
         startNewModule(moduleName);
         return true;
     }
-    std::cout << "Processed line" << std::endl;
     if (isUninstallLine(line)) {
         if (!inModuleInstall) {
             warnx("line %i: Uninstall without named module: %s", currentLineNo,
@@ -202,14 +319,10 @@ template <class OutputIterator>
 void
 ConfigFileReader::flushModule(OutputIterator output)
 {
-    std::cout << "Flushing current module" << std::endl;
-    std::cout << "About to set output" << std::endl;
     *output = *currentModule;
-    std::cout << "About to delete current module" << std::endl;
     delete currentModule;
     inModuleInstall = false;
     inModuleUninstall = false;
-    std::cout << "About to increment module" << std::endl;
     output++;
 }
 }
