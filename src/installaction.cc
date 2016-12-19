@@ -119,7 +119,7 @@ InstallAction::performAction()
 
     try {
         if (!boost::filesystem::exists(sourcePath)) {
-            warnx("#ile %s doesn't exist.", sourcePath.c_str());
+            warnx("File %s doesn't exist.", sourcePath.c_str());
             return false;
         }
 
@@ -144,6 +144,12 @@ InstallAction::performAction()
         if (boost::filesystem::is_regular_file(sourcePath)) {
             boost::filesystem::copy_file(sourcePath, destinationPath,
                 boost::filesystem::copy_option::overwrite_if_exists);
+        } else if (boost::filesystem::is_directory(sourcePath)) {
+            if (boost::filesystem::exists(destinationPath)) {
+                if (boost::filesystem::is_directory(destinationDirectory)) {
+                    
+                }
+            }
         } else {
             boost::filesystem::copy(sourcePath, destinationPath);
         }
@@ -153,5 +159,22 @@ InstallAction::performAction()
     }
 
     return true;
+}
+
+bool
+InstallAction::installFile(const boost::filesystem::path& sourcePath,
+    const boost::filesystem::path& destinationPath)
+{
+    if (!boost::filesystem::exists(sourcePath)) {
+        warnx("File %s doesn't exist.", sourcePath.c_str());
+        return false;
+    }
+
+    if (boost::filesystem::is_regular_file(sourcePath)
+        && boost::filesystem::is_directory(destinationPath)) {
+        warnx("Replacing directory %s with regular file %s.",
+            sourcePath.c_str(), destinationPath.c_str());
+        boost::filesystem::remove_all(destinationPath);
+    }
 }
 } /* namespace dfm */
