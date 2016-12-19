@@ -147,7 +147,6 @@ InstallAction::performAction()
         } else if (boost::filesystem::is_directory(sourcePath)) {
             if (boost::filesystem::exists(destinationPath)) {
                 if (boost::filesystem::is_directory(destinationDirectory)) {
-                    
                 }
             }
         } else {
@@ -162,19 +161,58 @@ InstallAction::performAction()
 }
 
 bool
-InstallAction::installFile(const boost::filesystem::path& sourcePath,
+InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
-    if (!boost::filesystem::exists(sourcePath)) {
-        warnx("File %s doesn't exist.", sourcePath.c_str());
+    try {
+        if (!boost::filesystem::exists(sourceFilePath)) {
+            warnx("File %s doesn't exist.", sourceFilePath.c_str());
+            return false;
+        }
+
+        if (!boost::filesystem::is_regular_file(sourceFilePath)) {
+            warnx("Attempting to copy non regular file with regular file "
+                  "function %s.",
+                sourceFilePath.c_str());
+            return false;
+        }
+
+        if (!boost::filesystem::exists(destinationDirectory.parent_path()))
+            boost::filesystem::create_directories(destinationPath);
+        else if (!boost::filesystem::is_regular_file(destinationDirectory)) {
+            warnx("Copying regular file over directory %s, overwriting.",
+                destinationPath.c_str());
+            boost::filesystem::remove_all(destinationPath);
+        }
+
+        boost::filesystem::copy_file(sourceFilePath, destinationPath);
+    } catch (boost::filesystem::filesystem_error& e) {
+        warnx("Filesystem error.");
         return false;
     }
 
-    if (boost::filesystem::is_regular_file(sourcePath)
-        && boost::filesystem::is_directory(destinationPath)) {
-        warnx("Replacing directory %s with regular file %s.",
-            sourcePath.c_str(), destinationPath.c_str());
-        boost::filesystem::remove_all(destinationPath);
+    return true;
+}
+
+bool
+InstallAction::copyDirectory(
+    const boost::filesystem::path& sourceDirectoryPath,
+    const boost::filesystem::path& destinationPath)
+{
+    try {
+        if (!boost::filesystem::exists(sourceDirectoryPath)) {
+            warnx("File %s doesn't exist.");
+            return false;
+        }
+
+        if (!boost::filesystem::is_directory(sourceDirectoryPath)) {
+            warnx("Attempting to copy non-directory with with directory "
+                  "function %s.", sourceDirectoryPath.c_str());
+            return false;
+        }
+
+        if (!boost::filesystem::exists(destinationPath)) {
+        }
     }
 }
 } /* namespace dfm */

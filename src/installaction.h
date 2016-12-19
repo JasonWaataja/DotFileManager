@@ -51,7 +51,9 @@ public:
     const std::string& getInstallFilename() const;
     void setInstallFilename(const std::string& installFilename);
 
-    bool installFile(const boost::filesystem::path& sourcePath,
+    bool copyRegularFile(const boost::filesystem::path& sourceFilePath,
+        const boost::filesystem::path& destinationPath);
+    bool copyDirectory(const boost::filesystem::path& sourceDirectoryPath,
         const boost::filesystem::path& destinationPath);
 
 private:
