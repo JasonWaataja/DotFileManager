@@ -341,6 +341,7 @@ ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
         name = va_arg(argumentList, const char*);
     }
     commands.push_back(command);
+    va_end(argumentList);
 }
 
 void
@@ -358,6 +359,7 @@ ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
         command.addCallableName(std::string(name));
         name = va_arg(argumentList, const char*);
     }
+    va_end(argumentList);
 
     switch (argumentCheckingType) {
     case Command::NO_ARGUMENT_CKECK:
