@@ -51,9 +51,10 @@ public:
     const std::string& getInstallFilename() const;
     void setInstallFilename(const std::string& installFilename);
 
-    bool copyRegularFile(const boost::filesystem::path& sourceFilePath,
+    static bool copyRegularFile(const boost::filesystem::path& sourceFilePath,
         const boost::filesystem::path& destinationPath);
-    bool copyDirectory(const boost::filesystem::path& sourceDirectoryPath,
+    static bool copyDirectory(
+        const boost::filesystem::path& sourceDirectoryPath,
         const boost::filesystem::path& destinationPath);
 
 private:
@@ -61,6 +62,16 @@ private:
     boost::filesystem::path sourceDirectory;
     std::string installFilename;
     boost::filesystem::path destinationDirectory;
+
+    /*
+     * For internal use of copyDirectory. Assumes all preliminary checking has
+     * been done. Assumes that both sourceDirectoryPath and
+     * destinationDirectory exist and are directories, will have undefined
+     * behavior otherwise.
+     */
+    static bool copyDirectoryRecursive(
+        const boost::filesystem::path& sourceDirectoryPath,
+        const boost::filesystem::path& destinationDirectory);
 };
 } /* namespace dfm */
 

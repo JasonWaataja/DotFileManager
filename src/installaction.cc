@@ -22,6 +22,7 @@
 
 #include "installaction.h"
 
+#include <dirent.h>
 #include <err.h>
 
 namespace dfm {
@@ -138,19 +139,18 @@ InstallAction::performAction()
             return false;
         }
 
-        /*
-         * Overwrite if file exists. Copy uses the correct defaults otherwise.
-         */
-        if (boost::filesystem::is_regular_file(sourcePath)) {
-            boost::filesystem::copy_file(sourcePath, destinationPath,
-                boost::filesystem::copy_option::overwrite_if_exists);
-        } else if (boost::filesystem::is_directory(sourcePath)) {
-            if (boost::filesystem::exists(destinationPath)) {
-                if (boost::filesystem::is_directory(destinationDirectory)) {
-                }
-            }
-        } else {
-            boost::filesystem::copy(sourcePath, destinationPath);
+        if (boost::filesystem::is_regular_file(sourcePath))
+            return copyRegularFile(sourcePath, destinationPath);
+        else if (boost::filesystem::is_directory(sourcePath))
+            return copyDirectory(sourcePath, destinationPath);
+        else {
+            warnx("Skipping non-regular non-directory file %s.",
+                sourcePath.c_str());
+            /*
+             * It could return an error but it shouldn't be an error if there
+             * is a symbolic link in one of the directories.
+             */
+            return true;
         }
     } catch (boost::filesystem::filesystem_error& e) {
         warnx("%s", e.what());
@@ -177,9 +177,16 @@ InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
             return false;
         }
 
-        if (!boost::filesystem::exists(destinationDirectory.parent_path()))
+        /*
+         * There is a case that is not accounted for here, which is that the
+         * destination path doesn't exist and it tries to create the
+         * directories, but one of the parents of destinationPath is not a
+         * directory, leading to an exception. It will be caught by the
+         * try/catch block in that case.
+         */
+        if (!boost::filesystem::exists(destinationPath.parent_path()))
             boost::filesystem::create_directories(destinationPath);
-        else if (!boost::filesystem::is_regular_file(destinationDirectory)) {
+        else if (!boost::filesystem::is_regular_file(destinationPath)) {
             warnx("Copying regular file over directory %s, overwriting.",
                 destinationPath.c_str());
             boost::filesystem::remove_all(destinationPath);
@@ -187,7 +194,7 @@ InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
 
         boost::filesystem::copy_file(sourceFilePath, destinationPath);
     } catch (boost::filesystem::filesystem_error& e) {
-        warnx("Filesystem error.");
+        warnx("Error copying file %s: %s", sourceFilePath.c_str(), e.what());
         return false;
     }
 
@@ -201,18 +208,104 @@ InstallAction::copyDirectory(
 {
     try {
         if (!boost::filesystem::exists(sourceDirectoryPath)) {
-            warnx("File %s doesn't exist.");
+            warnx("Directory %s doesn't exist.", sourceDirectoryPath.c_str());
             return false;
         }
 
         if (!boost::filesystem::is_directory(sourceDirectoryPath)) {
             warnx("Attempting to copy non-directory with with directory "
-                  "function %s.", sourceDirectoryPath.c_str());
+                  "function %s.",
+                sourceDirectoryPath.c_str());
             return false;
         }
 
-        if (!boost::filesystem::exists(destinationPath)) {
+        /*
+         * There is a case that is not accounted for here, which is that the
+         * destination path doesn't exist and it tries to create the
+         * directories, but one of the parents of destinationPath is not a
+         * directory, leading to an exception. It will be caught by the
+         * try/catch block in that case.
+         */
+        if (!boost::filesystem::exists(destinationPath))
+            boost::filesystem::create_directories(destinationPath);
+        else if (!boost::filesystem::is_directory(destinationPath)) {
+            warnx("Copying directory %s over non-directory %s, removing it.",
+                sourceDirectoryPath.c_str(), destinationPath.c_str());
+            /* I don't think I need to use remove_all, but just to be safe. */
+            boost::filesystem::remove_all(destinationPath);
         }
+
+        copyDirectoryRecursive(sourceDirectoryPath, destinationPath);
+    } catch (boost::filesystem::filesystem_error& e) {
+        warnx("Error copying directory %s: %s", sourceDirectoryPath.c_str(),
+            e.what());
+        return false;
     }
+
+    return true;
+}
+
+bool
+InstallAction::copyDirectoryRecursive(
+    const boost::filesystem::path& sourceDirectoryPath,
+    const boost::filesystem::path& destinationDirectory)
+{
+    struct dirent** directoryEntries;
+    auto trueFunction = [](const struct dirent*) -> int { return 1; };
+
+    int directoryCount = scandir(sourceDirectoryPath.c_str(),
+        &directoryEntries, trueFunction, alphasort);
+
+    if (directoryCount == -1) {
+        warn("Failed to list directory %s.", sourceDirectoryPath.c_str());
+        return false;
+    }
+
+    /*
+     * Lol, they say in C that you shouldn't need more than three levels of
+     * indentation. I should probably split this into functions or something.
+     */
+    try {
+        for (int i = 0; i < directoryCount; i++) {
+            boost::filesystem::path sourceChildPath =
+                sourceDirectoryPath / directoryEntries[i]->d_name;
+            boost::filesystem::path destinationChildPath =
+                destinationDirectory / directoryEntries[i]->d_name;
+
+            if (boost::filesystem::is_directory(sourceChildPath)) {
+                if (!boost::filesystem::exists(destinationChildPath))
+                    boost::filesystem::create_directories(
+                        destinationChildPath);
+                else if (!boost::filesystem::is_directory(
+                             destinationChildPath)) {
+                    warnx("Copying directory %s over non-directory %s.",
+                        sourceChildPath.c_str(), destinationChildPath.c_str());
+                    boost::filesystem::remove_all(destinationChildPath);
+                }
+                copyDirectoryRecursive(sourceChildPath, destinationChildPath);
+            } else if (boost::filesystem::is_regular_file(sourceChildPath)) {
+                if (boost::filesystem::exists(destinationChildPath)
+                    && !boost::filesystem::is_regular_file(
+                           destinationChildPath)) {
+                    warnx("Copying regular file %s over non-regular file %s.",
+                        sourceChildPath.c_str(), destinationChildPath.c_str());
+                    boost::filesystem::remove_all(destinationChildPath);
+                }
+                boost::filesystem::copy_file(sourceChildPath,
+                    destinationChildPath,
+                    boost::filesystem::copy_option::overwrite_if_exists);
+            } else {
+                warnx("Skipping non-regular non-directory file %s.",
+                    sourceChildPath.c_str());
+            }
+        }
+    } catch (boost::filesystem::filesystem_error& e) {
+        warnx("Error processing directory %s: %s", sourceDirectoryPath.c_str(),
+            e.what());
+        return false;
+    }
+
+    /* Nothing threw an exception and there were no errors. */
+    return true;
 }
 } /* namespace dfm */
