@@ -31,21 +31,40 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_OPTIONS[] = ":iuad:";
+const char GETOPT_SHORT_OPTIONS[] = ":iuapd:";
 
 class DfmOptions {
 public:
     DfmOptions();
 
+    /*
+     * Load options from argc and argv, which are meant to be directly from the
+     * main function. This does not set any values back to their default, it
+     * only changes the ones represented by the arguments. If you want the
+     * default values, use a new DfmOptions object, which has the correct
+     * default values.
+     *
+     * Returns true on success, false on failure.
+     */
     bool loadFromArguments(int argc, char* argv[]);
     bool verifyArguments() const;
 
     bool installModulesFlag;
     bool uninstallModulesFlag;
     bool allFlag;
+    bool promptForDependenciesFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
     boost::filesystem::path sourceDirectory;
+
+    /*
+     * The getopt_long function sets flags sometimes. I want 1 to be true and 0
+     * to be false. Converts the flag, which is an int, into a boolean.
+     *
+     * Returns the boolean equivalent of how an int is evaluated in a
+     * conditional, so true for non-zero and false for zero.
+     */
+    static bool getoptFlagToBool(int flag);
 
 private:
     bool verifyFlagsConsistency() const;

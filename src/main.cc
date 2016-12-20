@@ -32,6 +32,10 @@
 int
 main(int argc, char* argv[])
 {
+    dfm::DfmOptions options;
+    options.loadFromArguments(argc, argv);
+    std::cout << "prompt " << options.promptForDependenciesFlag << std::endl;
+
     dfm::ConfigFileReader reader("testfile.txt");
     std::cout << reader.isOpen() << std::endl;
 

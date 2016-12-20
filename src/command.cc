@@ -32,18 +32,15 @@
 namespace dfm {
 
 Command::Command()
-    : callableNames(),
-      createActionFunction(getDefaultAction()),
-      argumentCheckingType(NO_ARGUMENT_CKECK),
-      expectedArgumentCount(-1)
+    : createActionFunction(getDefaultAction()),
+      argumentCheckingType(NO_ARGUMENT_CKECK)
 {
 }
 
 Command::Command(const std::string& name)
     : callableNames(1),
       createActionFunction(getDefaultAction()),
-      argumentCheckingType(NO_ARGUMENT_CKECK),
-      expectedArgumentCount(-1)
+      argumentCheckingType(NO_ARGUMENT_CKECK)
 {
     callableNames.push_back(name);
 }
@@ -54,8 +51,7 @@ Command::Command(const std::string& name,
         createActionFunction)
     : callableNames(1),
       createActionFunction(createActionFunction),
-      argumentCheckingType(NO_ARGUMENT_CKECK),
-      expectedArgumentCount(-1)
+      argumentCheckingType(NO_ARGUMENT_CKECK)
 {
     callableNames.push_back(name);
 }

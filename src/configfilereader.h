@@ -27,6 +27,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,6 +37,7 @@
 #include "installaction.h"
 #include "messageaction.h"
 #include "module.h"
+#include "options.h"
 #include "removeaction.h"
 #include "shellaction.h"
 
@@ -51,9 +53,16 @@ public:
      * This one is included to prevent ambiguity when using a string literal.
      */
     ConfigFileReader(const char* path);
+    ConfigFileReader(const boost::filesystem::path& path,
+        std::shared_ptr<DfmOptions> options);
+
     const boost::filesystem::path& getPath() const;
     void setPath(const std::string& path);
     void setPath(const boost::filesystem::path& path);
+
+    /* I'm not sure if this one accessor should be const or not. */
+    std::shared_ptr<DfmOptions> getOptions();
+    void setOptions(std::shared_ptr<DfmOptions> options);
 
     bool isOpen();
     void close();
@@ -80,7 +89,20 @@ public:
         Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
         const char* firstName, ...);
 
+    /*
+     * These functions are static because they produce the same action
+     * regardless of the states of the reader.
+     */
     static std::shared_ptr<ModuleAction> createMessageAction(
+        const std::vector<std::string>& arguments);
+
+    /*
+     * These functions are not static because they depend on the states of the
+     * reader. For example, to create the correct dependency action, the
+     * function needs to know the state of options and what command line
+     * options were passed to the program.
+     */
+    std::shared_ptr<ModuleAction> createDependenciesAction(
         const std::vector<std::string>& arguments);
 
 private:
@@ -89,32 +111,40 @@ private:
     /* The reader to open path with. */
     std::ifstream reader;
     /*
+     * The options for the program to be used when reading this file. These are
+     * meant to be read using getopt and passed to this object.
+     *
+     * It's a shared pointer because it might be used somewhere else in the
+     * program and I don't want to think about memory management.
+     */
+    std::shared_ptr<DfmOptions> options;
+    /*
      * Whether or not the reader is in a module install which determines what
      * command lines are used for.
      */
-    bool inModuleInstall;
+    bool inModuleInstall = false;
     /* Returns whether or not the reader is in a module and whether or not it
      * was changed to an uninstall.
      */
-    bool inModuleUninstall;
+    bool inModuleUninstall = false;
     /*
      * Pointer to a current module being constructed. Set to nullptr when not
      * currently in a module and is meant to be deleted when the module is
      * copied to the output.
      */
-    Module* currentModule;
+    Module* currentModule = nullptr;
     /*
      * Whether or not the reader should process lines as shell commands to be
      * added to the current module install or uninstall.
      */
-    bool inShell;
+    bool inShell = false;
     /* The current action to append shell commands to. */
-    ShellAction* currentShellAction;
+    ShellAction* currentShellAction = nullptr;
     /*
      * The current line number of the reader, meant to be used with error
      * messages.
      */
-    int currentLineNo;
+    int currentLineNo = 1;
     /*
      * The list of commands, which is checked against when processing a normal
      * command. It looks through these commands in order, so higher priority
@@ -225,7 +255,8 @@ private:
      */
     void changeToUninstall();
 
-    /* The main function for processing a config file. Takes a line, and takes
+    /*
+     * The main function for processing a config file. Takes a line, and takes
      * the appropriate action based on the content of the line.
      *
      * This function does not increment currentLineNo. Do that in the method

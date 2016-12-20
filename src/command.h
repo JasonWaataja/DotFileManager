@@ -108,7 +108,7 @@ private:
         const std::vector<std::string>&)>
         createActionFunction;
     ArgumentCheck argumentCheckingType;
-    int expectedArgumentCount;
+    int expectedArgumentCount = -1;
 };
 } /* namespace dfm */
 

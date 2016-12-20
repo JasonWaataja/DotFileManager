@@ -28,18 +28,12 @@
 #include <exception>
 #include <regex>
 
+#include "dependencyaction.h"
+
 namespace dfm {
 
 ConfigFileReader::ConfigFileReader(const std::string& path)
-    : path(path),
-      reader(path),
-      inModuleInstall(false),
-      inModuleUninstall(false),
-      currentModule(nullptr),
-      inShell(false),
-      currentShellAction(nullptr),
-      currentLineNo(1),
-      commands()
+    : path(path), reader(path)
 {
     addDefaultCommands();
 }
@@ -49,9 +43,36 @@ ConfigFileReader::ConfigFileReader(const boost::filesystem::path& path)
 {
 }
 
+ConfigFileReader::ConfigFileReader(
+    const boost::filesystem::path& path, std::shared_ptr<DfmOptions> options)
+    : path(path), reader(path.string()), options(options)
+{
+    addDefaultCommands();
+}
+
 ConfigFileReader::ConfigFileReader(const char* path)
     : ConfigFileReader(std::string(path))
 {
+}
+
+std::shared_ptr<DfmOptions>
+ConfigFileReader::getOptions()
+{
+    return options;
+}
+
+void
+ConfigFileReader::setOptions(std::shared_ptr<DfmOptions> options)
+{
+    /*
+     * I read the page for operator= on std::shared_ptr on cppreference.com.
+     * What I'm worried about is that it will not decrement the reference count
+     * of the pointer currently stored in this->options when using the =
+     * operator on its own. The cppreference.com page for reset says it does,
+     * though, so I'm resetting it first just in case.
+     */
+    this->options.reset();
+    this->options = options;
 }
 
 const boost::filesystem::path&
@@ -383,6 +404,15 @@ ConfigFileReader::createMessageAction(
     return std::shared_ptr<ModuleAction>(new MessageAction(arguments[0]));
 }
 
+std::shared_ptr<ModuleAction>
+ConfigFileReader::createDependenciesAction(
+    const std::vector<std::string>& arguments)
+{
+    std::shared_ptr<DependencyAction> action(new DependencyAction(arguments));
+    action->setPromptDependencies(options->promptForDependenciesFlag);
+    return action;
+}
+
 void
 ConfigFileReader::addDefaultCommands()
 {
@@ -390,4 +420,5 @@ ConfigFileReader::addDefaultCommands()
         Command::EXACT_COUNT_ARGUMENT_CHECK, 1, "message", "msg", "echo", "m",
         NULL);
 }
+
 } /* namespace dfm */
