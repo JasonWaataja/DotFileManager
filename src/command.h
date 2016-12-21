@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "module.h"
+#include "readerenvironment.h"
 
 namespace dfm {
 
@@ -44,7 +45,7 @@ public:
     Command(const std::string& name);
     Command(const std::string& name,
         std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&)>
+            const std::vector<std::string>&, const ReaderEnvironment&)>
             createActionFunction);
 
     void setNoArgumentChecking();
@@ -60,8 +61,10 @@ public:
     int getExpectedArgumentCount() const;
 
     std::shared_ptr<ModuleAction> createAction(
-        const std::vector<std::string>& arguments);
-    std::shared_ptr<ModuleAction> createAction(int argc, const std::string[]);
+        const std::vector<std::string>& arguments,
+        const ReaderEnvironment& environment);
+    std::shared_ptr<ModuleAction> createAction(
+        int argc, const std::string[], const ReaderEnvironment& environment);
 
     /*
      * Returns whether or not the given name matches any one of the names in
@@ -74,14 +77,14 @@ public:
     void setCallableNames(const std::vector<std::string>& names);
 
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&)>
+        const std::vector<std::string>&, const ReaderEnvironment&)>
     getCreateActionFunction() const;
     void setCreateActionFunction(std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&)>
+            const std::vector<std::string>&, const ReaderEnvironment&)>
             createActionFunction);
 
     static std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&)>
+        const std::vector<std::string>&, const ReaderEnvironment&)>
     getDefaultAction();
 
     /*
@@ -105,7 +108,7 @@ public:
 private:
     std::vector<std::string> callableNames;
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&)>
+        const std::vector<std::string>&, const ReaderEnvironment&)>
         createActionFunction;
     ArgumentCheck argumentCheckingType;
     int expectedArgumentCount = -1;

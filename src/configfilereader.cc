@@ -73,6 +73,7 @@ ConfigFileReader::setOptions(std::shared_ptr<DfmOptions> options)
      */
     this->options.reset();
     this->options = options;
+    environment.setOptions(options);
 }
 
 const boost::filesystem::path&
@@ -91,6 +92,18 @@ void
 ConfigFileReader::setPath(const boost::filesystem::path& path)
 {
     this->path = path;
+}
+
+const ReaderEnvironment&
+ConfigFileReader::getEnvironment() const
+{
+    return environment;
+}
+
+void
+ConfigFileReader::setEnvironment(const ReaderEnvironment& environment)
+{
+    this->environment = environment;
 }
 
 bool
@@ -296,7 +309,7 @@ ConfigFileReader::processCommand(
     for (Command command : commands) {
         if (command.matchesName(commandName)) {
             std::shared_ptr<ModuleAction> action =
-                command.createAction(arguments);
+                command.createAction(arguments, environment);
             if (inModuleInstall) {
                 currentModule->addInstallAction(action);
                 return true;
@@ -348,9 +361,10 @@ ConfigFileReader::close()
 }
 
 void
-ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
-                                 const std::vector<std::string>&)>
-                                 createActionFunction,
+ConfigFileReader::addCommand(
+    std::function<std::shared_ptr<ModuleAction>(
+        const std::vector<std::string>&, const ReaderEnvironment&)>
+        createActionFunction,
     const char* firstName, ...)
 {
     Command command(std::string(firstName), createActionFunction);
@@ -366,9 +380,10 @@ ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
 }
 
 void
-ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
-                                 const std::vector<std::string>&)>
-                                 createActionFunction,
+ConfigFileReader::addCommand(
+    std::function<std::shared_ptr<ModuleAction>(
+        const std::vector<std::string>&, const ReaderEnvironment&)>
+        createActionFunction,
     Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
     const char* firstName, ...)
 {
@@ -399,17 +414,20 @@ ConfigFileReader::addCommand(std::function<std::shared_ptr<ModuleAction>(
 
 std::shared_ptr<ModuleAction>
 ConfigFileReader::createMessageAction(
-    const std::vector<std::string>& arguments)
+    const std::vector<std::string>& arguments,
+    const ReaderEnvironment& environment)
 {
     return std::shared_ptr<ModuleAction>(new MessageAction(arguments[0]));
 }
 
 std::shared_ptr<ModuleAction>
 ConfigFileReader::createDependenciesAction(
-    const std::vector<std::string>& arguments)
+    const std::vector<std::string>& arguments,
+    const ReaderEnvironment& environment)
 {
     std::shared_ptr<DependencyAction> action(new DependencyAction(arguments));
-    action->setPromptDependencies(options->promptForDependenciesFlag);
+    action->setPromptDependencies(
+        environment.getOptions()->promptForDependenciesFlag);
     return action;
 }
 
@@ -419,6 +437,8 @@ ConfigFileReader::addDefaultCommands()
     addCommand(&ConfigFileReader::createMessageAction,
         Command::EXACT_COUNT_ARGUMENT_CHECK, 1, "message", "msg", "echo", "m",
         NULL);
+    addCommand(&ConfigFileReader::createDependenciesAction,
+        Command::NO_ARGUMENT_CKECK, -1, "dependencies", "dep", "depend", NULL);
 }
 
 } /* namespace dfm */

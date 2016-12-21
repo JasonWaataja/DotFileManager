@@ -38,6 +38,7 @@
 #include "messageaction.h"
 #include "module.h"
 #include "options.h"
+#include "readerenvironment.h"
 #include "removeaction.h"
 #include "shellaction.h"
 
@@ -64,6 +65,9 @@ public:
     std::shared_ptr<DfmOptions> getOptions();
     void setOptions(std::shared_ptr<DfmOptions> options);
 
+    const ReaderEnvironment& getEnvironment() const;
+    void setEnvironment(const ReaderEnvironment& environment);
+
     bool isOpen();
     void close();
     /*
@@ -79,31 +83,29 @@ public:
      * null terminated list of C strings. The last argument must be NULL or
      * else something will go wrong.
      */
-    void addCommand(std::function<std::shared_ptr<ModuleAction>(
-                        const std::vector<std::string>&)>
-                        createActionFunction,
+    void addCommand(
+        std::function<std::shared_ptr<ModuleAction>(
+            const std::vector<std::string>&, const ReaderEnvironment&)>
+            createActionFunction,
         const char* firstName, ...);
-    void addCommand(std::function<std::shared_ptr<ModuleAction>(
-                        const std::vector<std::string>&)>
-                        createActionFunction,
+    void addCommand(
+        std::function<std::shared_ptr<ModuleAction>(
+            const std::vector<std::string>&, const ReaderEnvironment&)>
+            createActionFunction,
         Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
         const char* firstName, ...);
 
     /*
-     * These functions are static because they produce the same action
-     * regardless of the states of the reader.
+     * These functions create actions based on the given arguments and
+     * environment.
      */
     static std::shared_ptr<ModuleAction> createMessageAction(
-        const std::vector<std::string>& arguments);
+        const std::vector<std::string>& arguments,
+        const ReaderEnvironment& environment);
 
-    /*
-     * These functions are not static because they depend on the states of the
-     * reader. For example, to create the correct dependency action, the
-     * function needs to know the state of options and what command line
-     * options were passed to the program.
-     */
-    std::shared_ptr<ModuleAction> createDependenciesAction(
-        const std::vector<std::string>& arguments);
+    static std::shared_ptr<ModuleAction> createDependenciesAction(
+        const std::vector<std::string>& arguments,
+        const ReaderEnvironment& environment);
 
 private:
     /* The path to the config file. */
@@ -118,6 +120,13 @@ private:
      * program and I don't want to think about memory management.
      */
     std::shared_ptr<DfmOptions> options;
+    /*
+     * The current environment for the parser. This was added after the options
+     * variable above, and should have replaced it but I'm lazy. This holds
+     * things like variables if they are ever added, and are an easy way to
+     * pass around options.
+     */
+    ReaderEnvironment environment;
     /*
      * Whether or not the reader is in a module install which determines what
      * command lines are used for.

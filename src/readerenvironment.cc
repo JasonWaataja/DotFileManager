@@ -28,20 +28,21 @@ ReaderEnvironment::ReaderEnvironment()
 {
 }
 
-ReaderEnvironment::ReaderEnvironment(const DfmOptions& options)
+ReaderEnvironment::ReaderEnvironment(std::shared_ptr<DfmOptions> options)
     : options(options)
 {
 }
 
-const DfmOptions&
+std::shared_ptr<DfmOptions>
 ReaderEnvironment::getOptions() const
 {
     return options;
 }
 
 void
-ReaderEnvironment::setOptions(const DfmOptions& options)
+ReaderEnvironment::setOptions(std::shared_ptr<DfmOptions> options)
 {
+    this->options.reset();
     this->options = options;
 }
 } /* namespace dfm */

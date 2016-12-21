@@ -47,7 +47,7 @@ Command::Command(const std::string& name)
 
 Command::Command(const std::string& name,
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&)>
+        const std::vector<std::string>&, const ReaderEnvironment&)>
         createActionFunction)
     : callableNames(1),
       createActionFunction(createActionFunction),
@@ -115,7 +115,8 @@ Command::setCallableNames(const std::vector<std::string>& names)
     callableNames = names;
 }
 
-std::function<std::shared_ptr<ModuleAction>(const std::vector<std::string>&)>
+std::function<std::shared_ptr<ModuleAction>(
+    const std::vector<std::string>&, const ReaderEnvironment&)>
 Command::getCreateActionFunction() const
 {
     return createActionFunction;
@@ -123,14 +124,15 @@ Command::getCreateActionFunction() const
 
 void
 Command::setCreateActionFunction(std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&)>
+        const std::vector<std::string>&, const ReaderEnvironment&)>
         createActionFunction)
 {
     this->createActionFunction = createActionFunction;
 }
 
 std::shared_ptr<ModuleAction>
-Command::createAction(const std::vector<std::string>& arguments)
+Command::createAction(const std::vector<std::string>& arguments,
+    const ReaderEnvironment& environment)
 {
     if (argumentCheckingType == EXACT_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountEqual(arguments, expectedArgumentCount))
@@ -140,24 +142,26 @@ Command::createAction(const std::vector<std::string>& arguments)
         && !checkArgumentCountAtLeast(arguments, expectedArgumentCount))
         return std::shared_ptr<ModuleAction>();
 
-    return createActionFunction(arguments);
+    return createActionFunction(arguments, environment);
 }
 
 std::shared_ptr<ModuleAction>
-Command::createAction(int argc, const std::string argv[])
+Command::createAction(
+    int argc, const std::string argv[], const ReaderEnvironment& environment)
 {
     assert(argc >= 0);
     std::vector<std::string> arguments(argc);
     for (int i = 0; i < argc; i++)
         arguments[i] = argv[i];
-    return createAction(arguments);
+    return createAction(arguments, environment);
 }
 
-std::function<std::shared_ptr<ModuleAction>(const std::vector<std::string>&)>
+std::function<std::shared_ptr<ModuleAction>(
+    const std::vector<std::string>&, const ReaderEnvironment&)>
 Command::getDefaultAction()
 {
-    auto createActionFunction = [](
-        const std::vector<std::string>&) -> std::shared_ptr<ModuleAction> {
+    auto createActionFunction = [](const std::vector<std::string>&,
+        const ReaderEnvironment&) -> std::shared_ptr<ModuleAction> {
         warnx("Calling command without behavior.");
         return std::shared_ptr<ModuleAction>();
     };

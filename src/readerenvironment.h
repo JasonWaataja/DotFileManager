@@ -24,6 +24,8 @@
 #ifndef READER_ENVIRONMENT_H
 #define READER_ENVIRONMENT_H
 
+#include <memory>
+
 #include "options.h"
 
 namespace dfm {
@@ -31,13 +33,13 @@ namespace dfm {
 class ReaderEnvironment {
 public:
     ReaderEnvironment();
-    ReaderEnvironment(const DfmOptions& options);
+    ReaderEnvironment(std::shared_ptr<DfmOptions> options);
 
-    const DfmOptions& getOptions() const;
-    void setOptions(const DfmOptions& options);
+    std::shared_ptr<DfmOptions> getOptions() const;
+    void setOptions(std::shared_ptr<DfmOptions> options);
 
 private:
-    DfmOptions options;
+    std::shared_ptr<DfmOptions> options;
 };
 } /* namespace 2016 */
 
