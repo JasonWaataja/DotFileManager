@@ -9,5 +9,7 @@ find_package (Boost 1.55.0 COMPONENTS system filesystem)
 include_directories (${Boost_INCLUDE_DIRS})
 target_link_libraries (dfm ${Boost_LIBRARIES})
 
+add_definitions (-DBOOST_NO_CXX11_SCOPED_ENUMS)
+
 # Installing
 install (TARGETS dfm DESTINATION bin)
