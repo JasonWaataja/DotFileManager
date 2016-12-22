@@ -35,17 +35,21 @@ namespace dfm {
 ConfigFileReader::ConfigFileReader(const std::string& path)
     : path(path), reader(path)
 {
+    options = std::shared_ptr<DfmOptions>(new DfmOptions());
+    environment = ReaderEnvironment(options);
     addDefaultCommands();
 }
 
 ConfigFileReader::ConfigFileReader(const boost::filesystem::path& path)
     : ConfigFileReader(path.string())
 {
+    options = std::shared_ptr<DfmOptions>(new DfmOptions());
+    environment = ReaderEnvironment(options);
 }
 
 ConfigFileReader::ConfigFileReader(
     const boost::filesystem::path& path, std::shared_ptr<DfmOptions> options)
-    : path(path), reader(path.string()), options(options)
+    : path(path), reader(path.string()), options(options), environment(options)
 {
     addDefaultCommands();
 }
@@ -426,6 +430,8 @@ ConfigFileReader::createDependenciesAction(
     const ReaderEnvironment& environment)
 {
     std::shared_ptr<DependencyAction> action(new DependencyAction(arguments));
+    bool promptForDependencies =
+        environment.getOptions()->promptForDependenciesFlag;
     action->setPromptDependencies(
         environment.getOptions()->promptForDependenciesFlag);
     return action;

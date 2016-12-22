@@ -108,6 +108,12 @@ DependencyAction::performAction()
         std::cout << "Enter command to install dependencies or leave blank to "
                      "do nothing."
                   << std::endl;
+
+        /*
+         * Print a dollar sign and a space to simulate being in a shell. I'm
+         * not sure of anything better to do here, maybe add color come day.
+         */
+        std::cout << "$ ";
         std::string userInput;
         std::getline(std::cin, userInput);
 

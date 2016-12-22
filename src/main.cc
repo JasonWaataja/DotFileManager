@@ -32,17 +32,23 @@
 int
 main(int argc, char* argv[])
 {
-    dfm::DfmOptions options;
-    options.loadFromArguments(argc, argv);
-    std::cout << "prompt " << options.promptForDependenciesFlag << std::endl;
+    std::shared_ptr<dfm::DfmOptions> options(new dfm::DfmOptions());
+    options->loadFromArguments(argc, argv);
+    std::cout << "prompt " << options->promptForDependenciesFlag << std::endl;
 
     dfm::ConfigFileReader reader("testfile.txt");
+    reader.setOptions(options);
     std::cout << reader.isOpen() << std::endl;
 
     std::vector<dfm::Module> modules;
     bool status = reader.readModules(std::back_inserter(modules));
     std::cout << "status: " << status << std::endl;
     std::cout << "size: " << modules.size() << std::endl;
+
+    for (dfm::Module module : modules) {
+        std::cout << "Module name: " << module.getName() << std::endl;
+        module.install();
+    }
 
     return EXIT_SUCCESS;
 }
