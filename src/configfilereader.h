@@ -282,6 +282,47 @@ private:
      */
     template <class OutputIterator>
     bool processLine(const std::string& line, OutputIterator output);
+
+    /*
+     * Matches a string entirely to whitespace. This could be implement with a
+     * regex or the isspace function, depedning on what you want to count as
+     * whitespace.
+     *
+     * Returns whether the whole string is whitespace, returns false for an
+     * empty string.
+     */
+    static bool isWhiteSpace(const std::string& string);
+    static bool isWhiteSpace(const char* string);
+    /* The same as above, except for single characters. */
+    static bool isWhiteSpace(char c);
+
+    /*
+     * Takes the given string containing arguments and extracts the arguments
+     * from them according to the rules of quotations. A token may be
+     * surrounded by quotes on its own, which allow for whitespace inside.
+     * Quotes are allowed in the middle of tokens, but don't make anything
+     * literal. Quotes are not allowed as the first or last character of a
+     * token. To do that, create a quoted string with an escaped quote
+     * character with \".
+     *
+     * This function takes a string that has been stripped of the command
+     * portion. If you don't take out the command portion first, it will return
+     * it as an argument.
+     *
+     * Clears the given vector regardless of any arguments found or any errors
+     * encountered. Stores any found arguments in the vector as it goes.
+     *
+     * In quotations, quote characters are escaped as \", backslash characters
+     * are escaped as \\.
+     *
+     * This used to be done through a regex, and it worked, but I wanted to
+     * give more detailed error messages like unclosed quotation mark. It
+     * wasn't worth it and I hate this.
+     *
+     * Returns true on success, false on failure.
+     */
+    bool splitArguments(
+        const std::string& argumentsLine, std::vector<std::string>& arguments);
 };
 
 template <class OutputIterator>

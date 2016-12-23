@@ -278,21 +278,13 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     localLine =
         localLine.substr(matchResults.position(1) + matchResults.length(1),
             localLine.length() - matchResults.length(1));
-    /*
-     * Match two quotes with as many characters between them that can be the
-     * escape sequence \" as possible. I think the quotation one has to come
-     * first in the or statement, otherwise it would always include the
-     * quotes.
-     */
-    std::regex argumentsRe("\\s+(\"(?:\\\\\"|[^\"])*\"|\\S+)");
-    std::sregex_iterator next(localLine.begin(), localLine.end(), argumentsRe);
-    std::sregex_iterator end;
+
     std::vector<std::string> arguments;
-    while (next != end) {
-        std::smatch match = *next;
-        /* We don't want the whole match, just the capture group. */
-        arguments.push_back(match.str(1));
-        next++;
+    bool success = splitArguments(localLine, arguments);
+    if (!success) {
+        warnx("line %i: Failed to extract arguments from line: \"%s\".",
+            currentLineNo, line.c_str());
+        return false;
     }
 
     if (isShellCommand(command)) {
@@ -447,4 +439,125 @@ ConfigFileReader::addDefaultCommands()
         Command::NO_ARGUMENT_CKECK, -1, "dependencies", "dep", "depend", NULL);
 }
 
+bool
+ConfigFileReader::isWhiteSpace(const std::string& string)
+{
+    std::regex whiteRe("\\s+");
+    return std::regex_match(string, whiteRe);
+}
+
+bool
+ConfigFileReader::isWhiteSpace(const char* string)
+{
+    std::regex whiteRe("\\s+");
+    return std::regex_match(string, whiteRe);
+}
+
+bool
+ConfigFileReader::isWhiteSpace(char c)
+{
+    std::regex whiteRe("\\s");
+    char string[] = { c, '\0' };
+    return std::regex_match(string, whiteRe);
+}
+
+bool
+ConfigFileReader::splitArguments(
+    const std::string& argumentsLine, std::vector<std::string>& arguments)
+{
+    arguments.clear();
+
+    /*
+     * Most of these could be done with a char lastChar variable, but it's
+     * harder for me to think through the logic that way.
+     */
+    bool inQuotes = false;
+    bool inWord = false;
+    bool lastCharEscape = false;
+    bool lastCharClosingQuote = false;
+    bool lastCharQuoteInNonQuoteWord = false;
+
+    std::string currentWord;
+
+    /*
+     * I could probably do something to make this loop more readable, but I
+     * don't want to. I tried nesting some of the statements but that led to
+     * too much indentation.
+     */
+    for (std::string::size_type i = 0; i < argumentsLine.length(); i++) {
+        char currentChar = argumentsLine[i];
+        bool isWhite = isWhiteSpace(currentChar);
+
+        if (inWord && inQuotes && currentChar == '"') {
+            if (!lastCharEscape) {
+                if (currentWord.length() == 0)
+                    warnx("Using empty string as argument: \"%s\".",
+                        argumentsLine.c_str());
+                inQuotes = false;
+                inWord = false;
+                lastCharClosingQuote = true;
+                arguments.push_back(currentWord);
+                currentWord.clear();
+            } else {
+                lastCharEscape = false;
+                currentWord += '"';
+            }
+        } else if (inWord && inQuotes && currentChar == '\\') {
+            if (!lastCharEscape)
+                lastCharEscape = true;
+            else {
+                lastCharEscape = false;
+                currentWord += '\\';
+            }
+        } else if (inWord && inQuotes && lastCharEscape) {
+            lastCharEscape = false;
+            /* It's escaped so don't add it to the word. */
+        } else if (inWord && inQuotes) {
+            currentWord += currentChar;
+        } else if (inWord && currentChar == '"') {
+            /* It already failed inQuotes above so this is not in quotes. */
+            currentWord += '"';
+            lastCharQuoteInNonQuoteWord = true;
+        } else if (inWord && !isWhite) {
+            currentWord += currentChar;
+            lastCharQuoteInNonQuoteWord = false;
+        } else if (lastCharQuoteInNonQuoteWord) {
+            warnx("Quote at end of token: \"%s\".", argumentsLine.c_str());
+            return false;
+        } else if (inWord) {
+            inWord = false;
+            arguments.push_back(currentWord);
+            lastCharQuoteInNonQuoteWord = false;
+            currentWord.clear();
+        } else if (lastCharClosingQuote && !isWhite) {
+            warnx("Missing space after quoted token: \"%s\".",
+                argumentsLine.c_str());
+            return false;
+        } else if (currentChar == '"') {
+            inWord = true;
+            inQuotes = true;
+            lastCharClosingQuote = false;
+        } else if (!isWhite) {
+            inWord = true;
+            inQuotes = false;
+            lastCharClosingQuote = false;
+            currentWord += currentChar;
+        } else {
+            lastCharClosingQuote = false;
+        }
+    }
+
+    if (inQuotes) {
+        warnx("Unclosed quote in word: \"%s\".", argumentsLine.c_str());
+        return false;
+    }
+    if (lastCharQuoteInNonQuoteWord) {
+        warnx("Quote at end of token: \"%s\".", argumentsLine.c_str());
+        return false;
+    }
+    if (inWord)
+        arguments.push_back(currentWord);
+
+    return true;
+}
 } /* namespace dfm */
