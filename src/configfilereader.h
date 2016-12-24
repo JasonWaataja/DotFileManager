@@ -83,15 +83,13 @@ public:
      * null terminated list of C strings. The last argument must be NULL or
      * else something will go wrong.
      */
-    void addCommand(
-        std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&, const ReaderEnvironment&)>
-            createActionFunction,
+    void addCommand(std::function<std::shared_ptr<ModuleAction>(
+                        const std::vector<std::string>&, ReaderEnvironment&)>
+                        createActionFunction,
         const char* firstName, ...);
-    void addCommand(
-        std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&, const ReaderEnvironment&)>
-            createActionFunction,
+    void addCommand(std::function<std::shared_ptr<ModuleAction>(
+                        const std::vector<std::string>&, ReaderEnvironment&)>
+                        createActionFunction,
         Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
         const char* firstName, ...);
 
@@ -101,11 +99,11 @@ public:
      */
     static std::shared_ptr<ModuleAction> createMessageAction(
         const std::vector<std::string>& arguments,
-        const ReaderEnvironment& environment);
+        ReaderEnvironment& environment);
 
     static std::shared_ptr<ModuleAction> createDependenciesAction(
         const std::vector<std::string>& arguments,
-        const ReaderEnvironment& environment);
+        ReaderEnvironment& environment);
 
 private:
     /* The path to the config file. */

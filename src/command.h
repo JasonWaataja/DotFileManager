@@ -35,6 +35,12 @@ namespace dfm {
 
 class Command {
 public:
+    /*
+     * An enum to reprent various types of argument checking for commands.
+     * These don't preclude any argument checking when generating an action,
+     * they are just preliminary checks, and using NO_ARGUMENT_CHECK and doing
+     * the checking yourself is valid.
+     */
     enum ArgumentCheck {
         NO_ARGUMENT_CKECK,
         EXACT_COUNT_ARGUMENT_CHECK,
@@ -45,7 +51,7 @@ public:
     Command(const std::string& name);
     Command(const std::string& name,
         std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&, const ReaderEnvironment&)>
+            const std::vector<std::string>&, ReaderEnvironment&)>
             createActionFunction);
 
     void setNoArgumentChecking();
@@ -62,9 +68,9 @@ public:
 
     std::shared_ptr<ModuleAction> createAction(
         const std::vector<std::string>& arguments,
-        const ReaderEnvironment& environment);
+        ReaderEnvironment& environment);
     std::shared_ptr<ModuleAction> createAction(
-        int argc, const std::string[], const ReaderEnvironment& environment);
+        int argc, const std::string[], ReaderEnvironment& environment);
 
     /*
      * Returns whether or not the given name matches any one of the names in
@@ -77,14 +83,14 @@ public:
     void setCallableNames(const std::vector<std::string>& names);
 
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
     getCreateActionFunction() const;
     void setCreateActionFunction(std::function<std::shared_ptr<ModuleAction>(
-            const std::vector<std::string>&, const ReaderEnvironment&)>
+            const std::vector<std::string>&, ReaderEnvironment&)>
             createActionFunction);
 
     static std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
     getDefaultAction();
 
     /*
@@ -107,11 +113,12 @@ public:
 
 private:
     std::vector<std::string> callableNames;
-    std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
-        createActionFunction;
     ArgumentCheck argumentCheckingType;
     int expectedArgumentCount = -1;
+
+    std::function<std::shared_ptr<ModuleAction>(
+        const std::vector<std::string>&, ReaderEnvironment&)>
+        createActionFunction;
 };
 } /* namespace dfm */
 

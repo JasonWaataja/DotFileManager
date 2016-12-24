@@ -359,7 +359,7 @@ ConfigFileReader::close()
 void
 ConfigFileReader::addCommand(
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction,
     const char* firstName, ...)
 {
@@ -378,7 +378,7 @@ ConfigFileReader::addCommand(
 void
 ConfigFileReader::addCommand(
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction,
     Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
     const char* firstName, ...)
@@ -410,16 +410,14 @@ ConfigFileReader::addCommand(
 
 std::shared_ptr<ModuleAction>
 ConfigFileReader::createMessageAction(
-    const std::vector<std::string>& arguments,
-    const ReaderEnvironment& environment)
+    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     return std::shared_ptr<ModuleAction>(new MessageAction(arguments[0]));
 }
 
 std::shared_ptr<ModuleAction>
 ConfigFileReader::createDependenciesAction(
-    const std::vector<std::string>& arguments,
-    const ReaderEnvironment& environment)
+    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     std::shared_ptr<DependencyAction> action(new DependencyAction(arguments));
     bool promptForDependencies =

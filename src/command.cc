@@ -47,7 +47,7 @@ Command::Command(const std::string& name)
 
 Command::Command(const std::string& name,
     std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction)
     : callableNames(1),
       createActionFunction(createActionFunction),
@@ -116,7 +116,7 @@ Command::setCallableNames(const std::vector<std::string>& names)
 }
 
 std::function<std::shared_ptr<ModuleAction>(
-    const std::vector<std::string>&, const ReaderEnvironment&)>
+    const std::vector<std::string>&, ReaderEnvironment&)>
 Command::getCreateActionFunction() const
 {
     return createActionFunction;
@@ -124,15 +124,15 @@ Command::getCreateActionFunction() const
 
 void
 Command::setCreateActionFunction(std::function<std::shared_ptr<ModuleAction>(
-        const std::vector<std::string>&, const ReaderEnvironment&)>
+        const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction)
 {
     this->createActionFunction = createActionFunction;
 }
 
 std::shared_ptr<ModuleAction>
-Command::createAction(const std::vector<std::string>& arguments,
-    const ReaderEnvironment& environment)
+Command::createAction(
+    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     if (argumentCheckingType == EXACT_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountEqual(arguments, expectedArgumentCount))
@@ -147,7 +147,7 @@ Command::createAction(const std::vector<std::string>& arguments,
 
 std::shared_ptr<ModuleAction>
 Command::createAction(
-    int argc, const std::string argv[], const ReaderEnvironment& environment)
+    int argc, const std::string argv[], ReaderEnvironment& environment)
 {
     assert(argc >= 0);
     std::vector<std::string> arguments(argc);
@@ -157,7 +157,7 @@ Command::createAction(
 }
 
 std::function<std::shared_ptr<ModuleAction>(
-    const std::vector<std::string>&, const ReaderEnvironment&)>
+    const std::vector<std::string>&, ReaderEnvironment&)>
 Command::getDefaultAction()
 {
     auto createActionFunction = [](const std::vector<std::string>&,
