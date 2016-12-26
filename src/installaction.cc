@@ -271,6 +271,10 @@ InstallAction::copyDirectoryRecursive(
      */
     try {
         for (int i = 0; i < directoryCount; i++) {
+            /*
+             * Not sure if I should use a continue here, but I think it's
+             * pretty readable.
+             */
             if (strcmp(directoryEntries[i]->d_name, ".") == 0
                 || strcmp(directoryEntries[i]->d_name, "..") == 0)
                 continue;
