@@ -22,15 +22,22 @@
 
 #include "readerenvironment.h"
 
+#include <boost/filesystem.hpp>
+
 namespace dfm {
 
 ReaderEnvironment::ReaderEnvironment()
+    : directory(boost::filesystem::current_path().string())
 {
 }
 
 ReaderEnvironment::ReaderEnvironment(std::shared_ptr<DfmOptions> options)
     : options(options)
 {
+    if (options->hasSourceDirectory)
+        directory = options->sourceDirectory.string();
+    else
+        directory = boost::filesystem::current_path().string();
 }
 
 std::shared_ptr<DfmOptions>
@@ -44,5 +51,17 @@ ReaderEnvironment::setOptions(std::shared_ptr<DfmOptions> options)
 {
     this->options.reset();
     this->options = options;
+}
+
+const std::string&
+ReaderEnvironment::getDirectory() const
+{
+    return directory;
+}
+
+void
+ReaderEnvironment::setDirectory(const std::string& directory)
+{
+    this->directory = directory;
 }
 } /* namespace dfm */

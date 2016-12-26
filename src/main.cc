@@ -48,6 +48,7 @@ main(int argc, char* argv[])
     for (dfm::Module module : modules) {
         std::cout << "Module name: " << module.getName() << std::endl;
         module.install();
+        module.uninstall();
     }
 
     return EXIT_SUCCESS;

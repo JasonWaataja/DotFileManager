@@ -38,8 +38,12 @@ public:
     std::shared_ptr<DfmOptions> getOptions() const;
     void setOptions(std::shared_ptr<DfmOptions> options);
 
+    const std::string& getDirectory() const;
+    void setDirectory(const std::string& directory);
+
 private:
     std::shared_ptr<DfmOptions> options;
+    std::string directory;
 };
 } /* namespace 2016 */
 

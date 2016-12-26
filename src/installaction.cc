@@ -25,6 +25,8 @@
 #include <dirent.h>
 #include <err.h>
 
+#include <iostream>
+
 namespace dfm {
 
 InstallAction::InstallAction(const std::string& filename,
@@ -164,6 +166,8 @@ bool
 InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
+    std::cout << "Copying regular " << sourceFilePath << " to "
+              << destinationPath << std::endl;
     try {
         if (!boost::filesystem::exists(sourceFilePath)) {
             warnx("File %s doesn't exist.", sourceFilePath.c_str());
@@ -171,8 +175,8 @@ InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
         }
 
         if (!boost::filesystem::is_regular_file(sourceFilePath)) {
-            warnx("Attempting to copy non regular file with regular file "
-                  "function %s.",
+            warnx(
+                "Attempting to copy non regular file with regular file function %s.",
                 sourceFilePath.c_str());
             return false;
         }
@@ -213,8 +217,8 @@ InstallAction::copyDirectory(
         }
 
         if (!boost::filesystem::is_directory(sourceDirectoryPath)) {
-            warnx("Attempting to copy non-directory with with directory "
-                  "function %s.",
+            warnx(
+                "Attempting to copy non-directory with with directory function %s.",
                 sourceDirectoryPath.c_str());
             return false;
         }
@@ -267,6 +271,9 @@ InstallAction::copyDirectoryRecursive(
      */
     try {
         for (int i = 0; i < directoryCount; i++) {
+            if (strcmp(directoryEntries[i]->d_name, ".") == 0
+                || strcmp(directoryEntries[i]->d_name, "..") == 0)
+                continue;
             boost::filesystem::path sourceChildPath =
                 sourceDirectoryPath / directoryEntries[i]->d_name;
             boost::filesystem::path destinationChildPath =

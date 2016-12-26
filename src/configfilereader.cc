@@ -29,6 +29,7 @@
 #include <regex>
 
 #include "dependencyaction.h"
+#include "removeaction.h"
 
 namespace dfm {
 
@@ -208,7 +209,7 @@ ConfigFileReader::isUninstallLine(const std::string& line)
      * The line must start with uninstall, then there must be a colon, which
      * may be surrounded by whitespace.
      */
-    std::regex re("^uninstall\\s*:\\s$");
+    std::regex re("^uninstall\\s*:\\s*$");
     if (std::regex_match(line, re)) {
         return true;
     }
@@ -427,6 +428,45 @@ ConfigFileReader::createDependenciesAction(
     return action;
 }
 
+std::shared_ptr<ModuleAction>
+ConfigFileReader::createRemoveAction(
+    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
+{
+    if (arguments.size() == 1) {
+        std::shared_ptr<RemoveAction> action(new RemoveAction(arguments[0]));
+        return action;
+    } else if (arguments.size() == 2) {
+        std::shared_ptr<RemoveAction> action(
+            new RemoveAction(arguments[0], arguments[1]));
+        return action;
+    }
+
+    warnx("Too many arguments to create remove action, can only accept two.");
+    return std::shared_ptr<ModuleAction>();
+}
+
+std::shared_ptr<ModuleAction>
+ConfigFileReader::createInstallAction(
+    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
+{
+    if (arguments.size() == 2) {
+        std::string sourceDirectory = environment.getDirectory();
+        return std::shared_ptr<ModuleAction>(
+            new InstallAction(arguments[0], sourceDirectory, arguments[1]));
+    }
+    if (arguments.size() == 3) {
+        return std::shared_ptr<ModuleAction>(
+            new InstallAction(arguments[0], arguments[1], arguments[2]));
+    }
+    if (arguments.size() == 4) {
+        return std::shared_ptr<ModuleAction>(new InstallAction(
+            arguments[0], arguments[1], arguments[2], arguments[3]));
+    }
+    warnx(
+        "Too many arguments to create an install action, can only accept two to four.");
+    return std::shared_ptr<ModuleAction>();
+}
+
 void
 ConfigFileReader::addDefaultCommands()
 {
@@ -435,6 +475,12 @@ ConfigFileReader::addDefaultCommands()
         NULL);
     addCommand(&ConfigFileReader::createDependenciesAction,
         Command::NO_ARGUMENT_CKECK, -1, "dependencies", "dep", "depend", NULL);
+    addCommand(&ConfigFileReader::createRemoveAction,
+        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "remove", "rm", "delete",
+        "uninstall", NULL);
+    addCommand(&ConfigFileReader::createInstallAction,
+        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 2, "install", "in", "instll",
+        "i", NULL);
 }
 
 bool
@@ -479,7 +525,8 @@ ConfigFileReader::splitArguments(
 
     /*
      * I could probably do something to make this loop more readable, but I
-     * don't want to. I tried nesting some of the statements but that led to
+     * don't want to. I tried nesting some of the statements but that led
+     * to
      * too much indentation.
      */
     for (std::string::size_type i = 0; i < argumentsLine.length(); i++) {
@@ -513,7 +560,8 @@ ConfigFileReader::splitArguments(
         } else if (inWord && inQuotes) {
             currentWord += currentChar;
         } else if (inWord && currentChar == '"') {
-            /* It already failed inQuotes above so this is not in quotes. */
+            /* It already failed inQuotes above so this is not in quotes.
+             */
             currentWord += '"';
             lastCharQuoteInNonQuoteWord = true;
         } else if (inWord && !isWhite) {

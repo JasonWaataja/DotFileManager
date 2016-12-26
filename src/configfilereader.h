@@ -105,6 +105,14 @@ public:
         const std::vector<std::string>& arguments,
         ReaderEnvironment& environment);
 
+    static std::shared_ptr<ModuleAction> createRemoveAction(
+        const std::vector<std::string>& arguments,
+        ReaderEnvironment& environment);
+
+    static std::shared_ptr<ModuleAction> createInstallAction(
+        const std::vector<std::string>& arguments,
+        ReaderEnvironment& environment);
+
 private:
     /* The path to the config file. */
     boost::filesystem::path path;
@@ -393,13 +401,6 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         }
     }
 
-    std::string moduleName;
-    if (isModuleLine(line, moduleName)) {
-        if (inModuleInstall || inModuleUninstall)
-            flushModule(output);
-        startNewModule(moduleName);
-        return true;
-    }
     if (isUninstallLine(line)) {
         if (!inModuleInstall) {
             warnx("line %i: Uninstall without named module: %s", currentLineNo,
@@ -407,6 +408,14 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
             return false;
         }
         changeToUninstall();
+        return true;
+    }
+
+    std::string moduleName;
+    if (isModuleLine(line, moduleName)) {
+        if (inModuleInstall || inModuleUninstall)
+            flushModule(output);
+        startNewModule(moduleName);
         return true;
     }
 
