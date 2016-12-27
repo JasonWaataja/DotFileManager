@@ -24,11 +24,17 @@
 
 #include <sys/stat.h>
 
+#include <assert.h>
 #include <dirent.h>
 #include <err.h>
+#include <libgen.h>
+#include <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <fstream>
-#include <unordered_set>
+
+#include "installaction.h"
 
 namespace dfm {
 
@@ -75,56 +81,219 @@ FileCheck::setFiles(
 }
 
 bool
-FileCheck::regularPathsEqual(
-    const std::string& path1, const std::string& path2)
+FileCheck::shouldUpdateRegularFile(
+    const std::string& sourcePath, const std::string& destinationPath) const
 {
-    if (path1 == path2)
+    if (sourcePath == destinationPath)
+        return false;
+    if (sourcePath.length() == 0 || destinationPath.length() == 0)
+        return false;
+
+    std::ifstream sourceReader(sourcePath.c_str());
+    if (!sourceReader.is_open()) {
+        return false;
+    }
+    /*
+     * This section returns true on failure because it means that it could open
+     * the file it is supposed to be a copy of but not the copied file, meaning
+     * it needs to be updated.
+     */
+    std::ifstream destinationReader(destinationPath.c_str());
+    if (!destinationReader.is_open()) {
+        sourceReader.close();
         return true;
-    if (path1.length() == 0 || path2.length() == 0)
-        return false;
-
-    std::ifstream file1Reader(path1.c_str());
-    if (!file1Reader.is_open()) {
-        warnx("Failed to open file %s.", path1.c_str());
-        return false;
     }
-    std::ifstream file2Reader(path2.c_str());
-    if (!file2Reader.is_open()) {
-        warnx("Failed to open file %s.", path2.c_str());
-        return false;
-    }
-    std::string line1;
-    std::string line2;
+    std::string sourceLine;
+    std::string destinationLine;
 
-    bool path1ReadStatus = true;
-    bool path2ReadStatus = false;
+    bool sourceReadStatus = true;
+    bool destinationReadStatus = false;
     /* I wish I knew how to directly assign a getline status to a bool. */
-    if (std::getline(file1Reader, line1))
-        path1ReadStatus = true;
+    if (std::getline(sourceReader, sourceLine))
+        sourceReadStatus = true;
     else
-        path2ReadStatus = false;
+        destinationReadStatus = false;
 
-    if (std::getline(file2Reader, line2))
-        path2ReadStatus = true;
+    if (std::getline(destinationReader, destinationLine))
+        destinationReadStatus = true;
     else
-        path2ReadStatus = false;
+        destinationReadStatus = false;
 
-    if (path1ReadStatus != path2ReadStatus)
+    if (sourceReadStatus != destinationReadStatus) {
+        sourceReader.close();
+        destinationReader.close();
         return false;
-
-    while (path1ReadStatus && path2ReadStatus) {
-        if (line1 != line2)
-            return false;
-
-        if (std::getline(file2Reader, line2))
-            path2ReadStatus = true;
-        else
-            path2ReadStatus = false;
-
-        if (path1ReadStatus != path2ReadStatus)
-            return false;
     }
 
+    while (sourceReadStatus && destinationReadStatus) {
+        if (sourceLine != destinationLine) {
+            sourceReader.close();
+            destinationReader.close();
+            return false;
+        }
+
+        if (std::getline(destinationReader, destinationLine))
+            destinationReadStatus = true;
+        else
+            destinationReadStatus = false;
+
+        if (sourceReadStatus != destinationReadStatus) {
+            sourceReader.close();
+            destinationReader.close();
+            return false;
+        }
+    }
+
+    sourceReader.close();
+    destinationReader.close();
     return true;
+}
+
+bool
+FileCheck::shouldUpdate() const
+{
+    if (!hasFiles()) {
+        warnx("Missing file to check for updates.");
+        return false;
+    }
+
+    return shouldUpdateFile(sourcePath, destinationPath);
+}
+
+bool
+FileCheck::shouldUpdateDirectory(
+    const std::string& sourcePath, const std::string& destinationPath) const
+{
+    if (sourcePath == destinationPath)
+        return false;
+    if (sourcePath.size() == 0 || destinationPath.size() == 0)
+        return false;
+
+    struct dirent** sourceEntries = nullptr;
+    struct dirent** destinationEntries = nullptr;
+
+    int sourceCount = scandir(
+        sourcePath.c_str(), &sourceEntries, &FileCheck::returnOne, alphasort);
+    if (sourceCount == -1) {
+        return false;
+    }
+    int destinationCount = scandir(destinationPath.c_str(),
+        &destinationEntries, &FileCheck::returnOne, alphasort);
+    /*
+     * The logic here is the same as in the regular file function. If it can't
+     * open the destination direcvory, there must be a problem and should
+     * thusly be updated.
+     */
+    if (destinationCount == -1) {
+        return true;
+    }
+
+    if (sourceCount != destinationCount) {
+        return true;
+    }
+
+    /*
+     * Both lists were sorted using the same algorithm, alphasort, which means
+     * that if they contain the same entries they should be in the same order.
+     */
+    for (int i = 0; i < sourceCount; i++) {
+        struct dirent* sourceEntry = sourceEntries[i];
+        struct dirent* destinationEntry = destinationEntries[i];
+        /*
+         * I dont' think I have to check destinationEntry here because they
+         * should both start with "." and ".." anyways.
+         */
+        if (strcmp(sourceEntry->d_name, ".") == 0
+            || strcmp(sourceEntry->d_name, "..") == 0
+            || strcmp(destinationEntry->d_name, ".") == 0
+            || strcmp(destinationEntry->d_name, "..") == 0)
+            continue;
+        if (strcmp(sourceEntry->d_name, destinationEntry->d_name) != 0)
+            return true;
+        std::string sourceEntryPath = sourcePath + "/" + sourceEntry->d_name;
+        std::string destinationEntryPath =
+            destinationPath + "/" + destinationEntry->d_name;
+        struct stat sourceEntryInfo;
+        if (stat(sourceEntryPath.c_str(), &sourceEntryInfo) != 0) {
+            return false;
+        }
+        if (shouldUpdateFile(sourceEntryPath, destinationEntryPath))
+            return true;
+    }
+    return false;
+}
+
+bool
+FileCheck::shouldUpdateFile(
+    const std::string& sourcePath, const std::string& destinationPath) const
+{
+    struct stat sourceInfo;
+    if (stat(sourcePath.c_str(), &sourceInfo) != 0) {
+        return false;
+    }
+    struct stat destinationInfo;
+    if (stat(destinationPath.c_str(), &destinationInfo) != 0) {
+        return true;
+    }
+    if (!S_ISREG(sourceInfo.st_mode) && !S_ISDIR(sourceInfo.st_mode))
+        return false;
+    if (!S_ISREG(destinationInfo.st_mode) && !S_ISDIR(destinationInfo.st_mode))
+        return true;
+    if (sourceInfo.st_mode != destinationInfo.st_mode)
+        return true;
+
+    if (S_ISREG(sourceInfo.st_mode))
+        return shouldUpdateRegularFile(sourcePath, destinationPath);
+    if (S_ISDIR(sourceInfo.st_mode))
+        return shouldUpdateDirectory(sourcePath, destinationPath);
+
+    /*
+     * I'm not sure how it would reach here, but just in case update anyways.
+     */
+    return true;
+}
+
+bool
+FileCheck::hasFiles() const
+{
+    return sourcePath.size() != 0 && destinationPath.size() != 0;
+}
+
+int
+FileCheck::returnOne(const struct dirent* entry)
+{
+    return true;
+}
+
+std::shared_ptr<ModuleAction>
+FileCheck::createInstallAction() const
+{
+    /*
+     * I shouldn't have to create a non-const copy of the string, but the
+     * dirname function and basename function (when including libgen.h)
+     * requires that the argument to be non-const on my system. Making a
+     * non-const copy allows for more portability, I guess.
+     */
+    char* sourcePath = strdup(this->sourcePath.c_str());
+    if (sourcePath == NULL)
+        err(EXIT_FAILURE, NULL);
+    char* destinationPath = strdup(this->destinationPath.c_str());
+    if (destinationPath == NULL)
+        err(EXIT_FAILURE, NULL);
+
+    /*
+     * I'm making copies here because on some system the returned pointer is
+     * overwritten in later calls. This might create an error in the future
+     * because these two functions are allowed to modify their contents.
+     * However, I think that basename is only allowed to remove trailing
+     * slashes so if I'm calling it first I think it's alright.
+     */
+    std::string sourceBasename = basename(sourcePath);
+    std::string sourceDirectory = dirname(sourcePath);
+    std::string destinationBasename = basename(destinationPath);
+    std::string destinationDirectory = dirname(destinationPath);
+
+    return std::shared_ptr<ModuleAction>(new InstallAction(sourceBasename,
+        sourceDirectory, destinationBasename, destinationDirectory));
 }
 } /* namespace dfm */

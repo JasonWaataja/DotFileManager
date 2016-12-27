@@ -22,6 +22,8 @@
 
 #include "module.h"
 
+#include <iostream>
+
 #include <err.h>
 
 namespace dfm {
@@ -52,7 +54,7 @@ Module::install()
     for (std::shared_ptr<ModuleAction> action : installActions) {
         bool status = action->performAction();
         if (!status) {
-            warnx("failed to install module %s", action->getName().c_str());
+            warnx("Failed to install module %s.", action->getName().c_str());
             return false;
         }
     }
@@ -66,11 +68,25 @@ Module::uninstall()
     for (std::shared_ptr<ModuleAction> action : uninstallActions) {
         bool status = action->performAction();
         if (!status) {
-            warnx("failed to install module %s", action->getName().c_str());
+            warnx("Failed to install module %s.", action->getName().c_str());
             return false;
         }
     }
+    return true;
+}
 
+
+bool
+Module::update()
+{
+    std::cout << "size: " << updateActions.size() << std::endl;
+    for (std::shared_ptr<ModuleAction> action : updateActions) {
+        bool status = action->performAction();
+        if (!status) {
+            warnx("Failed to update module %s.", action->getName().c_str());
+            return false;
+        }
+    }
     return true;
 }
 
@@ -84,5 +100,11 @@ void
 Module::addUninstallAction(std::shared_ptr<ModuleAction> action)
 {
     uninstallActions.push_back(action);
+}
+
+void
+Module::addUpdateAction(std::shared_ptr<ModuleAction> action)
+{
+    updateActions.push_back(action);
 }
 } /* namespace dfm */

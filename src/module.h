@@ -39,8 +39,10 @@ public:
     Module(const std::string& name);
     void addInstallAction(std::shared_ptr<ModuleAction> action);
     void addUninstallAction(std::shared_ptr<ModuleAction> action);
+    void addUpdateAction(std::shared_ptr<ModuleAction> action);
     bool install();
     bool uninstall();
+    bool update();
     const std::string& getName() const;
     void setName(const std::string& name);
 
@@ -48,6 +50,7 @@ private:
     std::string name;
     std::vector<std::shared_ptr<ModuleAction>> installActions;
     std::vector<std::shared_ptr<ModuleAction>> uninstallActions;
+    std::vector<std::shared_ptr<ModuleAction>> updateActions;
 };
 } /* namespace dfm */
 

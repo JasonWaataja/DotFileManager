@@ -24,8 +24,13 @@
 #ifndef FILE_CHECK_H
 #define FILE_CHECK_H
 
+#include <dirent.h>
+
+#include <memory>
 #include <string>
 #include <vector>
+
+#include "moduleaction.h"
 
 namespace dfm {
 
@@ -47,28 +52,30 @@ public:
     bool shouldUpdate() const;
     bool updateFile();
 
-    /* std::vector<std::string> getUpdatableFiles(); */
-
     /*
-     * Checks whether the two paths are equal according to some rules. Two
-     * files are equal if they have the same bytes. Two directories are equal
-     * if they contain the same file names and each file has the same contents,
-     * and not directory has extra files. If either of the paths aren't regular
-     * files or directories, then the function is false regardless if they are
-     * the same, such as if they are the same symlink. If one of the two paths
-     * is an empty string, then function is false unless they are both empty
-     * strings.
-     *
-     * Returns whether the contents of the two paths are equal.
+     * Create an InstallAction using the given source path and destination
+     * path. This creates an action regardell of whether or not it should
+     * update, so the caller should call shouldUpdate() before calling this
+     * one.
      */
-    static bool regularPathsEqual(
-        const std::string& path1, const std::string& path2);
+    std::shared_ptr<ModuleAction> createInstallAction() const;
 
 private:
+    /* Returns if neither path is a zero-length string. */
     bool hasFiles() const;
+
+
+    bool shouldUpdateFile(const std::string& sourcePath,
+        const std::string& destinationPath) const;
+    bool shouldUpdateRegularFile(const std::string& sourcePath,
+        const std::string& destinationPath) const;
+    bool shouldUpdateDirectory(const std::string& sourcePath,
+        const std::string& destinationPath) const;
 
     std::string sourcePath;
     std::string destinationPath;
+
+    static int returnOne(const struct dirent* entry);
 };
 } /* namespace 2016 */
 

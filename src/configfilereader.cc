@@ -449,22 +449,34 @@ std::shared_ptr<ModuleAction>
 ConfigFileReader::createInstallAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
+    InstallAction* action = nullptr;
+    /* Assume that we are working in the current directory. */
     if (arguments.size() == 2) {
         std::string sourceDirectory = environment.getDirectory();
-        return std::shared_ptr<ModuleAction>(
-            new InstallAction(arguments[0], sourceDirectory, arguments[1]));
+        action =
+            new InstallAction(arguments[0], sourceDirectory, arguments[1]);
     }
     if (arguments.size() == 3) {
-        return std::shared_ptr<ModuleAction>(
-            new InstallAction(arguments[0], arguments[1], arguments[2]));
+        action = new InstallAction(arguments[0], arguments[1], arguments[2]);
     }
     if (arguments.size() == 4) {
-        return std::shared_ptr<ModuleAction>(new InstallAction(
-            arguments[0], arguments[1], arguments[2], arguments[3]));
+        action = new InstallAction(
+            arguments[0], arguments[1], arguments[2], arguments[3]);
     }
-    warnx(
-        "Too many arguments to create an install action, can only accept two to four.");
-    return std::shared_ptr<ModuleAction>();
+
+    if (action == nullptr) {
+        warnx(
+            "Too many arguments to create an install action, can only accept two to four.");
+        return std::shared_ptr<ModuleAction>();
+    }
+
+    std::string sourcePath = action->getFilePath().string();
+    std::string destinationPath = action->getInstallationPath().string();
+
+    FileCheck check(sourcePath, destinationPath);
+    environment.addFileCheck(check);
+
+    return std::shared_ptr<ModuleAction>(action);
 }
 
 void

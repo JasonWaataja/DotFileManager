@@ -427,6 +427,11 @@ template <class OutputIterator>
 void
 ConfigFileReader::flushModule(OutputIterator output)
 {
+    for (FileCheck check : environment.getFileChecks()) {
+        std::cout << check.getSourcePath() << " " << check.getDestinationPath() << std::endl;
+        if (check.shouldUpdate())
+            currentModule->addUpdateAction(check.createInstallAction());
+    }
     *output = *currentModule;
     delete currentModule;
     inModuleInstall = false;
