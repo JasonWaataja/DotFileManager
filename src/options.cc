@@ -35,6 +35,7 @@ namespace dfm {
 DfmOptions::DfmOptions()
     : installModulesFlag(false),
       uninstallModulesFlag(false),
+      updateModulesFlag(false),
       allFlag(false),
       promptForDependenciesFlag(false),
       hasSourceDirectory(false)
@@ -54,6 +55,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         { "uninstall", no_argument, NULL, 'u' },
         { "all", no_argument, NULL, 'a' },
         { "prompt-for-dependencies", no_argument, NULL, 'p' },
+        { "check", no_argument, NULL, 'c' },
         { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
 
     int getoptValue = getopt_long_only(
@@ -82,6 +84,8 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         case 'p':
             promptForDependenciesFlag = true;
             break;
+        case 'c':
+            updateModulesFlag = true;
         case 'd':
             hasSourceDirectory = true;
             sourceDirectory = optarg;
@@ -127,13 +131,30 @@ DfmOptions::verifyArguments() const
 bool
 DfmOptions::verifyFlagsConsistency() const
 {
-    if (installModulesFlag && uninstallModulesFlag) {
-        warnx("Both install and uninstall flags passed.");
+    int operationsCount = 0;
+    if (installModulesFlag)
+        operationsCount++;
+    if (uninstallModulesFlag)
+        operationsCount++;
+    if (updateModulesFlag)
+        operationsCount++;
+
+    if (operationsCount == 0) {
+        warnx("Must specify an operation.");
         return false;
     }
-    if (allFlag && !installModulesFlag && !uninstallModulesFlag) {
-        warnx("The \"-a\" flag cannot be used without the \"-i\" or \"-u\" "
-              "flags.");
+    if (operationsCount > 1) {
+        warnx("May only specify one operation.");
+        return false;
+    }
+
+    /*
+     * Fails if the all flag is passed and there are remaining arguments or the
+     * all flag isn't passed and there are also no additional argumens.
+     */
+    if (allFlag == (remainingArguments.size() > 0)) {
+        warnx(
+            "Must specify either the --all flag or at least one remaining argument, but not both.");
         return false;
     }
     return true;
@@ -142,7 +163,8 @@ DfmOptions::verifyFlagsConsistency() const
 bool
 DfmOptions::verifyFlagsHaveArguments() const
 {
-    if ((installModulesFlag || uninstallModulesFlag) && !allFlag) {
+    if ((installModulesFlag || uninstallModulesFlag || updateModulesFlag)
+        && !allFlag && remainingArguments.size() == 0) {
         warnx("Must provide modules to install or uninstall.");
         return false;
     }

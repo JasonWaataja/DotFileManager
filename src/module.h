@@ -40,9 +40,9 @@ public:
     void addInstallAction(std::shared_ptr<ModuleAction> action);
     void addUninstallAction(std::shared_ptr<ModuleAction> action);
     void addUpdateAction(std::shared_ptr<ModuleAction> action);
-    bool install();
-    bool uninstall();
-    bool update();
+    bool install() const;
+    bool uninstall() const;
+    bool update() const;
     const std::string& getName() const;
     void setName(const std::string& name);
 

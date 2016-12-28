@@ -31,7 +31,7 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_SHORT_OPTIONS[] = ":iuapd:";
+const char GETOPT_SHORT_OPTIONS[] = ":iuapcd:";
 
 class DfmOptions {
 public:
@@ -51,6 +51,7 @@ public:
 
     bool installModulesFlag;
     bool uninstallModulesFlag;
+    bool updateModulesFlag;
     bool allFlag;
     bool promptForDependenciesFlag;
     std::vector<std::string> remainingArguments;

@@ -49,7 +49,7 @@ Module::setName(const std::string& name)
 }
 
 bool
-Module::install()
+Module::install() const
 {
     for (std::shared_ptr<ModuleAction> action : installActions) {
         bool status = action->performAction();
@@ -63,7 +63,7 @@ Module::install()
 }
 
 bool
-Module::uninstall()
+Module::uninstall() const
 {
     for (std::shared_ptr<ModuleAction> action : uninstallActions) {
         bool status = action->performAction();
@@ -77,7 +77,7 @@ Module::uninstall()
 
 
 bool
-Module::update()
+Module::update() const
 {
     std::cout << "size: " << updateActions.size() << std::endl;
     for (std::shared_ptr<ModuleAction> action : updateActions) {

@@ -24,9 +24,11 @@
 
 #include <ctype.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 #include <exception>
 #include <regex>
+#include <stdexcept>
 
 #include "dependencyaction.h"
 #include "removeaction.h"
@@ -617,5 +619,26 @@ ConfigFileReader::splitArguments(
         arguments.push_back(currentWord);
 
     return true;
+}
+
+std::string
+ConfigFileReader::getCurrentDirectory()
+{
+    size_t currentSize = 128;
+    char* currentDirectory = new char[currentSize];
+    char* result = getcwd(currentDirectory, currentSize);
+    while (result == NULL) {
+        if (errno == ERANGE) {
+            delete[] currentDirectory;
+            currentSize *= 2;
+            currentDirectory = new char[currentSize];
+        } else {
+            throw std::runtime_error("Failed to get current directory.");
+        }
+        result = getcwd(currentDirectory, currentSize);
+    }
+    std::string directoryString(currentDirectory);
+    delete[] currentDirectory;
+    return directoryString;
 }
 } /* namespace dfm */

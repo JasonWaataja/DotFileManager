@@ -20,10 +20,34 @@
  * IN THE SOFTWARE.
  */
 
-#include "dotfilemanager.h"
 
-int
-main(int argc, char* argv[])
-{
-    return dfm::DotFileManager(argc, argv).run();
-}
+#ifndef DOT_FILE_MANAGER_H
+#define DOT_FILE_MANAGER_H
+
+#include <memory>
+
+#include "module.h"
+#include "options.h"
+
+namespace dfm {
+
+class DotFileManager {
+public:
+    DotFileManager(int argc, char** argv);
+    int run();
+
+private:
+    int argc;
+    char** argv;
+
+    std::shared_ptr<DfmOptions> options;
+    std::vector<Module> modules;
+
+    bool initializeOptions();
+    bool readModules();
+    bool performOperation();
+    bool operateOn(const Module& module);
+};
+} /* namespace 2016 */
+
+#endif /* DOT_FILE_MANAGER_H */

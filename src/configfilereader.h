@@ -44,6 +44,12 @@
 
 namespace dfm {
 
+/*
+ * The default name that the program should look for in the source directory as
+ * the config file.
+ */
+const char CONFIG_FILE_NAME[] = "config.dfm";
+
 const char COMMENT_DELIMITER = '#';
 
 class ConfigFileReader {
@@ -92,6 +98,8 @@ public:
                         createActionFunction,
         Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
         const char* firstName, ...);
+
+    static std::string getCurrentDirectory();
 
     /*
      * These functions create actions based on the given arguments and
