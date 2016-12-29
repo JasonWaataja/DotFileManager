@@ -59,7 +59,7 @@ RemoveAction::performAction()
         if (!getYesOrNo(prompt))
             return true;
     }
-    verboseMessage("Removing %s.", filePath.c_str());
+    verboseMessage("Removing %s.\n", filePath.c_str());
     try {
         if (boost::filesystem::exists(filePath)) {
             boost::filesystem::remove_all(filePath);
