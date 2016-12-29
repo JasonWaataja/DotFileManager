@@ -64,22 +64,4 @@ ReaderEnvironment::setDirectory(const std::string& directory)
 {
     this->directory = directory;
 }
-
-void
-ReaderEnvironment::addFileCheck(const FileCheck& check)
-{
-    checks.push_back(check);
-}
-
-const std::vector<FileCheck>&
-ReaderEnvironment::getFileChecks() const
-{
-    return checks;
-}
-
-void
-ReaderEnvironment::clearFileChecks()
-{
-    checks.clear();
-}
 } /* namespace dfm */

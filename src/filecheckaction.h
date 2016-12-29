@@ -34,10 +34,10 @@
 
 namespace dfm {
 
-class FileCheck {
+class FileCheckAction : public ModuleAction {
 public:
-    FileCheck();
-    FileCheck(
+    FileCheckAction();
+    FileCheckAction(
         const std::string& sourcePath, const std::string& destinationPath);
 
     const std::string& getSourcePath() const;
@@ -48,17 +48,10 @@ public:
     void setFiles(
         const std::string& sourcePath, const std::string& destinationPath);
 
+    bool performAction() override;
+
 
     bool shouldUpdate() const;
-    bool updateFile();
-
-    /*
-     * Create an InstallAction using the given source path and destination
-     * path. This creates an action regardell of whether or not it should
-     * update, so the caller should call shouldUpdate() before calling this
-     * one.
-     */
-    std::shared_ptr<ModuleAction> createInstallAction() const;
 
 private:
     /* Returns if neither path is a zero-length string. */
@@ -74,8 +67,6 @@ private:
 
     std::string sourcePath;
     std::string destinationPath;
-
-    static int returnOne(const struct dirent* entry);
 };
 } /* namespace 2016 */
 

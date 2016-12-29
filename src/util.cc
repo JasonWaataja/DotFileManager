@@ -22,6 +22,8 @@
 
 #include "util.h"
 
+#include <err.h>
+#include <pwd.h>
 #include <unistd.h>
 #include <wordexp.h>
 
@@ -109,5 +111,15 @@ shellExpandPath(const std::string& path)
     std::string expandedPath = expr.we_wordv[0];
     wordfree(&expr);
     return expandedPath;
+}
+
+std::string
+getHomeDirectory()
+{
+    struct passwd* userInfo = getpwuid(getuid());
+    if (userInfo == NULL) {
+        err(EXIT_FAILURE, "Failed to get user info.");
+    }
+    return userInfo->pw_dir;
 }
 } /* namespace dfm */

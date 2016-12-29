@@ -24,6 +24,7 @@
 #define CONFIG_FILE_READER_H
 
 #include <err.h>
+#include <stdarg.h>
 
 #include <fstream>
 #include <iostream>
@@ -76,6 +77,16 @@ public:
 
     bool isOpen();
     void close();
+
+    /*
+     * These functions print errorr messages by passing the argumetns to warnx,
+     * and optionally may be passed a line that is printed at the end.
+     */
+    void errorMessage(const char* format, ...);
+    void vErrorMessage(const char* format, va_list argumentList);
+    void errorMessage(const std::string& line, const char* format, ...);
+    void vErrorMessage(
+        const std::string& line, const char* format, va_list argumentList);
     /*
      * Read the modules in the given file and write them to the given iterator,
      * which must contain elements of type Module.
@@ -142,14 +153,25 @@ private:
      */
     ReaderEnvironment environment;
     /*
+     * Whether or not the reader is currently reading files to install. Lines
+     * are processed as files to intall
+     */
+    bool inFiles = false;
+    /*
      * Whether or not the reader is in a module install which determines what
      * command lines are used for.
      */
     bool inModuleInstall = false;
-    /* Returns whether or not the reader is in a module and whether or not it
-     * was changed to an uninstall.
+    /*
+     * Whether or not the reader is in a module and whether or not it was
+     * changed to an uninstall.
      */
     bool inModuleUninstall = false;
+    /*
+     * Whether or not the reader is in a module and whether or not it is in an
+     * update set of actions.
+     */
+    bool inModuleUpdate = false;
     /*
      * Pointer to a current module being constructed. Set to nullptr when not
      * currently in a module and is meant to be deleted when the module is
@@ -226,17 +248,30 @@ private:
      */
     bool isModuleLine(const std::string& line);
     /*
+     * Tests line to see if it reprsents a line that starts install actions.
+     *
+     * Returns if the line starts with install: with optional whitespace.
+     */
+    bool isInstallLine(const std::string& line);
+    /*
      * Tests line to see if it represents a line that uninstalls.
      *
      * Returns whether or not line matches the syntax for an uninstall line.
      */
     bool isUninstallLine(const std::string& line);
     /*
+     * Tests line to see if it represents a line that starts update actions.
+     *
+     * Returns if the line starts with update: with optional whitespace.
+     */
+    bool isUpdateLine(const std::string& line);
+    /*
      * Tests commandName to see if it's a command that should activate shell
      * action.
+     *
+     * Returns if commandName represents a recognized command.
      */
     bool isShellCommand(const std::string& commandName);
-
     /* Processing commands that affect object state. */
     void addShellAction(const std::string& line);
     /* Behavior changes if install or uninstall. */
@@ -258,6 +293,7 @@ private:
     /* Executes command string with given arguments. */
     bool processCommand(const std::string& commandName,
         const std::vector<std::string>& arguments);
+    bool processLineAsFile(const std::string& line);
 
     /*
      * If the reader is in a module install or uninstall, finishes the module
@@ -271,12 +307,12 @@ private:
      * forget to do so.
      */
     void startNewModule(const std::string& name);
-    /*
-     * If in a modul install, change the current state so that actions are
-     * added to the module's uninstall actions. Gives a warning if not in a
-     * module install.
-     */
+    /* Changes to actions representing install actions. */
+    void changeToInstall();
+    /* Changes to actions representing uninstall actions. */
     void changeToUninstall();
+    /* Changes to actions representing update actions. */
+    void changeToUpdate();
 
     /*
      * The main function for processing a config file. Takes a line, and takes
@@ -337,6 +373,9 @@ private:
      */
     bool splitArguments(
         const std::string& argumentsLine, std::vector<std::string>& arguments);
+
+    bool inModule() const;
+    bool isCreatingMouleActions() const;
 };
 
 template <class OutputIterator>
@@ -349,8 +388,10 @@ ConfigFileReader::readModules(OutputIterator output)
     }
 
     currentLineNo = 1;
+    inFiles = false;
     inModuleInstall = false;
     inModuleUninstall = false;
+    inModuleUpdate = -false;
     currentModule = nullptr;
     inShell = false;
     currentShellAction = nullptr;
@@ -367,12 +408,12 @@ ConfigFileReader::readModules(OutputIterator output)
     if (inShell)
         flushShellAction();
 
-    if (inModuleInstall || inModuleUninstall)
+    if (inModule())
         flushModule(output);
 
     if (!noErrors) {
-        warnx("Failed to read config file %s, line %i: %s", getPath().c_str(),
-            currentLineNo, line.c_str());
+        errorMessage(
+            line, "Failed to read config file %s.", getPath().c_str());
     }
 
     return noErrors;
@@ -398,36 +439,54 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         } else
             flushShellAction();
     }
-
-    if (inModuleInstall || inModuleUninstall) {
+    if (inFiles) {
         if (indents == 1)
-            return processLineAsCommand(line);
+            return processLineAsFile(line);
         else if (indents > 1) {
-            warnx("line %i: Unexpected indentation: %s", currentLineNo,
-                line.c_str());
+            errorMessage(line, "Unexpected indentation.");
             return false;
         }
     }
-
+    if (isCreatingMouleActions()) {
+        if (indents == 1)
+            return processLineAsCommand(line);
+        else if (indents > 1) {
+            errorMessage(line, "Unexpected indentation.");
+            return false;
+        }
+    }
+    if (isInstallLine(line)) {
+        if (!inModule()) {
+            errorMessage(line, "Install without named module.");
+            return false;
+        }
+        changeToInstall();
+    }
     if (isUninstallLine(line)) {
-        if (!inModuleInstall) {
-            warnx("line %i: Uninstall without named module: %s", currentLineNo,
-                line.c_str());
+        if (!inModule()) {
+            errorMessage(line, "Uninstall without named module.");
             return false;
         }
         changeToUninstall();
         return true;
     }
+    if (isUpdateLine(line)) {
+        if (!inModule()) {
+            errorMessage(line, "Update without named module.");
+            return false;
+        }
+        changeToUpdate();
+    }
 
     std::string moduleName;
     if (isModuleLine(line, moduleName)) {
-        if (inModuleInstall || inModuleUninstall)
+        if (inModule())
             flushModule(output);
         startNewModule(moduleName);
         return true;
     }
 
-    warnx("line %i: Unable to process line: %s", currentLineNo, line.c_str());
+    errorMessage(line, "Unable to process line.");
     return false;
 }
 
@@ -435,14 +494,12 @@ template <class OutputIterator>
 void
 ConfigFileReader::flushModule(OutputIterator output)
 {
-    for (FileCheck check : environment.getFileChecks()) {
-        if (check.shouldUpdate())
-            currentModule->addUpdateAction(check.createInstallAction());
-    }
     *output = *currentModule;
     delete currentModule;
+    inFiles = false;
     inModuleInstall = false;
     inModuleUninstall = false;
+    inModuleUpdate = false;
     output++;
 }
 } /* namespace dfm */

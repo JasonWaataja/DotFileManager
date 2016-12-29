@@ -27,7 +27,6 @@
 #include <memory>
 
 #include "options.h"
-#include "filecheck.h"
 
 namespace dfm {
 
@@ -42,14 +41,9 @@ public:
     const std::string& getDirectory() const;
     void setDirectory(const std::string& directory);
 
-    void addFileCheck(const FileCheck& check);
-    const std::vector<FileCheck>& getFileChecks() const;
-    void clearFileChecks();
-
 private:
     std::shared_ptr<DfmOptions> options;
     std::string directory;
-    std::vector<FileCheck> checks;
 };
 } /* namespace 2016 */
 

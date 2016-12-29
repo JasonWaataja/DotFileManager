@@ -62,8 +62,11 @@ std::string getCurrentDirectory();
  * an errorr or if the string path expands to more than one word.
  */
 std::string shellExpandPath(const std::string& path);
+/*
+ * Returns the current user's home directory. Throws a runtime error when
+ * encountering an error.
+ */
+std::string getHomeDirectory();
 } /* namespace dfm */
-
-
 
 #endif /* UTIL_H */

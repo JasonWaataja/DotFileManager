@@ -24,12 +24,14 @@
 
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #include <exception>
 #include <regex>
 #include <stdexcept>
 
 #include "dependencyaction.h"
+#include "filecheckaction.h"
 #include "removeaction.h"
 #include "util.h"
 
@@ -160,7 +162,7 @@ ConfigFileReader::getExpectedIndents() const
     if (inShell)
         return 2;
 
-    if (inModuleInstall || inModuleUninstall)
+    if (inModule())
         return 1;
 
     return 0;
@@ -203,6 +205,16 @@ ConfigFileReader::isModuleLine(const std::string& line)
 }
 
 bool
+ConfigFileReader::isInstallLine(const std::string& line)
+{
+    if (isEmptyLine(line) || isComment(line, 0))
+        return false;
+
+    std::regex re("^install\\s*:\\s*$");
+    return std::regex_match(line, re);
+}
+
+bool
 ConfigFileReader::isUninstallLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
@@ -212,10 +224,16 @@ ConfigFileReader::isUninstallLine(const std::string& line)
      * may be surrounded by whitespace.
      */
     std::regex re("^uninstall\\s*:\\s*$");
-    if (std::regex_match(line, re)) {
-        return true;
-    }
-    return false;
+    return std::regex_match(line, re);
+}
+
+bool
+ConfigFileReader::isUpdateLine(const std::string& line)
+{
+    if (isEmptyLine(line) || isComment(line, 0))
+        return false;
+    std::regex re("^update\\s*:\\s*$");
+    return std::regex_match(line, re);
 }
 
 bool
@@ -258,6 +276,11 @@ ConfigFileReader::flushShellAction()
             std::shared_ptr<ModuleAction>(currentShellAction));
         inShell = false;
         currentShellAction = nullptr;
+    } else if (inModuleUpdate) {
+        currentModule->addUpdateAction(
+            std::shared_ptr<ModuleAction>(currentShellAction));
+        inShell = false;
+        currentShellAction = nullptr;
     }
 }
 
@@ -272,8 +295,7 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     std::regex commandRe("^(\\S+).*$");
     std::smatch matchResults;
     if (!std::regex_match(localLine, matchResults, commandRe)) {
-        warnx("line %i: No command found for line: %s", currentLineNo,
-            line.c_str());
+        errorMessage(line, "No command found");
         return false;
     }
 
@@ -285,8 +307,7 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     std::vector<std::string> arguments;
     bool success = splitArguments(localLine, arguments);
     if (!success) {
-        warnx("line %i: Failed to extract arguments from line: \"%s\".",
-            currentLineNo, line.c_str());
+        errorMessage(line, "Failed to extract arguments");
         return false;
     }
 
@@ -299,6 +320,61 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     }
 
     return processCommand(command, arguments);
+}
+
+bool
+ConfigFileReader::processLineAsFile(const std::string& line)
+{
+    std::string localLine = stripIndents(line, 1);
+    std::vector<std::string> arguments;
+    if (!splitArguments(line, arguments)) {
+        warnx("line %i: Falied to extract arguments from line: \"%s\".",
+            currentLineNo, line.c_str());
+        return false;
+    }
+    int argumentCount = arguments.size();
+    InstallAction* installAction = nullptr;
+    RemoveAction* removeAction = nullptr;
+    FileCheckAction* checkAction = nullptr;
+    std::string currentDirectory = environment.getDirectory();
+    std::string homeDirectory = getHomeDirectory();
+    std::string sourcePath;
+    std::string destinationPath;
+    if (argumentCount == 1) {
+        sourcePath = currentDirectory + "/" + arguments[0];
+        destinationPath = homeDirectory + "/" + arguments[0];
+        installAction =
+            new InstallAction(arguments[0], currentDirectory, homeDirectory);
+    } else if (argumentCount == 2) {
+        sourcePath = currentDirectory + "/" + arguments[0];
+        destinationPath = shellExpandPath(arguments[1]) + "/" + arguments[0];
+        installAction = new InstallAction(
+            arguments[0], currentDirectory, shellExpandPath(arguments[1]));
+    } else if (argumentCount == 3) {
+        sourcePath = shellExpandPath(arguments[1]) + "/" + arguments[0];
+        destinationPath = shellExpandPath(arguments[2]) + "/" + arguments[0];
+        installAction = new InstallAction(arguments[0],
+            shellExpandPath(arguments[1]), shellExpandPath(arguments[2]));
+    } else if (argumentCount == 4) {
+        sourcePath = shellExpandPath(arguments[1]) + "/" + arguments[0];
+        destinationPath = shellExpandPath(arguments[3]) + "/" + arguments[2];
+        installAction =
+            new InstallAction(arguments[0], shellExpandPath(arguments[1]),
+                arguments[3], shellExpandPath(arguments[4]));
+    } else {
+        warnx("line %i: Incorrect number of arguments to file: \"%s\".",
+            currentLineNo, line.c_str());
+        return false;
+    }
+    removeAction = new RemoveAction(destinationPath);
+    checkAction = new FileCheckAction(sourcePath, destinationPath);
+    currentModule->addInstallAction(
+        std::shared_ptr<ModuleAction>(installAction));
+    currentModule->addUninstallAction(
+        std::shared_ptr<ModuleAction>(removeAction));
+    currentModule->addUpdateAction(
+        std::shared_ptr<ModuleAction>(removeAction));
+    return true;
 }
 
 bool
@@ -317,9 +393,12 @@ ConfigFileReader::processCommand(
             } else if (inModuleUninstall) {
                 currentModule->addUninstallAction(action);
                 return true;
+            } else if (inModuleUpdate) {
+                currentModule->addUpdateAction(action);
+                return true;
             } else {
-                warnx("line %i: Tryng to add action when not in module "
-                      "install or uninstall: %s",
+                warnx(
+                    "line %i: Tryng to add action when not in module install, uninstall, or update: %s",
                     currentLineNo, commandName.c_str());
                 return false;
             }
@@ -336,26 +415,46 @@ void
 ConfigFileReader::startNewModule(const std::string& name)
 {
     currentModule = new Module(name);
+    inFiles = true;
+    inModuleInstall = false;
+    inModuleUninstall = false;
+    inModuleUpdate = false;
+}
+
+void
+ConfigFileReader::changeToInstall()
+{
+    inFiles = false;
+    inModuleUninstall = false;
+    inModuleUpdate = false;
+
     inModuleInstall = true;
 }
 
 void
 ConfigFileReader::changeToUninstall()
 {
-    if (!inModuleInstall) {
-        warnx("line %i: Attempting to uninstall module without module.",
-            currentLineNo);
-        return;
-    }
-
+    inFiles = false;
     inModuleInstall = false;
+    inModuleUpdate = false;
+
     inModuleUninstall = true;
+}
+
+void
+ConfigFileReader::changeToUpdate()
+{
+    inFiles = false;
+    inModuleInstall = false;
+    inModuleUninstall = false;
+
+    inModuleUpdate = true;
 }
 
 void
 ConfigFileReader::close()
 {
-    if (inModuleInstall || inModuleUninstall)
+    if (inModule())
         warnx("Attempting to close reader while still reading.");
 
     reader.close();
@@ -473,13 +572,6 @@ ConfigFileReader::createInstallAction(
             "Too many arguments to create an install action, can only accept two to four.");
         return std::shared_ptr<ModuleAction>();
     }
-
-    std::string sourcePath = action->getFilePath().string();
-    std::string destinationPath = action->getInstallationPath().string();
-
-    FileCheck check(sourcePath, destinationPath);
-    environment.addFileCheck(check);
-
     return std::shared_ptr<ModuleAction>(action);
 }
 
@@ -621,5 +713,52 @@ ConfigFileReader::splitArguments(
         arguments.push_back(currentWord);
 
     return true;
+}
+
+bool
+ConfigFileReader::inModule() const
+{
+    return inFiles || isCreatingMouleActions();
+}
+
+bool
+ConfigFileReader::isCreatingMouleActions() const
+{
+    return inModuleInstall || inModuleUninstall || inModuleUpdate;
+}
+
+void
+ConfigFileReader::errorMessage(const char* format, ...)
+{
+    va_list argumentList;
+    va_start(argumentList, format);
+    vErrorMessage(format, argumentList);
+    va_end(argumentList);
+}
+
+void
+ConfigFileReader::vErrorMessage(const char* format, va_list argumentList)
+{
+    vwarnx(format, argumentList);
+    std::cerr << getPath() << ": line " << currentLineNo << std::endl;
+}
+
+void
+ConfigFileReader::errorMessage(
+    const std::string& line, const char* format, ...)
+{
+    va_list argumentList;
+    va_start(argumentList, format);
+    vErrorMessage(line, format, argumentList);
+    va_end(argumentList);
+}
+
+void
+ConfigFileReader::vErrorMessage(const std::string& line, const char* format,
+    va_list argumentList)
+{
+    vwarnx(format, argumentList);
+    std::cerr << getPath() << ": line " << currentLineNo << ":" << std::endl;
+    std::cerr << line << std::endl;
 }
 } /* namespace dfm */

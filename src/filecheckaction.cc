@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-#include "filecheck.h"
+#include "filecheckaction.h"
 
 #include <sys/stat.h>
 
@@ -38,42 +38,42 @@
 
 namespace dfm {
 
-FileCheck::FileCheck()
+FileCheckAction::FileCheckAction()
 {
 }
 
-FileCheck::FileCheck(
+FileCheckAction::FileCheckAction(
     const std::string& sourcePath, const std::string& destinationPath)
     : sourcePath(sourcePath), destinationPath(destinationPath)
 {
 }
 
 const std::string&
-FileCheck::getSourcePath() const
+FileCheckAction::getSourcePath() const
 {
     return sourcePath;
 }
 
 void
-FileCheck::setSourcePath(const std::string& sourcePath)
+FileCheckAction::setSourcePath(const std::string& sourcePath)
 {
     this->sourcePath = sourcePath;
 }
 
 const std::string&
-FileCheck::getDestinationPath() const
+FileCheckAction::getDestinationPath() const
 {
     return destinationPath;
 }
 
 void
-FileCheck::setDestinationPath(const std::string& destinationPath)
+FileCheckAction::setDestinationPath(const std::string& destinationPath)
 {
     this->destinationPath = destinationPath;
 }
 
 void
-FileCheck::setFiles(
+FileCheckAction::setFiles(
     const std::string& sourcePath, const std::string& destinationPath)
 {
     setSourcePath(sourcePath);
@@ -81,7 +81,7 @@ FileCheck::setFiles(
 }
 
 bool
-FileCheck::shouldUpdateRegularFile(
+FileCheckAction::shouldUpdateRegularFile(
     const std::string& sourcePath, const std::string& destinationPath) const
 {
     if (sourcePath == destinationPath)
@@ -150,7 +150,7 @@ FileCheck::shouldUpdateRegularFile(
 }
 
 bool
-FileCheck::shouldUpdate() const
+FileCheckAction::shouldUpdate() const
 {
     if (!hasFiles()) {
         warnx("Missing file to check for updates.");
@@ -161,7 +161,7 @@ FileCheck::shouldUpdate() const
 }
 
 bool
-FileCheck::shouldUpdateDirectory(
+FileCheckAction::shouldUpdateDirectory(
     const std::string& sourcePath, const std::string& destinationPath) const
 {
     if (sourcePath == destinationPath)
@@ -172,13 +172,15 @@ FileCheck::shouldUpdateDirectory(
     struct dirent** sourceEntries = nullptr;
     struct dirent** destinationEntries = nullptr;
 
-    int sourceCount = scandir(
-        sourcePath.c_str(), &sourceEntries, &FileCheck::returnOne, alphasort);
+    auto returnOne = [](const struct dirent* entry) { return 1; };
+
+    int sourceCount =
+        scandir(sourcePath.c_str(), &sourceEntries, returnOne, alphasort);
     if (sourceCount == -1) {
         return false;
     }
-    int destinationCount = scandir(destinationPath.c_str(),
-        &destinationEntries, &FileCheck::returnOne, alphasort);
+    int destinationCount = scandir(
+        destinationPath.c_str(), &destinationEntries, returnOne, alphasort);
     /*
      * The logic here is the same as in the regular file function. If it can't
      * open the destination direcvory, there must be a problem and should
@@ -224,7 +226,7 @@ FileCheck::shouldUpdateDirectory(
 }
 
 bool
-FileCheck::shouldUpdateFile(
+FileCheckAction::shouldUpdateFile(
     const std::string& sourcePath, const std::string& destinationPath) const
 {
     struct stat sourceInfo;
@@ -254,20 +256,16 @@ FileCheck::shouldUpdateFile(
 }
 
 bool
-FileCheck::hasFiles() const
+FileCheckAction::hasFiles() const
 {
     return sourcePath.size() != 0 && destinationPath.size() != 0;
 }
 
-int
-FileCheck::returnOne(const struct dirent* entry)
+bool
+FileCheckAction::performAction()
 {
-    return true;
-}
-
-std::shared_ptr<ModuleAction>
-FileCheck::createInstallAction() const
-{
+    if (!shouldUpdate())
+        return true;
     /*
      * I shouldn't have to create a non-const copy of the string, but the
      * dirname function and basename function (when including libgen.h)
@@ -293,7 +291,8 @@ FileCheck::createInstallAction() const
     std::string destinationBasename = basename(destinationPath);
     std::string destinationDirectory = dirname(destinationPath);
 
-    return std::shared_ptr<ModuleAction>(new InstallAction(sourceBasename,
-        sourceDirectory, destinationBasename, destinationDirectory));
+    InstallAction action(sourceBasename, sourceDirectory, destinationBasename,
+        destinationDirectory);
+    return action.performAction();
 }
 } /* namespace dfm */
