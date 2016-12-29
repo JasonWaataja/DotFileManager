@@ -55,10 +55,11 @@ bool
 RemoveAction::performAction()
 {
     if (isInteractive()) {
-        std::string prompt = "Remove file " + filePath.string() + "?";
+        std::string prompt = "Remove " + filePath.string() + "?";
         if (!getYesOrNo(prompt))
             return true;
     }
+    verboseMessage("Removing %s.", filePath.c_str());
     try {
         if (boost::filesystem::exists(filePath)) {
             boost::filesystem::remove_all(filePath);
@@ -67,7 +68,6 @@ RemoveAction::performAction()
         warnx("%s", e.what());
         return false;
     }
-
     return true;
 }
 } /* namespace dfm */
