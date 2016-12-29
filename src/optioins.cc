@@ -39,10 +39,9 @@ DfmOptions::DfmOptions()
       uninstallModulesFlag(false),
       updateModulesFlag(false),
       allFlag(false),
-      verboseFlag(false),
-      interactiveFlag(false),
       promptForDependenciesFlag(false),
-      hasSourceDirectory(false)
+      hasSourceDirectory(false),
+      verboseFlag(false)
 {
 }
 
@@ -52,6 +51,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
     int optionIndex = 0;
 
     int interactiveFlag = 0;
+
     /*
      * ClangFormat does a weird thing here, but I don't want to add a
      * suppression and I'll just leave it.
@@ -93,6 +93,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             break;
         case 'c':
             updateModulesFlag = true;
+            break;
         case 'd':
             hasSourceDirectory = true;
             sourceDirectory = shellExpandPath(optarg);
@@ -120,8 +121,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             argc, argv, GETOPT_SHORT_OPTIONS, longOptions, &optionIndex);
     }
 
-    if (interactiveFlag == 1)
-        this->interactiveFlag = true;
+    this->interactiveFlag = interactiveFlag != 0;
 
     for (int i = optind; i < argc; i++)
         remainingArguments.push_back(std::string(argv[i]));

@@ -31,7 +31,7 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_SHORT_OPTIONS[] = ":iuapcd:";
+const char GETOPT_SHORT_OPTIONS[] = ":iuapcvd:";
 
 class DfmOptions {
 public:
@@ -54,9 +54,11 @@ public:
     bool updateModulesFlag;
     bool allFlag;
     bool promptForDependenciesFlag;
+    bool interactiveFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
     boost::filesystem::path sourceDirectory;
+    bool verboseFlag;
 
     /*
      * The getopt_long function sets flags sometimes. I want 1 to be true and 0

@@ -23,12 +23,15 @@
 #include "dotfilemanager.h"
 
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <algorithm>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "configfilereader.h"
+#include "util.h"
 
 namespace dfm {
 
@@ -61,6 +64,17 @@ DotFileManager::initializeOptions()
         return false;
     if (!options->verifyArguments())
         return false;
+
+    /*
+     * Change directories to the one specified by the options. This is so that
+     * relative paths specified in the config file work.
+     */
+    if (options->hasSourceDirectory) {
+        if (chdir(options->sourceDirectory.c_str()) == -1) {
+            throw std::runtime_error("Failed to change directory.");
+        }
+    }
+
     return true;
 }
 
@@ -72,17 +86,16 @@ DotFileManager::readModules()
         programDirectory = options->sourceDirectory.string();
     else {
         try {
-            programDirectory = dfm::ConfigFileReader::getCurrentDirectory();
+            programDirectory = getCurrentDirectory();
         } catch (std::runtime_error& e) {
             warnx("%s", e.what());
             return false;
         }
     }
 
-    std::string configFilePath =
-        programDirectory + "/" + dfm::CONFIG_FILE_NAME;
+    std::string configFilePath = programDirectory + "/" + CONFIG_FILE_NAME;
 
-    dfm::ConfigFileReader reader(configFilePath);
+    ConfigFileReader reader(configFilePath);
     reader.setOptions(options);
 
     bool status = reader.readModules(std::back_inserter(modules));
@@ -99,7 +112,7 @@ bool
 DotFileManager::performOperation()
 {
     if (options->allFlag) {
-        for (dfm::Module module : modules) {
+        for (Module module : modules) {
             if (!operateOn(module))
                 return false;
         }
@@ -126,6 +139,21 @@ bool
 DotFileManager::operateOn(const Module& module)
 {
     bool status = true;
+    std::string operationWord;
+    if (options->interactiveFlag) {
+        if (options->installModulesFlag)
+            operationWord = "Install";
+        else if (options->uninstallModulesFlag)
+            operationWord = "Uninstall";
+        else if (options->updateModulesFlag)
+            operationWord = "Update";
+
+        std::string prompt =
+            operationWord + " module " + module.getName() + "?";
+        if (!getYesOrNo(prompt))
+            return true;
+    }
+
     if (options->installModulesFlag)
         status = module.install();
     else if (options->uninstallModulesFlag)

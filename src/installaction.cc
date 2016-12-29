@@ -25,7 +25,7 @@
 #include <dirent.h>
 #include <err.h>
 
-#include <iostream>
+#include "util.h"
 
 namespace dfm {
 
@@ -120,6 +120,16 @@ InstallAction::performAction()
     boost::filesystem::path sourcePath = getFilePath();
     boost::filesystem::path destinationPath = getInstallationPath();
 
+    if (isInteractive()) {
+        std::string prompt = "Install " + sourcePath.string() + " to "
+            + destinationPath.string() + "?";
+        if (!getYesOrNo(prompt))
+            return true;
+    }
+
+    verboseMessage(
+        "Installing %s to %s.", sourcePath.c_str(), destinationPath.c_str());
+
     try {
         if (!boost::filesystem::exists(sourcePath)) {
             warnx("File %s doesn't exist.", sourcePath.c_str());
@@ -166,8 +176,8 @@ bool
 InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
-    std::cout << "Copying regular " << sourceFilePath << " to "
-              << destinationPath << std::endl;
+    verboseMessage("Copying regular file %s to %s.", sourceFilePath.c_str(),
+        destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceFilePath)) {
             warnx("File %s doesn't exist.", sourceFilePath.c_str());
@@ -196,7 +206,8 @@ InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
             boost::filesystem::remove_all(destinationPath);
         }
 
-        boost::filesystem::copy_file(sourceFilePath, destinationPath);
+        boost::filesystem::copy_file(sourceFilePath, destinationPath,
+            boost::filesystem::copy_option::overwrite_if_exists);
     } catch (boost::filesystem::filesystem_error& e) {
         warnx("Error copying file %s: %s", sourceFilePath.c_str(), e.what());
         return false;
@@ -210,6 +221,8 @@ InstallAction::copyDirectory(
     const boost::filesystem::path& sourceDirectoryPath,
     const boost::filesystem::path& destinationPath)
 {
+    verboseMessage("Copying directory %s to %s.", sourceDirectoryPath.c_str(),
+        destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceDirectoryPath)) {
             warnx("Directory %s doesn't exist.", sourceDirectoryPath.c_str());

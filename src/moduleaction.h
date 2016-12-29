@@ -23,6 +23,8 @@
 #ifndef MODULE_ACTION_H
 #define MODULE_ACTION_H
 
+#include <stdarg.h>
+
 #include <string>
 
 namespace dfm {
@@ -34,11 +36,21 @@ public:
     ModuleAction();
     ModuleAction(const std::string& name);
     virtual bool performAction() = 0;
+
+    void verboseMessage(const char* format, ...);
+    void vVerboseMessage(const char* format, va_list argumentList);
+
     const std::string& getName() const;
     void setName(const std::string& name);
+    bool isVerbose() const;
+    void setVerbose(bool verbose);
+    bool isInteractive() const;
+    void setInteractive(bool interactive);
 
 private:
     std::string name;
+    bool verbose = false;
+    bool interactive = false;
 };
 } /* namespace dfm */
 

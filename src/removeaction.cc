@@ -24,6 +24,8 @@
 
 #include <err.h>
 
+#include "util.h"
+
 namespace dfm {
 
 RemoveAction::RemoveAction(const boost::filesystem::path& filePath)
@@ -52,6 +54,11 @@ RemoveAction::setFilePath(const boost::filesystem::path& filePath)
 bool
 RemoveAction::performAction()
 {
+    if (isInteractive()) {
+        std::string prompt = "Remove file " + filePath.string() + "?";
+        if (!getYesOrNo(prompt))
+            return true;
+    }
     try {
         if (boost::filesystem::exists(filePath)) {
             boost::filesystem::remove_all(filePath);

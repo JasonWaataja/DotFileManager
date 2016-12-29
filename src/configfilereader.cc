@@ -24,7 +24,6 @@
 
 #include <ctype.h>
 #include <stdarg.h>
-#include <unistd.h>
 
 #include <exception>
 #include <regex>
@@ -32,6 +31,7 @@
 
 #include "dependencyaction.h"
 #include "removeaction.h"
+#include "util.h"
 
 namespace dfm {
 
@@ -309,6 +309,8 @@ ConfigFileReader::processCommand(
         if (command.matchesName(commandName)) {
             std::shared_ptr<ModuleAction> action =
                 command.createAction(arguments, environment);
+            action->setVerbose(options->verboseFlag);
+            action->setInteractive(options->interactiveFlag);
             if (inModuleInstall) {
                 currentModule->addInstallAction(action);
                 return true;
@@ -455,15 +457,16 @@ ConfigFileReader::createInstallAction(
     /* Assume that we are working in the current directory. */
     if (arguments.size() == 2) {
         std::string sourceDirectory = environment.getDirectory();
-        action =
-            new InstallAction(arguments[0], sourceDirectory, arguments[1]);
+        action = new InstallAction(
+            arguments[0], sourceDirectory, shellExpandPath(arguments[1]));
     }
     if (arguments.size() == 3) {
-        action = new InstallAction(arguments[0], arguments[1], arguments[2]);
+        action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
+            shellExpandPath(arguments[2]));
     }
     if (arguments.size() == 4) {
-        action = new InstallAction(
-            arguments[0], arguments[1], arguments[2], arguments[3]);
+        action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
+            arguments[2], shellExpandPath(arguments[3]));
     }
 
     if (action == nullptr) {
@@ -619,26 +622,5 @@ ConfigFileReader::splitArguments(
         arguments.push_back(currentWord);
 
     return true;
-}
-
-std::string
-ConfigFileReader::getCurrentDirectory()
-{
-    size_t currentSize = 128;
-    char* currentDirectory = new char[currentSize];
-    char* result = getcwd(currentDirectory, currentSize);
-    while (result == NULL) {
-        if (errno == ERANGE) {
-            delete[] currentDirectory;
-            currentSize *= 2;
-            currentDirectory = new char[currentSize];
-        } else {
-            throw std::runtime_error("Failed to get current directory.");
-        }
-        result = getcwd(currentDirectory, currentSize);
-    }
-    std::string directoryString(currentDirectory);
-    delete[] currentDirectory;
-    return directoryString;
 }
 } /* namespace dfm */

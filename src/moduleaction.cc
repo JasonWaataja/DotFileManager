@@ -22,6 +22,8 @@
 
 #include "moduleaction.h"
 
+#include <stdio.h>
+
 namespace dfm {
 
 ModuleAction::ModuleAction() : name(DEFAULT_ACTION_NAME)
@@ -42,5 +44,50 @@ void
 ModuleAction::setName(const std::string& name)
 {
     this->name = name;
+}
+
+bool
+ModuleAction::isVerbose() const
+{
+    return verbose;
+}
+
+void
+ModuleAction::setVerbose(bool verbose)
+{
+    this->verbose = verbose;
+}
+
+bool
+ModuleAction::isInteractive() const
+{
+    return interactive;
+}
+
+void
+ModuleAction::setInteractive(bool interactive)
+{
+    this->interactive = interactive;
+}
+
+void
+ModuleAction::verboseMessage(const char* format, ...)
+{
+    if (!verbose)
+        return;
+
+    va_list argumentList;
+    va_start(argumentList, format);
+    vVerboseMessage(format, argumentList);
+    va_end(argumentList);
+}
+
+void
+ModuleAction::vVerboseMessage(const char* format, va_list argumentList)
+{
+    if (!verbose)
+        return;
+
+    vprintf(format, argumentList);
 }
 } /* namespace dfm */
