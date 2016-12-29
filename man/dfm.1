@@ -1,0 +1,29 @@
+.TH dfm 1 "December 2016" "0.1.0" "dfm man page"
+.SH NAME
+dfm \- A configuration file manager
+.SH SYNOPSIS
+dfm [-d configfile] [-i|-u|-c] [-a] [OPTIONS] [MODULES]
+.SH DESCRIPTION
+Used for installing, uninstalling, and updating configuration files for a user.
+It operates on a directory, which defaults to the current directory, and opens a
+file called config.dfm.
+Must be passed --insall, --uninstall, or --check as an operation, and must
+either be passed the --all flag or a list of modules.
+.IP "-d, --directory"
+Specify the directory to work in, defaults to the current directory
+.IP "-i, --install"
+Install the given modules
+.IP "-u, --uninstall"
+Uninstall the given modules
+.IP "-c, --check"
+Check the installable files for update
+.IP "-a, --all"
+Perform the operation on all modules
+.IP "-p, --prompt-for-dependencies"
+Ask for the command to install the specified dependencies for a module.
+.IP "-v, --verbose"
+Print extra information
+.IP "--interactive"
+Prompt for installing module, removing files, etc.
+.SH AUTHOR
+Jason Waataja <jasonswaataja@gmail.com>
