@@ -22,8 +22,6 @@
 
 #include "module.h"
 
-#include <iostream>
-
 #include <err.h>
 
 namespace dfm {
@@ -79,7 +77,6 @@ Module::uninstall() const
 bool
 Module::update() const
 {
-    std::cout << "size: " << updateActions.size() << std::endl;
     for (std::shared_ptr<ModuleAction> action : updateActions) {
         bool status = action->performAction();
         if (!status) {
