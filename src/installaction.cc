@@ -25,6 +25,8 @@
 #include <dirent.h>
 #include <err.h>
 
+#include <iostream>
+
 #include "util.h"
 
 namespace dfm {
@@ -125,10 +127,11 @@ InstallAction::performAction()
             + destinationPath.string() + "?";
         if (!getYesOrNo(prompt))
             return true;
+        std::cout << std::endl;
     }
 
     verboseMessage(
-        "Installing %s to %s.\n", sourcePath.c_str(), destinationPath.c_str());
+        "Installing %s to %s.\n\n", sourcePath.c_str(), destinationPath.c_str());
 
     try {
         if (!boost::filesystem::exists(sourcePath)) {
@@ -176,7 +179,7 @@ bool
 InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
-    verboseMessage("Copying regular file %s to %s.\n", sourceFilePath.c_str(),
+    verboseMessage("Copying regular file %s to %s.\n\n", sourceFilePath.c_str(),
         destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceFilePath)) {
@@ -221,7 +224,7 @@ InstallAction::copyDirectory(
     const boost::filesystem::path& sourceDirectoryPath,
     const boost::filesystem::path& destinationPath)
 {
-    verboseMessage("Copying directory %s to %s.\n",
+    verboseMessage("Copying directory %s to %s.\n\n",
         sourceDirectoryPath.c_str(), destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceDirectoryPath)) {

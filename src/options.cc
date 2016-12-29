@@ -93,6 +93,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             break;
         case 'c':
             updateModulesFlag = true;
+            break;
         case 'd':
             hasSourceDirectory = true;
             sourceDirectory = shellExpandPath(optarg);

@@ -22,6 +22,8 @@
 
 #include "removeaction.h"
 
+#include <iostream>
+
 #include <err.h>
 
 #include "util.h"
@@ -58,8 +60,11 @@ RemoveAction::performAction()
         std::string prompt = "Remove " + filePath.string() + "?";
         if (!getYesOrNo(prompt))
             return true;
+        std::cout << std::endl;
     }
-    verboseMessage("Removing %s.\n", filePath.c_str());
+
+    verboseMessage("Removing %s.\n\n", filePath.c_str());
+
     try {
         if (boost::filesystem::exists(filePath)) {
             boost::filesystem::remove_all(filePath);
