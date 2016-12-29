@@ -454,20 +454,19 @@ ConfigFileReader::createInstallAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     InstallAction* action = nullptr;
+    if (arguments.size() == 1)
+        action = new InstallAction(arguments[0], environment.getDirectory(),
+            shellExpandPath("$HOME"));
     /* Assume that we are working in the current directory. */
-    if (arguments.size() == 2) {
-        std::string sourceDirectory = environment.getDirectory();
-        action = new InstallAction(
-            arguments[0], sourceDirectory, shellExpandPath(arguments[1]));
-    }
-    if (arguments.size() == 3) {
+    if (arguments.size() == 2)
+        action = new InstallAction(arguments[0], environment.getDirectory(),
+            shellExpandPath(arguments[1]));
+    if (arguments.size() == 3)
         action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
             shellExpandPath(arguments[2]));
-    }
-    if (arguments.size() == 4) {
+    if (arguments.size() == 4)
         action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
             arguments[2], shellExpandPath(arguments[3]));
-    }
 
     if (action == nullptr) {
         warnx(
@@ -496,7 +495,7 @@ ConfigFileReader::addDefaultCommands()
         Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "remove", "rm", "delete",
         "uninstall", NULL);
     addCommand(&ConfigFileReader::createInstallAction,
-        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 2, "install", "in", "instll",
+        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "install", "in", "instll",
         "i", NULL);
 }
 
