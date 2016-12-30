@@ -43,17 +43,14 @@ getYesOrNo(const std::string& prompt)
 {
     std::cout << prompt << " ";
     std::string input;
-
     if (!std::getline(std::cin, input))
         errx(EXIT_FAILURE, "Failed to read input.");
-
     bool yesOrNo = true;
     while (!lineIsYesOrNo(input, yesOrNo)) {
-        std::cout << "Please enter y or n." << std::endl;
+        std::cout << "Please enter y or n. ";
         if (!std::getline(std::cin, input))
             errx(EXIT_FAILURE, "Failed to read input.");
     }
-
     return yesOrNo;
 }
 
@@ -73,7 +70,6 @@ lineIsYesOrNo(const std::string& input, bool& yesOrNo)
         yesOrNo = false;
         return true;
     }
-
     return false;
 }
 
