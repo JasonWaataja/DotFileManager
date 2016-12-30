@@ -129,7 +129,6 @@ InstallAction::performAction()
             return true;
         std::cout << std::endl;
     }
-
     verboseMessage("Installing %s to %s.\n\n", sourcePath.c_str(),
         destinationPath.c_str());
 
@@ -138,7 +137,6 @@ InstallAction::performAction()
             warnx("File %s doesn't exist.", sourcePath.c_str());
             return false;
         }
-
         if (!boost::filesystem::exists(destinationDirectory)) {
             bool status =
                 boost::filesystem::create_directories(destinationDirectory);
@@ -148,7 +146,6 @@ InstallAction::performAction()
                 return false;
             }
         }
-
         if (!boost::filesystem::is_directory(destinationDirectory)) {
             warnx("File%s isn't a directory.", destinationDirectory.c_str());
             return false;
@@ -179,8 +176,6 @@ bool
 InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
-    verboseMessage("Copying regular file %s to %s.\n\n",
-        sourceFilePath.c_str(), destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceFilePath)) {
             warnx("File %s doesn't exist.", sourceFilePath.c_str());
@@ -226,8 +221,6 @@ InstallAction::copyDirectory(
     const boost::filesystem::path& sourceDirectoryPath,
     const boost::filesystem::path& destinationPath)
 {
-    verboseMessage("Copying directory %s to %s.\n\n",
-        sourceDirectoryPath.c_str(), destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceDirectoryPath)) {
             warnx("Directory %s doesn't exist.", sourceDirectoryPath.c_str());

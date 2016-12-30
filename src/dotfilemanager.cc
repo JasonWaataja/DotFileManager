@@ -26,7 +26,6 @@
 #include <unistd.h>
 
 #include <algorithm>
-#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -70,9 +69,8 @@ DotFileManager::initializeOptions()
      * relative paths specified in the config file work.
      */
     if (options->hasSourceDirectory) {
-        if (chdir(options->sourceDirectory.c_str()) == -1) {
-            throw std::runtime_error("Failed to change directory.");
-        }
+        if (chdir(options->sourceDirectory.c_str()) == -1)
+            err(EXIT_FAILURE, "Failed to change directory.");
     }
 
     return true;
@@ -84,14 +82,8 @@ DotFileManager::readModules()
     std::string programDirectory;
     if (options->hasSourceDirectory)
         programDirectory = options->sourceDirectory.string();
-    else {
-        try {
-            programDirectory = getCurrentDirectory();
-        } catch (std::runtime_error& e) {
-            warnx("%s", e.what());
-            return false;
-        }
-    }
+    else
+        programDirectory = getCurrentDirectory();
 
     std::string configFilePath = programDirectory + "/" + CONFIG_FILE_NAME;
 

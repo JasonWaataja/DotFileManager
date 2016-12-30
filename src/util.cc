@@ -28,7 +28,6 @@
 #include <wordexp.h>
 
 #include <iostream>
-#include <stdexcept>
 
 namespace dfm {
 
@@ -46,13 +45,13 @@ getYesOrNo(const std::string& prompt)
     std::string input;
 
     if (!std::getline(std::cin, input))
-        throw std::runtime_error("Failed to read input.");
+        errx(EXIT_FAILURE, "Failed to read input.");
 
     bool yesOrNo = true;
     while (!lineIsYesOrNo(input, yesOrNo)) {
         std::cout << "Please enter y or n." << std::endl;
         if (!std::getline(std::cin, input))
-            throw std::runtime_error("Failed to read input.");
+            errx(EXIT_FAILURE, "Failed to read input.");
     }
 
     return yesOrNo;
@@ -89,9 +88,8 @@ getCurrentDirectory()
             delete[] currentDirectory;
             currentSize *= 2;
             currentDirectory = new char[currentSize];
-        } else {
-            throw std::runtime_error("Failed to get current directory.");
-        }
+        } else
+            err(EXIT_FAILURE, "Failed to get current directory.");
         result = getcwd(currentDirectory, currentSize);
     }
     std::string directoryString(currentDirectory);
@@ -104,9 +102,9 @@ shellExpandPath(const std::string& path)
 {
     wordexp_t expr;
     if (wordexp(path.c_str(), &expr, 0) != 0)
-        throw std::runtime_error("Failed to expand path");
+        errx(EXIT_FAILURE, "Failed to expand path.");
     if (expr.we_wordc != 1)
-        throw std::runtime_error("Path expanded into multiple words.");
+        errx(EXIT_FAILURE, "Path expanded into multiple words.");
 
     std::string expandedPath = expr.we_wordv[0];
     wordfree(&expr);

@@ -293,6 +293,8 @@ FileCheckAction::performAction()
 
     InstallAction action(sourceBasename, sourceDirectory, destinationBasename,
         destinationDirectory);
+    action.setVerbose(isVerbose());
+    action.setInteractive(isInteractive());
     return action.performAction();
 }
 } /* namespace dfm */

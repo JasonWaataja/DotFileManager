@@ -28,7 +28,6 @@
 
 #include <exception>
 #include <regex>
-#include <stdexcept>
 
 #include "dependencyaction.h"
 #include "filecheckaction.h"
