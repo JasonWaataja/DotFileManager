@@ -82,8 +82,8 @@ public:
      * These functions print errorr messages by passing the argumetns to warnx,
      * and optionally may be passed a line that is printed at the end.
      */
-    void errorMessage(const char* format, ...);
-    void vErrorMessage(const char* format, va_list argumentList);
+    void errorMessageNoLine(const char* format, ...);
+    void vErrorMessageNoLine(const char* format, va_list argumentList);
     void errorMessage(const std::string& line, const char* format, ...);
     void vErrorMessage(
         const std::string& line, const char* format, va_list argumentList);

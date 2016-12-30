@@ -310,10 +310,13 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     }
 
     if (isShellCommand(command)) {
-        if (!Command::checkArgumentCountEqual(arguments, 0))
-            return false;
         inShell = true;
         currentShellAction = new ShellAction;
+        /* Match everything after one group of whitespace. */
+        std::regex re("^\\s+(.*)$");
+        std::smatch match;
+        if (std::regex_match(localLine, match, re))
+            currentShellAction->addCommand(match.str(1));
         return true;
     }
 
@@ -326,8 +329,7 @@ ConfigFileReader::processLineAsFile(const std::string& line)
     std::string localLine = stripIndents(line, 1);
     std::vector<std::string> arguments;
     if (!splitArguments(line, arguments)) {
-        warnx("line %i: Falied to extract arguments from line: \"%s\".",
-            currentLineNo, line.c_str());
+        errorMessage(line, "Failed to extract arguments");
         return false;
     }
     int argumentCount = arguments.size();
@@ -360,8 +362,7 @@ ConfigFileReader::processLineAsFile(const std::string& line)
             new InstallAction(arguments[0], shellExpandPath(arguments[1]),
                 arguments[3], shellExpandPath(arguments[4]));
     } else {
-        warnx("line %i: Incorrect number of arguments to file: \"%s\".",
-            currentLineNo, line.c_str());
+        errorMessage(line, "Incorrect number of arguments to file.");
         return false;
     }
     removeAction = new RemoveAction(destinationPath);
@@ -396,17 +397,15 @@ ConfigFileReader::processCommand(
                 currentModule->addUpdateAction(action);
                 return true;
             } else {
-                warnx(
-                    "line %i: Tryng to add action when not in module install, uninstall, or update: %s",
-                    currentLineNo, commandName.c_str());
+                errorMessageNoLine(
+                    "Trying to add action when not in module install, uninstall, or update: \'%s\"",
+                    commandName.c_str());
                 return false;
             }
         }
     }
-
-    warnx("line %i: no matching command for name \"%s\"", currentLineNo,
-        commandName.c_str());
-
+    errorMessageNoLine(
+        "No matching command for name \"%s\".", commandName.c_str());
     return false;
 }
 
@@ -727,16 +726,16 @@ ConfigFileReader::isCreatingModuleActions() const
 }
 
 void
-ConfigFileReader::errorMessage(const char* format, ...)
+ConfigFileReader::errorMessageNoLine(const char* format, ...)
 {
     va_list argumentList;
     va_start(argumentList, format);
-    vErrorMessage(format, argumentList);
+    vErrorMessageNoLine(format, argumentList);
     va_end(argumentList);
 }
 
 void
-ConfigFileReader::vErrorMessage(const char* format, va_list argumentList)
+ConfigFileReader::vErrorMessageNoLine(const char* format, va_list argumentList)
 {
     vwarnx(format, argumentList);
     std::cerr << getPath() << ": line " << currentLineNo << std::endl;

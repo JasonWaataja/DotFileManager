@@ -50,7 +50,7 @@ ShellAction::performAction()
 {
     FILE* shell = popen(SHELL_PROCESS, "w");
     if (shell == NULL) {
-        perror("Failed to open shell");
+        perror("Failed to open bash shell");
         return false;
     }
 
