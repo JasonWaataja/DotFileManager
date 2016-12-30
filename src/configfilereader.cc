@@ -149,7 +149,7 @@ ConfigFileReader::isComment(const std::string& line, int expectedIndents) const
 int
 ConfigFileReader::indentCount(const std::string& line) const
 {
-    int indents = 0;
+    std::string::size_type indents = 0;
     /* I could probably use an empty for loop for this. */
     while (indents < line.length() && line[indents] == '\t')
         indents++;
@@ -367,12 +367,14 @@ ConfigFileReader::processLineAsFile(const std::string& line)
     }
     removeAction = new RemoveAction(destinationPath);
     checkAction = new FileCheckAction(sourcePath, destinationPath);
+    setModuleActionFlags(installAction);
+    setModuleActionFlags(removeAction);
+    setModuleActionFlags(checkAction);
     currentModule->addInstallAction(
         std::shared_ptr<ModuleAction>(installAction));
     currentModule->addUninstallAction(
         std::shared_ptr<ModuleAction>(removeAction));
-    currentModule->addUpdateAction(
-        std::shared_ptr<ModuleAction>(removeAction));
+    currentModule->addUpdateAction(std::shared_ptr<ModuleAction>(checkAction));
     return true;
 }
 
@@ -384,8 +386,7 @@ ConfigFileReader::processCommand(
         if (command.matchesName(commandName)) {
             std::shared_ptr<ModuleAction> action =
                 command.createAction(arguments, environment);
-            action->setVerbose(options->verboseFlag);
-            action->setInteractive(options->interactiveFlag);
+            setModuleActionFlags(action);
             if (inModuleInstall) {
                 currentModule->addInstallAction(action);
                 return true;
@@ -759,5 +760,19 @@ ConfigFileReader::vErrorMessage(
     vwarnx(format, argumentList);
     std::cerr << getPath() << ": line " << currentLineNo << ":" << std::endl;
     std::cerr << line << std::endl;
+}
+
+void
+ConfigFileReader::setModuleActionFlags(std::shared_ptr<ModuleAction> action)
+{
+    action->setVerbose(options->verboseFlag);
+    action->setInteractive(options->interactiveFlag);
+}
+
+void
+ConfigFileReader::setModuleActionFlags(ModuleAction* action)
+{
+    action->setVerbose(options->verboseFlag);
+    action->setInteractive(options->interactiveFlag);
 }
 } /* namespace dfm */

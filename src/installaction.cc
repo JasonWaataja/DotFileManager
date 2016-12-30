@@ -130,8 +130,8 @@ InstallAction::performAction()
         std::cout << std::endl;
     }
 
-    verboseMessage(
-        "Installing %s to %s.\n\n", sourcePath.c_str(), destinationPath.c_str());
+    verboseMessage("Installing %s to %s.\n\n", sourcePath.c_str(),
+        destinationPath.c_str());
 
     try {
         if (!boost::filesystem::exists(sourcePath)) {
@@ -179,8 +179,8 @@ bool
 InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
     const boost::filesystem::path& destinationPath)
 {
-    verboseMessage("Copying regular file %s to %s.\n\n", sourceFilePath.c_str(),
-        destinationPath.c_str());
+    verboseMessage("Copying regular file %s to %s.\n\n",
+        sourceFilePath.c_str(), destinationPath.c_str());
     try {
         if (!boost::filesystem::exists(sourceFilePath)) {
             warnx("File %s doesn't exist.", sourceFilePath.c_str());
@@ -202,8 +202,10 @@ InstallAction::copyRegularFile(const boost::filesystem::path& sourceFilePath,
          * try/catch block in that case.
          */
         if (!boost::filesystem::exists(destinationPath.parent_path()))
-            boost::filesystem::create_directories(destinationPath);
-        else if (!boost::filesystem::is_regular_file(destinationPath)) {
+            boost::filesystem::create_directories(
+                destinationPath.parent_path());
+        else if (boost::filesystem::exists(destinationPath)
+            && !boost::filesystem::is_regular_file(destinationPath)) {
             warnx("Copying regular file over directory %s, overwriting.",
                 destinationPath.c_str());
             boost::filesystem::remove_all(destinationPath);

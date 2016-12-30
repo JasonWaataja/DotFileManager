@@ -376,6 +376,13 @@ private:
 
     bool inModule() const;
     bool isCreatingModuleActions() const;
+
+    /*
+     * Sets the given ModuleAction to the correct verbose and interactive flags
+     * based on the current options.
+     */
+    void setModuleActionFlags(std::shared_ptr<ModuleAction> action);
+    void setModuleActionFlags(ModuleAction* action);
 };
 
 template <class OutputIterator>
