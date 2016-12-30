@@ -106,13 +106,13 @@ FileCheckAction::shouldUpdateRegularFile(
     std::string sourceLine;
     std::string destinationLine;
 
-    bool sourceReadStatus = true;
+    bool sourceReadStatus = false;
     bool destinationReadStatus = false;
     /* I wish I knew how to directly assign a getline status to a bool. */
     if (std::getline(sourceReader, sourceLine))
         sourceReadStatus = true;
     else
-        destinationReadStatus = false;
+        sourceReadStatus = false;
 
     if (std::getline(destinationReader, destinationLine))
         destinationReadStatus = true;
@@ -122,15 +122,18 @@ FileCheckAction::shouldUpdateRegularFile(
     if (sourceReadStatus != destinationReadStatus) {
         sourceReader.close();
         destinationReader.close();
-        return false;
+        return true;
     }
-
     while (sourceReadStatus && destinationReadStatus) {
         if (sourceLine != destinationLine) {
             sourceReader.close();
             destinationReader.close();
-            return false;
+            return true;
         }
+        if (std::getline(sourceReader, sourceLine))
+            sourceReadStatus = true;
+        else
+            sourceReadStatus = false;
 
         if (std::getline(destinationReader, destinationLine))
             destinationReadStatus = true;
@@ -140,13 +143,12 @@ FileCheckAction::shouldUpdateRegularFile(
         if (sourceReadStatus != destinationReadStatus) {
             sourceReader.close();
             destinationReader.close();
-            return false;
+            return true;
         }
     }
-
     sourceReader.close();
     destinationReader.close();
-    return true;
+    return false;
 }
 
 bool
@@ -156,7 +158,6 @@ FileCheckAction::shouldUpdate() const
         warnx("Missing file to check for updates.");
         return false;
     }
-
     return shouldUpdateFile(sourcePath, destinationPath);
 }
 
@@ -189,11 +190,9 @@ FileCheckAction::shouldUpdateDirectory(
     if (destinationCount == -1) {
         return true;
     }
-
     if (sourceCount != destinationCount) {
         return true;
     }
-
     /*
      * Both lists were sorted using the same algorithm, alphasort, which means
      * that if they contain the same entries they should be in the same order.
@@ -215,10 +214,6 @@ FileCheckAction::shouldUpdateDirectory(
         std::string sourceEntryPath = sourcePath + "/" + sourceEntry->d_name;
         std::string destinationEntryPath =
             destinationPath + "/" + destinationEntry->d_name;
-        struct stat sourceEntryInfo;
-        if (stat(sourceEntryPath.c_str(), &sourceEntryInfo) != 0) {
-            return false;
-        }
         if (shouldUpdateFile(sourceEntryPath, destinationEntryPath))
             return true;
     }
@@ -246,13 +241,12 @@ FileCheckAction::shouldUpdateFile(
 
     if (S_ISREG(sourceInfo.st_mode))
         return shouldUpdateRegularFile(sourcePath, destinationPath);
-    if (S_ISDIR(sourceInfo.st_mode))
-        return shouldUpdateDirectory(sourcePath, destinationPath);
-
     /*
-     * I'm not sure how it would reach here, but just in case update anyways.
+     * It was already checked about that the source mode is either a regular
+     * file or a directory, so if it's not a regular file then it must be a
+     * directory here.
      */
-    return true;
+    return shouldUpdateDirectory(sourcePath, destinationPath);
 }
 
 bool

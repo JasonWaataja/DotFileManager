@@ -411,18 +411,13 @@ ConfigFileReader::readModules(OutputIterator output)
         if (noErrors)
             currentLineNo++;
     }
-
     if (inShell)
         flushShellAction();
-
     if (inModule())
         flushModule(output);
-
-    if (!noErrors) {
-        errorMessage(
-            line, "Failed to read config file %s.", getPath().c_str());
-    }
-
+    if (!noErrors)
+        errorMessageNoLine(
+            "Failed to read config file %s.", getPath().c_str());
     return noErrors;
 }
 
@@ -486,7 +481,6 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         changeToUpdate();
         return true;
     }
-
     std::string moduleName;
     if (isModuleLine(line, moduleName)) {
         if (inModule())
@@ -494,7 +488,6 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
         startNewModule(moduleName);
         return true;
     }
-
     errorMessage(line, "Unable to process line.");
     return false;
 }
