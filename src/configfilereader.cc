@@ -209,7 +209,6 @@ ConfigFileReader::isInstallLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
-
     std::regex re("^install\\s*:\\s*$");
     return std::regex_match(line, re);
 }
@@ -718,11 +717,11 @@ ConfigFileReader::splitArguments(
 bool
 ConfigFileReader::inModule() const
 {
-    return inFiles || isCreatingMouleActions();
+    return inFiles || isCreatingModuleActions();
 }
 
 bool
-ConfigFileReader::isCreatingMouleActions() const
+ConfigFileReader::isCreatingModuleActions() const
 {
     return inModuleInstall || inModuleUninstall || inModuleUpdate;
 }
@@ -754,8 +753,8 @@ ConfigFileReader::errorMessage(
 }
 
 void
-ConfigFileReader::vErrorMessage(const std::string& line, const char* format,
-    va_list argumentList)
+ConfigFileReader::vErrorMessage(
+    const std::string& line, const char* format, va_list argumentList)
 {
     vwarnx(format, argumentList);
     std::cerr << getPath() << ": line " << currentLineNo << ":" << std::endl;

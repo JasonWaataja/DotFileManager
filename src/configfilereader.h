@@ -375,7 +375,7 @@ private:
         const std::string& argumentsLine, std::vector<std::string>& arguments);
 
     bool inModule() const;
-    bool isCreatingMouleActions() const;
+    bool isCreatingModuleActions() const;
 };
 
 template <class OutputIterator>
@@ -447,7 +447,7 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
             return false;
         }
     }
-    if (isCreatingMouleActions()) {
+    if (isCreatingModuleActions()) {
         if (indents == 1)
             return processLineAsCommand(line);
         else if (indents > 1) {
@@ -461,6 +461,7 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
             return false;
         }
         changeToInstall();
+        return true;
     }
     if (isUninstallLine(line)) {
         if (!inModule()) {
@@ -476,6 +477,7 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
             return false;
         }
         changeToUpdate();
+        return true;
     }
 
     std::string moduleName;
