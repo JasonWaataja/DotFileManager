@@ -521,12 +521,7 @@ std::shared_ptr<ModuleAction>
 ConfigFileReader::createDependenciesAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
-    std::shared_ptr<DependencyAction> action(new DependencyAction(arguments));
-    bool promptForDependencies =
-        environment.getOptions()->promptForDependenciesFlag;
-    action->setPromptDependencies(
-        environment.getOptions()->promptForDependenciesFlag);
-    return action;
+    return std::shared_ptr<DependencyAction>(new DependencyAction(arguments));
 }
 
 std::shared_ptr<ModuleAction>

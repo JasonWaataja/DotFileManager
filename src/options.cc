@@ -41,7 +41,6 @@ DfmOptions::DfmOptions()
       allFlag(false),
       verboseFlag(false),
       interactiveFlag(false),
-      promptForDependenciesFlag(false),
       hasSourceDirectory(false)
 {
 }
@@ -50,8 +49,6 @@ bool
 DfmOptions::loadFromArguments(int argc, char* argv[])
 {
     int optionIndex = 0;
-
-    int interactiveFlag = 0;
     /*
      * ClangFormat does a weird thing here, but I don't want to add a
      * suppression and I'll just leave it.
@@ -59,10 +56,9 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
     struct option longOptions[] = { { "install", no_argument, NULL, 'i' },
         { "uninstall", no_argument, NULL, 'u' },
         { "all", no_argument, NULL, 'a' },
-        { "prompt-for-dependencies", no_argument, NULL, 'p' },
+        { "prompt", no_argument, NULL, 'p' },
         { "check", no_argument, NULL, 'c' },
         { "verbose", no_argument, NULL, 'v'},
-        { "interactive", no_argument, &interactiveFlag, 1},
         { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
 
     int getoptValue = getopt_long_only(
@@ -89,7 +85,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             allFlag = true;
             break;
         case 'p':
-            promptForDependenciesFlag = true;
+            interactiveFlag = true;
             break;
         case 'c':
             updateModulesFlag = true;
@@ -120,13 +116,8 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         getoptValue = getopt_long_only(
             argc, argv, GETOPT_SHORT_OPTIONS, longOptions, &optionIndex);
     }
-
-    if (interactiveFlag == 1)
-        this->interactiveFlag = true;
-
     for (int i = optind; i < argc; i++)
         remainingArguments.push_back(std::string(argv[i]));
-
     return true;
 }
 

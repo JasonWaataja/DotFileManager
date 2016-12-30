@@ -53,12 +53,11 @@ public:
     bool uninstallModulesFlag;
     bool updateModulesFlag;
     bool allFlag;
-    bool promptForDependenciesFlag;
+    bool verboseFlag;
     bool interactiveFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
     boost::filesystem::path sourceDirectory;
-    bool verboseFlag;
 
     /*
      * The getopt_long function sets flags sometimes. I want 1 to be true and 0

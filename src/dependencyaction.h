@@ -42,9 +42,6 @@ public:
     /* Sets dependencies to the NULL terminated list of dependencies. */
     void setDependencies(const char* firstDependency, ...);
 
-    bool shouldPromptDependencies() const;
-    void setPromptDependencies(bool prompt);
-
     bool performAction() override;
 
     /*
@@ -59,7 +56,6 @@ public:
 
 private:
     std::vector<std::string> dependencies;
-    bool promptDependencies;
 };
 } /* namespace 2016 */
 

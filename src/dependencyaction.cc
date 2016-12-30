@@ -30,19 +30,18 @@
 
 namespace dfm {
 
-DependencyAction::DependencyAction()
-    : dependencies(), promptDependencies(false)
+DependencyAction::DependencyAction() : dependencies()
 {
 }
 
 DependencyAction::DependencyAction(
     const std::vector<std::string>& dependencies)
-    : dependencies(dependencies), promptDependencies(false)
+    : dependencies(dependencies)
 {
 }
 
 DependencyAction::DependencyAction(const char* firstDependency, ...)
-    : dependencies(), promptDependencies(false)
+    : dependencies()
 {
     dependencies.push_back(std::string(firstDependency));
 
@@ -54,18 +53,6 @@ DependencyAction::DependencyAction(const char* firstDependency, ...)
         dependency = va_arg(argumentList, const char*);
     }
     va_end(argumentList);
-}
-
-bool
-DependencyAction::shouldPromptDependencies() const
-{
-    return promptDependencies;
-}
-
-void
-DependencyAction::setPromptDependencies(bool prompt)
-{
-    this->promptDependencies = prompt;
 }
 
 const std::vector<std::string>&
@@ -99,7 +86,7 @@ DependencyAction::setDependencies(const char* firstDependency, ...)
 bool
 DependencyAction::performAction()
 {
-    if (promptDependencies) {
+    if (isInteractive()) {
         std::cout << "Do you have the following packages installed?"
                   << std::endl;
         std::cout << std::endl;
@@ -151,7 +138,8 @@ DependencyAction::getDependenciesAsString(const std::string& delimiter) const
     else
         return dependencyString;
 
-    for (int i = 1; i < dependencies.size(); i++) {
+    for (std::vector<std::string>::size_type i = 1; i < dependencies.size();
+         i++) {
         dependencyString += delimiter + dependencies[i];
     }
     return dependencyString;
