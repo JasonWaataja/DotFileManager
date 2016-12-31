@@ -148,7 +148,7 @@ deleteRegularFile(const std::string& path)
 {
     struct stat pathInfo;
     if (stat(path.c_str(), &pathInfo) != 0)
-        return false;
+        return true;
     if (!S_ISREG(pathInfo.st_mode))
         return false;
     if (remove(path.c_str()) != 0) {
@@ -192,12 +192,10 @@ deleteDirectory(const std::string& path)
 {
     struct stat pathInfo;
     if (stat(path.c_str(), &pathInfo) != 0)
-        return false;
+        return true;
     if (!S_ISDIR(pathInfo.st_mode))
         return false;
-    if (nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) != 0)
-        return false;
-    return rmdir(path.c_str()) == 0;
+    return nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) == 0;
 }
 
 bool
@@ -205,14 +203,11 @@ deleteFile(const std::string& path)
 {
     struct stat pathInfo;
     if (stat(path.c_str(), &pathInfo) != 0)
-        return false;
+        return true;
     if (S_ISREG(pathInfo.st_mode))
         return remove(path.c_str()) == 0;
-    if (S_ISDIR(pathInfo.st_mode)) {
-        if (nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) != 0)
-            return false;
-        return rmdir(path.c_str()) == 0;
-    }
+    if (S_ISDIR(pathInfo.st_mode))
+        return nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) == 0;
     /* The file at path is not a regular file or a directory. */
     return false;
 }
@@ -230,6 +225,10 @@ ensureDirectoriesExist(const std::string& path)
         free(pathCopy);
         if (!parentPathExists)
             return false;
+        /*
+         * I think that using 0777 here uses the default permissions uses the
+         * user's umask, but I might be wrong.
+         */
         return mkdir(path.c_str(), 0777) == 0;
     }
     if (S_ISDIR(pathInfo.st_mode))
