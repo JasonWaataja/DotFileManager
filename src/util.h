@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include <ftw.h>
+
 #include <string>
 
 #ifndef UTIL_H
@@ -67,6 +69,57 @@ std::string shellExpandPath(const std::string& path);
  * encountering an error.
  */
 std::string getHomeDirectory();
+
+/*
+ * Determines if the file given by path exists. Exits the program if an error
+ * is encountered.
+ *
+ * Returns whether the file represented by path exists in the filesystem.
+ */
+bool pathExists(const std::string& path);
+/*
+ * Determines whether the given path is a regular file. Exits the program if
+ * the
+ * filetype cannot be determined, which means you should make sure the file
+ * exists first.
+ *
+ * Returns if the file represented by path is a regular file.
+ */
+bool isRegularFile(const std::string& path);
+/*
+ * Determines whether the given path is a directory. Exits the program if the
+ * filetype cannot be determined, which means you should make sure the file
+ * exists first.
+ *
+ * Returns if the file reprented by path is a directory.
+ */
+bool isDirectory(const std::string& path);
+/*
+ * Removes the given regular file from the filesystem. Fails if the path
+ * doesn't exist, the path isn't a regular file, or if there was an error
+ * removing it.
+ *
+ * Returns true on success, false on failure.
+ */
+bool deleteRegularFile(const std::string& path);
+/* Helper function for deleteDirectory, passed to ntfw. */
+int deleteDirectoryHelper(const char* fpath, const struct stat* sb,
+    int typeflag, struct FTW* ftwbuf);
+/*
+ * Removes the given directory from the filesystem. Fails if the path doesn't
+ * exist, the path isn't a directory, or if there was an error removing it.
+ * Operates recursively and will delete all the contents of the directory by
+ * default.
+ *
+ * Returns true on success, false on failure.
+ */
+bool deleteDirectory(const std::string& path);
+/*
+ * Removes the given regular file or directory from the filesystem. Fails if
+ * the path doesn't exist, the path isn't a regular file or directory, or if
+ * there was an error removing it.
+ */
+bool deleteFile(const std::string& path);
 } /* namespace dfm */
 
 #endif /* UTIL_H */

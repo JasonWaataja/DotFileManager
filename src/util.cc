@@ -22,7 +22,10 @@
 
 #include "util.h"
 
+#include <sys/stat.h>
+
 #include <err.h>
+#include <ftw.h>
 #include <pwd.h>
 #include <unistd.h>
 #include <wordexp.h>
@@ -114,5 +117,96 @@ getHomeDirectory()
         err(EXIT_FAILURE, "Failed to get user info.");
     }
     return userInfo->pw_dir;
+}
+
+bool
+pathExists(const std::string& path)
+{
+    return access(path.c_str(), F_OK) == 0;
+}
+
+bool
+isRegularFile(const std::string& path)
+{
+    struct stat pathInfo;
+    return stat(path.c_str(), &pathInfo) == 0 && S_ISREG(pathInfo.st_mode);
+}
+
+bool
+isDirectory(const std::string& path)
+{
+    struct stat pathInfo;
+    return stat(path.c_str(), &pathInfo) == 0 && S_ISDIR(pathInfo.st_mode);
+}
+
+bool
+deleteRegularFile(const std::string& path)
+{
+    struct stat pathInfo;
+    if (stat(path.c_str(), &pathInfo) != 0)
+        return false;
+    if (!S_ISREG(pathInfo.st_mode))
+        return false;
+    if (remove(path.c_str()) != 0) {
+        warnx("Failed to remove file %s.", path.c_str());
+        return false;
+    }
+    return true;
+}
+
+int
+deleteDirectoryHelper(
+    const char* fpath, const struct stat* sb, int typeflag, struct FTW* ftwbuf)
+{
+    if (typeflag == FTW_F) {
+        if (!deleteRegularFile(fpath))
+            return -1;
+    }
+    /*
+     * Because this function is meant to be called by nftw with the FTW_DEPTH
+     * flag, all of the regular files and directories that are children of this
+     * directory should have been processed before this one so it should be
+     * empty if it all of its children are regular files and directories. If
+     * there was a symlink or something somewhere, then this will fail and stop
+     * the tree walk.
+     */
+    if (typeflag == FTW_D && rmdir(fpath) == 0)
+        return 0;
+    /*
+     * The code only reacher here if typeflag was not a regular file or a
+     * directory, in which case the directory walking should be stopped, or
+     * rmdir failed and the function should also stop the walk.
+     */
+    return -1;
+}
+
+bool
+deleteDirectory(const std::string& path)
+{
+    struct stat pathInfo;
+    if (stat(path.c_str(), &pathInfo) != 0)
+        return false;
+    if (!S_ISDIR(pathInfo.st_mode))
+        return false;
+    if (nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) != 0)
+        return false;
+    return rmdir(path.c_str()) == 0;
+}
+
+bool
+deleteFile(const std::string& path)
+{
+    struct stat pathInfo;
+    if (stat(path.c_str(), &pathInfo) != 0)
+        return false;
+    if (S_ISREG(pathInfo.st_mode))
+        return remove(path.c_str()) == 0;
+    if (S_ISDIR(pathInfo.st_mode)) {
+        if (nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) != 0)
+            return false;
+        return rmdir(path.c_str()) == 0;
+    }
+    /* The file at path is not a regular file or a directory. */
+    return false;
 }
 } /* namespace dfm */
