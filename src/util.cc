@@ -256,6 +256,7 @@ copyRegularFile(
     std::ifstream reader(sourcePath, std::ios::binary);
     if (!reader.is_open())
         return false;
+    reader.seekg(0, std::ios::end);
     /*
      * TBH I have no idea what type I'm supposed to be using here. The tellg()
      * function returns an std::streampos and I'm not sure at all how that
