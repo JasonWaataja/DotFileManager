@@ -32,8 +32,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/filesystem.hpp>
-
 #include "command.h"
 #include "installaction.h"
 #include "messageaction.h"
@@ -56,17 +54,15 @@ const char COMMENT_DELIMITER = '#';
 class ConfigFileReader {
 public:
     ConfigFileReader(const std::string& path);
-    ConfigFileReader(const boost::filesystem::path& path);
     /*
      * This one is included to prevent ambiguity when using a string literal.
      */
     ConfigFileReader(const char* path);
-    ConfigFileReader(const boost::filesystem::path& path,
-        std::shared_ptr<DfmOptions> options);
+    ConfigFileReader(
+        const std::string& path, std::shared_ptr<DfmOptions> options);
 
-    const boost::filesystem::path& getPath() const;
+    const std::string& getPath() const;
     void setPath(const std::string& path);
-    void setPath(const boost::filesystem::path& path);
 
     /* I'm not sure if this one accessor should be const or not. */
     std::shared_ptr<DfmOptions> getOptions();
@@ -134,7 +130,7 @@ public:
 
 private:
     /* The path to the config file. */
-    boost::filesystem::path path;
+    std::string path;
     /* The reader to open path with. */
     std::ifstream reader;
     /*

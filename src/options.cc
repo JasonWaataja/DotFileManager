@@ -177,11 +177,11 @@ bool
 DfmOptions::verifyDirectoryExists() const
 {
     if (hasSourceDirectory) {
-        if (!boost::filesystem::exists(sourceDirectory)) {
+        if (!fileExists(sourceDirectory)) {
             warnx("Directory doesn't exist: %s.", sourceDirectory.c_str());
             return false;
         }
-        if (!boost::filesystem::is_directory(sourceDirectory)) {
+        if (!isDirectory(sourceDirectory)) {
             warnx("Given file isn't a directory: %s", sourceDirectory.c_str());
             return false;
         }

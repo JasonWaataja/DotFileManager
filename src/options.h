@@ -26,8 +26,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/filesystem.hpp>
-
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
@@ -57,7 +55,7 @@ public:
     bool interactiveFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
-    boost::filesystem::path sourceDirectory;
+    std::string sourceDirectory;
 
     /*
      * The getopt_long function sets flags sometimes. I want 1 to be true and 0

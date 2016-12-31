@@ -20,6 +20,9 @@
  * IN THE SOFTWARE.
  */
 
+#include <ftw.h>
+
+#include <iostream>
 #include <string>
 
 #ifndef UTIL_H
@@ -27,6 +30,7 @@
 
 namespace dfm {
 
+const std::streamsize FILE_READ_SIZE = 1024;
 /*
  * Waits for the user to input a yes or no input on the current line. Accepts
  * any string that starts with a "y" or "Y" as true and any string that starts
@@ -67,6 +71,103 @@ std::string shellExpandPath(const std::string& path);
  * encountering an error.
  */
 std::string getHomeDirectory();
+
+/*
+ * Determines if the file given by path exists. Exits the program if an error
+ * is encountered.
+ *
+ * Returns whether the file represented by path exists in the filesystem.
+ */
+bool fileExists(const std::string& path);
+/*
+ * Determines whether the given path is a regular file. Exits the program if
+ * the
+ * filetype cannot be determined, which means you should make sure the file
+ * exists first.
+ *
+ * Returns if the file represented by path is a regular file.
+ */
+bool isRegularFile(const std::string& path);
+/*
+ * Determines whether the given path is a directory. Exits the program if the
+ * filetype cannot be determined, which means you should make sure the file
+ * exists first.
+ *
+ * Returns if the file reprented by path is a directory.
+ */
+bool isDirectory(const std::string& path);
+/*
+ * Removes the given regular file from the filesystem. Fails if the path
+ * doesn't exist, the path isn't a regular file, or if there was an error
+ * removing it.
+ *
+ * Returns true on success, false on failure.
+ */
+bool deleteRegularFile(const std::string& path);
+/* Helper function for deleteDirectory, passed to ntfw. */
+int deleteDirectoryHelper(const char* fpath, const struct stat* sb,
+    int typeflag, struct FTW* ftwbuf);
+/*
+ * Removes the given directory from the filesystem. Fails if the path doesn't
+ * exist, the path isn't a directory, or if there was an error removing it.
+ * Operates recursively and will delete all the contents of the directory by
+ * default.
+ *
+ * Returns true on success, false on failure.
+ */
+bool deleteDirectory(const std::string& path);
+/*
+ * Removes the given regular file or directory from the filesystem. Fails if
+ * the path doesn't exist, the path isn't a regular file or directory, or if
+ * there was an error removing it.
+ */
+bool deleteFile(const std::string& path);
+/*
+ * Checks to see if the given directory given by path exists and all its parent
+ * directories exist. Path must be intended to be a directory. If the file at
+ * path doesn't exist, or any of its parents exist, then they are created. If,
+ * at any point, creating a directory fails or if a parent directory exists and
+ * is not a directory, then the function fails.
+ *
+ * Returns true if the file at path already exists and is a directory or if it
+ * was successfully created, false otherwise.
+ */
+bool ensureDirectoriesExist(const std::string& path);
+/*
+ * Same as ensureDirectoriesExist() except that it operates on the parent
+ * directory of the given path.
+ *
+ * Returns true if the file at path already exists or if its parent directories
+ * were successfully created, false otherwise.
+ */
+bool ensureParentDirectoriesExist(const std::string& path);
+/*
+ * Copies the given regular file byte for byte. Fails if the source path
+ * doesn't exist, the destination path can't be accessed, or if the process
+ * failed. Attempts to create parent directories if they don't exist.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyRegularFile(
+    const std::string& sourcePath, const std::string& destinationPath);
+/*
+ * Copies the contents of the directory at sourcePath and all its children,
+ * recursively. Fails if sourcePath couldn't be read as a directory, or if
+ * destinationPath couldn't be written to as a directory. Attempts to create
+ * parent directories if they don't exist for destinatinPath.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyDirectory(
+    const std::string& sourcePath, const std::string& destinationPath);
+/*
+ * Copies the given file to the path at destinationPath. Works on regular files
+ * and directories, and fails if it is not one of those two.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyFile(
+    const std::string& sourcePath, const std::string& destinationPath);
 } /* namespace dfm */
 
 #endif /* UTIL_H */
