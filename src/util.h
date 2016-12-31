@@ -22,6 +22,7 @@
 
 #include <ftw.h>
 
+#include <iostream>
 #include <string>
 
 #ifndef UTIL_H

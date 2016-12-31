@@ -162,10 +162,8 @@ int
 deleteDirectoryHelper(
     const char* fpath, const struct stat* sb, int typeflag, struct FTW* ftwbuf)
 {
-    if (typeflag == FTW_F) {
-        if (!deleteRegularFile(fpath))
-            return -1;
-    }
+    if (typeflag == FTW_F)
+        return (deleteRegularFile(fpath)) ? 0 : -1;
     /*
      * Because this function is meant to be called by nftw with the FTW_DEPTH
      * flag, all of the regular files and directories that are children of this
@@ -173,8 +171,13 @@ deleteDirectoryHelper(
      * empty if it all of its children are regular files and directories. If
      * there was a symlink or something somewhere, then this will fail and stop
      * the tree walk.
+     *
+     * Also, I should only have to check against FTW_DP because that is what is
+     * passed when FTW_DEPTH is passed, but I'm checking against all of them
+     * just in case.
      */
-    if (typeflag == FTW_D && rmdir(fpath) == 0)
+    if ((typeflag == FTW_D || typeflag == FTW_DNR || typeflag == FTW_DP)
+        && rmdir(fpath) == 0)
         return 0;
     /*
      * The code only reacher here if typeflag was not a regular file or a
@@ -225,7 +228,9 @@ ensureDirectoriesExist(const std::string& path)
         char* parentPath = dirname(pathCopy);
         bool parentPathExists = ensureDirectoriesExist(parentPath);
         free(pathCopy);
-        return parentPathExists;
+        if (!parentPathExists)
+            return false;
+        return mkdir(path.c_str(), 0777) == 0;
     }
     if (S_ISDIR(pathInfo.st_mode))
         return true;
@@ -302,9 +307,11 @@ copyDirectory(
         return false;
     }
     for (int i = 0; i < entryCount; i++) {
-        std::string sourceEntryPath = sourcePath + "/" + entries[i]->d_name;
-        std::string destinationEntryPath =
-            destinationPath + "/" + entries[i]->d_name;
+        std::string entryName = entries[i]->d_name;
+        if (entryName == "." || entryName == "..")
+            continue;
+        std::string sourceEntryPath = sourcePath + "/" + entryName;
+        std::string destinationEntryPath = destinationPath + "/" + entryName;
         if (!copyFile(sourceEntryPath, destinationEntryPath)) {
             free(entries);
             return false;
