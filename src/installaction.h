@@ -32,45 +32,28 @@ namespace dfm {
 class InstallAction : public ModuleAction {
 public:
     InstallAction(const std::string& filename,
-        const boost::filesystem::path& sourceDirectory,
-        const boost::filesystem::path& destinationDirectory);
+        const std::string& sourceDirectory,
+        const std::string& destinationDirectory);
     InstallAction(const std::string& filename,
-        const boost::filesystem::path& sourceDirectory,
-        const std::string& installFilename,
-        const boost::filesystem::path& destinationDirectory);
+        const std::string& sourceDirectory, const std::string& installFilename,
+        const std::string& destinationDirectory);
     bool performAction() override;
-    const boost::filesystem::path getFilePath() const;
-    const boost::filesystem::path getInstallationPath() const;
+    std::string getFilePath() const;
+    std::string getInstallationPath() const;
     const std::string& getFilename() const;
     void setFilename(const std::string& filename);
-    const boost::filesystem::path& getSourceDirectory() const;
-    void setSourceDirectory(const boost::filesystem::path& sourceDirectory);
-    const boost::filesystem::path& getDestinationDirectory() const;
-    void setDestinationDirectory(
-        const boost::filesystem::path& destinationDirectory);
+    const std::string& getSourceDirectory() const;
+    void setSourceDirectory(const std::string& sourceDirectory);
+    const std::string& getDestinationDirectory() const;
+    void setDestinationDirectory(const std::string& destinationDirectory);
     const std::string& getInstallFilename() const;
     void setInstallFilename(const std::string& installFilename);
 
-    bool copyRegularFile(const boost::filesystem::path& sourceFilePath,
-        const boost::filesystem::path& destinationPath);
-    bool copyDirectory(const boost::filesystem::path& sourceDirectoryPath,
-        const boost::filesystem::path& destinationPath);
-
 private:
     std::string filename;
-    boost::filesystem::path sourceDirectory;
+    std::string sourceDirectory;
     std::string installFilename;
-    boost::filesystem::path destinationDirectory;
-
-    /*
-     * For internal use of copyDirectory. Assumes all preliminary checking has
-     * been done. Assumes that both sourceDirectoryPath and
-     * destinationDirectory exist and are directories, will have undefined
-     * behavior otherwise.
-     */
-    static bool copyDirectoryRecursive(
-        const boost::filesystem::path& sourceDirectoryPath,
-        const boost::filesystem::path& destinationDirectory);
+    std::string destinationDirectory;
 };
 } /* namespace dfm */
 
