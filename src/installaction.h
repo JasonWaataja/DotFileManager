@@ -23,7 +23,7 @@
 #ifndef INSTALL_ACTION_H
 #define INSTALL_ACTION_H
 
-#include <boost/filesystem.hpp>
+#include <string>
 
 #include "moduleaction.h"
 

@@ -124,7 +124,7 @@ getHomeDirectory()
 }
 
 bool
-pathExists(const std::string& path)
+fileExists(const std::string& path)
 {
     return access(path.c_str(), F_OK) == 0;
 }

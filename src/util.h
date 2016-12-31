@@ -77,7 +77,7 @@ std::string getHomeDirectory();
  *
  * Returns whether the file represented by path exists in the filesystem.
  */
-bool pathExists(const std::string& path);
+bool fileExists(const std::string& path);
 /*
  * Determines whether the given path is a regular file. Exits the program if
  * the

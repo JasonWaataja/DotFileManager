@@ -3,7 +3,7 @@
 #ifndef REMOVE_ACTION_H
 #define REMOVE_ACTION_H
 
-#include <boost/filesystem.hpp>
+#include <string>
 
 #include "moduleaction.h"
 
