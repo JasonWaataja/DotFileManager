@@ -13,15 +13,16 @@ const char DEFAULT_REMOVE_ACTION_NAME[] = "remove action";
 
 class RemoveAction : public ModuleAction {
 public:
-    RemoveAction(const boost::filesystem::path& filePath);
-    RemoveAction(
-        const std::string& filename, const boost::filesystem::path& directory);
-    const boost::filesystem::path& getFilePath() const;
-    void setFilePath(const boost::filesystem::path& filePath);
+    RemoveAction(const std::string& filePath);
+    RemoveAction(const std::string& filename, const std::string& directory);
+    const std::string& getFilePath() const;
+    void setFilePath(const std::string& filePath);
+    void setFilePath(
+        const std::string& filename, const std::string& directory);
     bool performAction() override;
 
 private:
-    boost::filesystem::path filePath;
+    std::string filePath;
 };
 }
 
