@@ -24,12 +24,16 @@
 
 #include <sys/stat.h>
 
+#include <dirent.h>
 #include <err.h>
 #include <ftw.h>
+#include <libgen.h>
 #include <pwd.h>
+#include <string.h>
 #include <unistd.h>
 #include <wordexp.h>
 
+#include <fstream>
 #include <iostream>
 
 namespace dfm {
@@ -207,6 +211,119 @@ deleteFile(const std::string& path)
         return rmdir(path.c_str()) == 0;
     }
     /* The file at path is not a regular file or a directory. */
+    return false;
+}
+
+bool
+ensureDirectoriesExist(const std::string& path)
+{
+    struct stat pathInfo;
+    if (stat(path.c_str(), &pathInfo) != 0) {
+        char* pathCopy = strdup(path.c_str());
+        if (pathCopy == NULL)
+            err(EXIT_FAILURE, NULL);
+        char* parentPath = dirname(pathCopy);
+        bool parentPathExists = ensureDirectoriesExist(parentPath);
+        free(pathCopy);
+        return parentPathExists;
+    }
+    if (S_ISDIR(pathInfo.st_mode))
+        return true;
+    return false;
+}
+
+bool
+ensureParentDirectoriesExist(const std::string& path)
+{
+    char* pathCopy = strdup(path.c_str());
+    if (pathCopy == NULL)
+        err(EXIT_FAILURE, NULL);
+    char* parentPath = dirname(pathCopy);
+    bool directoriesExist = ensureDirectoriesExist(parentPath);
+    free(pathCopy);
+    return directoriesExist;
+}
+
+bool
+copyRegularFile(
+    const std::string& sourcePath, const std::string& destinationPath)
+{
+    std::ifstream reader(sourcePath, std::ios::binary);
+    if (!reader.is_open())
+        return false;
+    reader.seekg(0, std::ios::end);
+    /*
+     * TBH I have no idea what type I'm supposed to be using here. The tellg()
+     * function returns an std::streampos and I'm not sure at all how that
+     * interacts with a streamsize, which is supposed to be the standard for
+     * representing IO stuff in C++ I think. This compiles so whatever.
+     */
+    std::streamsize sourceSize = reader.tellg();
+    if (!ensureParentDirectoriesExist(destinationPath))
+        return false;
+    std::ofstream writer(destinationPath, std::ios::binary);
+    if (!writer.is_open()) {
+        reader.close();
+        return false;
+    }
+    char readBuffer[FILE_READ_SIZE];
+    std::streamsize remainingBytes = sourceSize;
+    /*
+     * Another thing I'm not sure of is error checking. There are members of
+     * the stream classes that give this stuff, but it's way different than C
+     * IO operations where they return an error code or the number of bytes
+     * read or written, and I don't want to research this.
+     */
+    while (remainingBytes > 0) {
+        std::streamsize bytesToRead = (remainingBytes < FILE_READ_SIZE)
+            ? remainingBytes
+            : FILE_READ_SIZE;
+        reader.read(readBuffer, bytesToRead);
+        writer.write(readBuffer, bytesToRead);
+        remainingBytes -= bytesToRead;
+    }
+    reader.close();
+    writer.close();
+    return true;
+}
+
+bool
+copyDirectory(
+    const std::string& sourcePath, const std::string& destinationPath)
+{
+    struct dirent** entries = nullptr;
+    auto returnOne = [](const struct dirent* entry) { return 1; };
+    int entryCount =
+        scandir(sourcePath.c_str(), &entries, returnOne, alphasort);
+    if (entryCount == -1)
+        return false;
+    if (!ensureDirectoriesExist(destinationPath)) {
+        free(entries);
+        return false;
+    }
+    for (int i = 0; i < entryCount; i++) {
+        std::string sourceEntryPath = sourcePath + "/" + entries[i]->d_name;
+        std::string destinationEntryPath =
+            destinationPath + "/" + entries[i]->d_name;
+        if (!copyFile(sourceEntryPath, destinationEntryPath)) {
+            free(entries);
+            return false;
+        }
+    }
+    free(entries);
+    return true;
+}
+
+bool
+copyFile(const std::string& sourcePath, const std::string& destinationPath)
+{
+    struct stat sourcePathInfo;
+    if (stat(sourcePath.c_str(), &sourcePathInfo) != 0)
+        return false;
+    if (S_ISREG(sourcePathInfo.st_mode))
+        return copyRegularFile(sourcePath, destinationPath);
+    if (S_ISDIR(sourcePathInfo.st_mode))
+        return copyDirectory(sourcePath, destinationPath);
     return false;
 }
 } /* namespace dfm */

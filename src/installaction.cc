@@ -326,7 +326,7 @@ InstallAction::copyDirectoryRecursive(
             e.what());
         return false;
     }
-
+    free(directoryEntries);
     /* Nothing threw an exception and there were no errors. */
     return true;
 }

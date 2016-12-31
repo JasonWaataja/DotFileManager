@@ -29,6 +29,7 @@
 
 namespace dfm {
 
+const std::streamsize FILE_READ_SIZE = 1024;
 /*
  * Waits for the user to input a yes or no input on the current line. Accepts
  * any string that starts with a "y" or "Y" as true and any string that starts
@@ -120,6 +121,52 @@ bool deleteDirectory(const std::string& path);
  * there was an error removing it.
  */
 bool deleteFile(const std::string& path);
+/*
+ * Checks to see if the given directory given by path exists and all its parent
+ * directories exist. Path must be intended to be a directory. If the file at
+ * path doesn't exist, or any of its parents exist, then they are created. If,
+ * at any point, creating a directory fails or if a parent directory exists and
+ * is not a directory, then the function fails.
+ *
+ * Returns true if the file at path already exists and is a directory or if it
+ * was successfully created, false otherwise.
+ */
+bool ensureDirectoriesExist(const std::string& path);
+/*
+ * Same as ensureDirectoriesExist() except that it operates on the parent
+ * directory of the given path.
+ *
+ * Returns true if the file at path already exists or if its parent directories
+ * were successfully created, false otherwise.
+ */
+bool ensureParentDirectoriesExist(const std::string& path);
+/*
+ * Copies the given regular file byte for byte. Fails if the source path
+ * doesn't exist, the destination path can't be accessed, or if the process
+ * failed. Attempts to create parent directories if they don't exist.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyRegularFile(
+    const std::string& sourcePath, const std::string& destinationPath);
+/*
+ * Copies the contents of the directory at sourcePath and all its children,
+ * recursively. Fails if sourcePath couldn't be read as a directory, or if
+ * destinationPath couldn't be written to as a directory. Attempts to create
+ * parent directories if they don't exist for destinatinPath.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyDirectory(
+    const std::string& sourcePath, const std::string& destinationPath);
+/*
+ * Copies the given file to the path at destinationPath. Works on regular files
+ * and directories, and fails if it is not one of those two.
+ *
+ * Returns true on success, false on failure.
+ */
+bool copyFile(
+    const std::string& sourcePath, const std::string& destinationPath);
 } /* namespace dfm */
 
 #endif /* UTIL_H */
