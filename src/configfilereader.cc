@@ -44,16 +44,9 @@ ConfigFileReader::ConfigFileReader(const std::string& path)
     addDefaultCommands();
 }
 
-ConfigFileReader::ConfigFileReader(const boost::filesystem::path& path)
-    : ConfigFileReader(path.string())
-{
-    options = std::shared_ptr<DfmOptions>(new DfmOptions());
-    environment = ReaderEnvironment(options);
-}
-
 ConfigFileReader::ConfigFileReader(
-    const boost::filesystem::path& path, std::shared_ptr<DfmOptions> options)
-    : path(path), reader(path.string()), options(options), environment(options)
+    const std::string& path, std::shared_ptr<DfmOptions> options)
+    : path(path), reader(path), options(options), environment(options)
 {
     addDefaultCommands();
 }
@@ -84,7 +77,7 @@ ConfigFileReader::setOptions(std::shared_ptr<DfmOptions> options)
     environment.setOptions(options);
 }
 
-const boost::filesystem::path&
+const std::string&
 ConfigFileReader::getPath() const
 {
     return path;
@@ -92,12 +85,6 @@ ConfigFileReader::getPath() const
 
 void
 ConfigFileReader::setPath(const std::string& path)
-{
-    this->path = path;
-}
-
-void
-ConfigFileReader::setPath(const boost::filesystem::path& path)
 {
     this->path = path;
 }

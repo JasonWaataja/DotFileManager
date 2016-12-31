@@ -81,7 +81,7 @@ DotFileManager::readModules()
 {
     std::string programDirectory;
     if (options->hasSourceDirectory)
-        programDirectory = options->sourceDirectory.string();
+        programDirectory = options->sourceDirectory;
     else
         programDirectory = getCurrentDirectory();
 
