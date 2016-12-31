@@ -20,6 +20,7 @@
  * IN THE SOFTWARE.
  */
 
+#include <dirent.h>
 #include <ftw.h>
 
 #include <iostream>
@@ -168,6 +169,12 @@ bool copyDirectory(
  */
 bool copyFile(
     const std::string& sourcePath, const std::string& destinationPath);
+/*
+ * Function to be used with scandir as a filter that doesn't filter anything.
+ *
+ * Returns one.
+ */
+int returnOne(const struct dirent* entry);
 } /* namespace dfm */
 
 #endif /* UTIL_H */

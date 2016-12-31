@@ -35,6 +35,7 @@
 #include <fstream>
 
 #include "installaction.h"
+#include "util.h"
 
 namespace dfm {
 
@@ -172,8 +173,6 @@ FileCheckAction::shouldUpdateDirectory(
 
     struct dirent** sourceEntries = nullptr;
     struct dirent** destinationEntries = nullptr;
-
-    auto returnOne = [](const struct dirent* entry) { return 1; };
 
     int sourceCount =
         scandir(sourcePath.c_str(), &sourceEntries, returnOne, alphasort);

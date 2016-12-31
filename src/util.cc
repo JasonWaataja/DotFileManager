@@ -297,7 +297,6 @@ copyDirectory(
     const std::string& sourcePath, const std::string& destinationPath)
 {
     struct dirent** entries = nullptr;
-    auto returnOne = [](const struct dirent* entry) { return 1; };
     int entryCount =
         scandir(sourcePath.c_str(), &entries, returnOne, alphasort);
     if (entryCount == -1)
@@ -332,5 +331,11 @@ copyFile(const std::string& sourcePath, const std::string& destinationPath)
     if (S_ISDIR(sourcePathInfo.st_mode))
         return copyDirectory(sourcePath, destinationPath);
     return false;
+}
+
+int
+returnOne(const struct dirent* entry)
+{
+    return 1;
 }
 } /* namespace dfm */

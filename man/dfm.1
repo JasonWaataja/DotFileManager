@@ -2,26 +2,37 @@
 .SH NAME
 dfm \- A configuration file manager
 .SH SYNOPSIS
-dfm [vp] [-i|-u|-c] [-d directory] [-a|[MODULES]]
+dfm [-Iv] [-c|-g|-G|-i|-u] [-d directory] [-a|[MODULES]]
 .SH DESCRIPTION
 Used for installing, uninstalling, and updating configuration files for a user.
 It operates on a directory, which defaults to the current directory, and opens a
 file called config.dfm.
-Must be passed --insall, --uninstall, or --check as an operation, and must
-either be passed the --all flag or a list of modules.
-.IP "-d, --directory"
-Specify the directory to work in, defaults to the current directory
-.IP "-i, --install"
-Install the given modules
-.IP "-u, --uninstall"
-Uninstall the given modules
-.IP "-c, --check"
-Check the installable files for if they need to be updated.
+
+When passed --insall, --uninstall, or --check as an operation, must either be
+passed the --all flag or a list of modules.
+
+Using --generate-config-file or --dump-config file creates a generic config
+file for the directory specified by --directory or the current directory if not
+specified. The --generate-config-file option writes to a config file in the
+directory and the --dump-config-file option writes to standard output.
 .IP "-a, --all"
 Perform the operation on all modules
-.IP "-p, --prompt"
+.IP "-c, --check"
+Check the installable files for if they need to be updated.
+.IP "-d, --directory"
+Specify the directory to work in, defaults to the current directory
+.IP "-g, --generate-config-file"
+Generate a generic config file with all the files in the given directory and
+write it to a config file in that directory.
+.IP "-G --dump-config-file"
+Generate a generic config file with all the files in a given directory and
+write it to standard output.
+.IP "-i, --install"
+Install the given modules
+.IP "-I, --interactive"
 Ask for confirmation when operating on modules, manipulating files, etc.
-Ask for the command to install the specified dependencies for a module.
+.IP "-u, --uninstall"
+Uninstall the given modules
 .IP "-v, --verbose"
 Print extra information
 .SH AUTHOR

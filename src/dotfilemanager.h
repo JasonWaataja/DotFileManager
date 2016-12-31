@@ -47,6 +47,24 @@ private:
     bool readModules();
     bool performOperation();
     bool operateOn(const Module& module);
+
+    /*
+     * Determines the correct stream to write to based on the flags in options
+     * and writes a config file to it.
+     *
+     * Returns true on success, false on failure.
+     */
+    bool createConfigFile() const;
+
+private:
+    /*
+     * Generates a config file for the given directory and writes it to the
+     * given output stream.
+     *
+     * Returns true on success, false on failure.
+     */
+    bool writeConfigFile(const std::string& directory, std::ostream&
+        outputStream) const;
 };
 } /* namespace 2016 */
 

@@ -29,7 +29,7 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_SHORT_OPTIONS[] = "iuapcvd:";
+const char GETOPT_SHORT_OPTIONS[] = "iuaIcvgGd:";
 
 class DfmOptions {
 public:
@@ -53,6 +53,8 @@ public:
     bool allFlag;
     bool verboseFlag;
     bool interactiveFlag;
+    bool generateConfigFileFlag;
+    bool dumpConfigFileFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
     std::string sourceDirectory;
@@ -69,7 +71,6 @@ public:
 
 private:
     bool verifyFlagsConsistency() const;
-    bool verifyFlagsHaveArguments() const;
     bool verifyDirectoryExists() const;
 };
 } /* namespace dfm */

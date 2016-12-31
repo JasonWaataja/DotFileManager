@@ -43,6 +43,8 @@ DfmOptions::DfmOptions()
       allFlag(false),
       verboseFlag(false),
       interactiveFlag(false),
+      generateConfigFileFlag(false),
+      dumpConfigFileFlag(false),
       hasSourceDirectory(false)
 {
 }
@@ -58,9 +60,11 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
     struct option longOptions[] = { { "install", no_argument, NULL, 'i' },
         { "uninstall", no_argument, NULL, 'u' },
         { "all", no_argument, NULL, 'a' },
-        { "prompt", no_argument, NULL, 'p' },
+        { "interactive", no_argument, NULL, 'I' },
         { "check", no_argument, NULL, 'c' },
         { "verbose", no_argument, NULL, 'v' },
+        { "generate-config-file", no_argument, NULL, 'g' },
+        { "dump-config-file", no_argument, NULL, 'G' },
         { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
 
     int getoptValue = getopt_long_only(
@@ -86,11 +90,17 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         case 'a':
             allFlag = true;
             break;
-        case 'p':
+        case 'I':
             interactiveFlag = true;
             break;
         case 'c':
             updateModulesFlag = true;
+            break;
+        case 'g':
+            generateConfigFileFlag = true;
+            break;
+        case 'G':
+            dumpConfigFileFlag = true;
             break;
         case 'd':
             hasSourceDirectory = true;
@@ -123,8 +133,6 @@ DfmOptions::verifyArguments() const
 {
     if (!verifyFlagsConsistency())
         return false;
-    if (!verifyFlagsHaveArguments())
-        return false;
     if (!verifyDirectoryExists())
         return false;
     return true;
@@ -140,6 +148,10 @@ DfmOptions::verifyFlagsConsistency() const
         operationsCount++;
     if (updateModulesFlag)
         operationsCount++;
+    if (generateConfigFileFlag)
+        operationsCount++;
+    if (dumpConfigFileFlag)
+        operationsCount++;
 
     if (operationsCount == 0) {
         warnx("Must specify an operation.");
@@ -150,24 +162,22 @@ DfmOptions::verifyFlagsConsistency() const
         return false;
     }
 
+    if (generateConfigFileFlag || dumpConfigFileFlag) {
+        if (remainingArguments.size() > 0) {
+            warnx("No arguments expected when creating config file.");
+            return false;
+        }
+        return true;
+    }
     /*
      * Fails if the all flag is passed and there are remaining arguments or the
-     * all flag isn't passed and there are also no additional argumens.
+     * all flag isn't passed and there are also no additional argumens. I used
+     * the == operator here as an xnor operator. If both are true or both are
+     * false, then fail.
      */
     if (allFlag == (remainingArguments.size() > 0)) {
         warnx(
             "Must specify either the --all flag or at least one remaining argument, but not both.");
-        return false;
-    }
-    return true;
-}
-
-bool
-DfmOptions::verifyFlagsHaveArguments() const
-{
-    if ((installModulesFlag || uninstallModulesFlag || updateModulesFlag)
-        && !allFlag && remainingArguments.size() == 0) {
-        warnx("Must provide modules to install or uninstall.");
         return false;
     }
     return true;
@@ -192,7 +202,8 @@ DfmOptions::verifyDirectoryExists() const
 void
 DfmOptions::usage()
 {
-    std::cout << "usage: dfm [vp] [-i|-u|-c] [-d directory] [-a|[MODULES]]"
-              << std::endl;
+    std::cout
+        << "usage: dfm [-Iv] [-c|-g|-G|-i|-u] [-d directory] [-a|[MODULES]]"
+        << std::endl;
 }
 } /* namespace dfm */
