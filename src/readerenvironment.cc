@@ -22,22 +22,19 @@
 
 #include "readerenvironment.h"
 
-#include <boost/filesystem.hpp>
+#include "util.h"
 
 namespace dfm {
 
-ReaderEnvironment::ReaderEnvironment()
-    : directory(boost::filesystem::current_path().string())
+ReaderEnvironment::ReaderEnvironment() : directory(getCurrentDirectory())
 {
 }
 
 ReaderEnvironment::ReaderEnvironment(std::shared_ptr<DfmOptions> options)
     : options(options)
 {
-    if (options->hasSourceDirectory)
-        directory = options->sourceDirectory.string();
-    else
-        directory = boost::filesystem::current_path().string();
+    directory = (options->hasSourceDirectory) ? options->sourceDirectory
+                                              : getCurrentDirectory();
 }
 
 std::shared_ptr<DfmOptions>
