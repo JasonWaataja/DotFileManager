@@ -47,7 +47,7 @@ getYesOrNo(const std::string& prompt)
         errx(EXIT_FAILURE, "Failed to read input.");
     bool yesOrNo = true;
     while (!lineIsYesOrNo(input, yesOrNo)) {
-        std::cout << "Please enter y or n. ";
+        std::cout << "Please enter y or n.";
         if (!std::getline(std::cin, input))
             errx(EXIT_FAILURE, "Failed to read input.");
     }
@@ -101,7 +101,6 @@ shellExpandPath(const std::string& path)
         errx(EXIT_FAILURE, "Failed to expand path.");
     if (expr.we_wordc != 1)
         errx(EXIT_FAILURE, "Path expanded into multiple words.");
-
     std::string expandedPath = expr.we_wordv[0];
     wordfree(&expr);
     return expandedPath;

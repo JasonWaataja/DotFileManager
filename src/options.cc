@@ -25,6 +25,8 @@
 #include <err.h>
 #include <getopt.h>
 
+#include <iostream>
+
 #include "util.h"
 
 namespace dfm {
@@ -58,7 +60,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         { "all", no_argument, NULL, 'a' },
         { "prompt", no_argument, NULL, 'p' },
         { "check", no_argument, NULL, 'c' },
-        { "verbose", no_argument, NULL, 'v'},
+        { "verbose", no_argument, NULL, 'v' },
         { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
 
     int getoptValue = getopt_long_only(
@@ -98,19 +100,14 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             verboseFlag = true;
             break;
         case '?':
-            /*
-             * This infuriates me, it doesn't say in the documentation for
-             * glibc where it stores the option name if it encounters an
-             * unknown option. I did testing and it's not options[optionIndex]
-             * and it's not optopt. I guess I just won't print it.
-             */
-            warnx("Unrecognized argument.");
-            /* TODO: Print usage here. */
+            usage();
             return false;
         case ':':
-            /* Same problem as above. */
-            warnx("Missing required argument.");
-            /* TODO: Print usage. */
+            /*
+             * I'm not sure if this case is possible if optstring doesn't start
+             * with a colon, but I'm including it just to be safe.
+             */
+            usage();
             return false;
         }
         getoptValue = getopt_long_only(
@@ -190,5 +187,12 @@ DfmOptions::verifyDirectoryExists() const
         }
     }
     return true;
+}
+
+void
+DfmOptions::usage()
+{
+    std::cout << "usage: dfm [vp] [-i|-u|-c] [-d directory] [-a|[MODULES]]"
+              << std::endl;
 }
 } /* namespace dfm */

@@ -31,7 +31,7 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_SHORT_OPTIONS[] = ":iuapcvd:";
+const char GETOPT_SHORT_OPTIONS[] = "iuapcvd:";
 
 class DfmOptions {
 public:
@@ -67,6 +67,7 @@ public:
      * conditional, so true for non-zero and false for zero.
      */
     static bool getoptFlagToBool(int flag);
+    static void usage();
 
 private:
     bool verifyFlagsConsistency() const;
