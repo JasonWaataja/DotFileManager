@@ -31,7 +31,11 @@
 #include <pwd.h>
 #include <string.h>
 #include <unistd.h>
+
+/* For compatability with OpenBSD, which doesn't include wordexp.h. */
+#ifdef HAVE_WORDEXP_H
 #include <wordexp.h>
+#endif
 
 #include <fstream>
 #include <iostream>
@@ -103,6 +107,7 @@ getCurrentDirectory()
 std::string
 shellExpandPath(const std::string& path)
 {
+#ifdef HAVE_WORDEXP_H
     wordexp_t expr;
     if (wordexp(path.c_str(), &expr, 0) != 0)
         errx(EXIT_FAILURE, "Failed to expand path.");
@@ -111,6 +116,13 @@ shellExpandPath(const std::string& path)
     std::string expandedPath = expr.we_wordv[0];
     wordfree(&expr);
     return expandedPath;
+#else
+    std::string pathCopy = path;
+    size_t charPosition = pathCopy.find("~");
+    while (charPosition != std::string::npos)
+        pathCopy.replace(charPosition, 1, getHomeDirectory());
+    return pathCopy;
+#endif
 }
 
 std::string
