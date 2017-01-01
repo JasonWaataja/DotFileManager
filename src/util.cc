@@ -119,8 +119,10 @@ shellExpandPath(const std::string& path)
 #else
     std::string pathCopy = path;
     size_t charPosition = pathCopy.find("~");
-    while (charPosition != std::string::npos)
+    while (charPosition != std::string::npos) {
         pathCopy.replace(charPosition, 1, getHomeDirectory());
+        charPosition = pathCopy.find("~");
+    }
     return pathCopy;
 #endif
 }
