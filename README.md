@@ -12,8 +12,8 @@ automatically run the necessary scripts to install, uninstall, and update them.
 Another special feature is that DFM can check if files in your syncing directory
 are different from the installed versions and update them for you.
 ## Installation
-DFM only compiles on POSIX platforms, or optionally on CYGWIN or MSYS. Because
-it uses POSIX, though, it required no dependencies outside of the system's libc.
+DFM only compiles on POSIX platforms, or optionally on Cygwin or MSYS. Because
+it uses POSIX, though, it requires no dependencies outside of the system's libc.
 
 DFM is compiled using CMake and supports compiling in-source if desired.
 Navigate into the build directory and run `cmake /path/to/dfm`. Then, assuming
@@ -24,7 +24,7 @@ When testing on FreeBSD, I noticed that the `man` command on FreeBSD doesn't
 search /usr/local/shar/man on 12.0-CURRENT. I may be missing something, and I
 could change it to install to /usr/share/man, but it makes more sense to me to
 install to `CMAKE_INSTALL_PREFIX`. To get the man pages in the default search
-path on FreBSD, run `cp man/dfm.1 /usr/share/man/man1`, or run cmake with
+path on FreeBSD, run `cp man/dfm.1 /usr/share/man/man1`, or run cmake with
 `-DCMAKE_INSTALL_PREFIX=/usr`.
 ## Usage
 DFM's man page can be consulted for basic options. DFM requires on operation,
