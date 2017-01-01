@@ -15,12 +15,19 @@ are different from the installed versions and update them for you.
 DFM only compiles on POSIX platforms, or optionally on Cygwin or MSYS. Because
 it uses POSIX, though, it requires no dependencies outside of the system's libc.
 However, DFM does rely on some features in C++11, namely the regex and smart
-pointers features. This, sadly, rules out OpenBSD 6.0, I believe.
+pointers features.
 
 DFM is compiled using CMake and supports compiling in-source if desired.
 Navigate into the build directory and run `cmake /path/to/dfm`. Then, assuming
 you are using the Unix Makefiles generator, run `make install clean`, which may
 require root permissions.
+
+DFM builds on most platforms that I've tested, with the exception of OpenBSD. To
+compile on OpenBSD, install the `llvm` package, which includes the clang
+compiler. Then, run cmake with CC set to clang and CXX set to clang++. One more
+note is that OpenBSD's libc also lacks one header, and a worse version of that
+function that is used from that header has been implemented for OpenBSD, and
+might not work the same as in other platfomrs.
 
 When testing on FreeBSD, I noticed that the `man` command on FreeBSD doesn't
 search /usr/local/shar/man on 12.0-CURRENT. I may be missing something, and I
