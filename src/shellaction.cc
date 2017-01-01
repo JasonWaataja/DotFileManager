@@ -48,29 +48,13 @@ ShellAction::getShellCommands() const
 bool
 ShellAction::performAction()
 {
-    FILE* shell = popen(SHELL_PROCESS, "w");
-    if (shell == NULL) {
-        perror("Failed to open bash shell");
-        return false;
-    }
-
-    /* Set the shell to exit on any failed commands. */
-    fprintf(shell, "set -e\n");
-    /* Execute commands, I'm not sure if this is the best way to do it. */
-    for (std::string command : shellCommands) {
-        fprintf(shell, "%s\n", command.c_str());
-    }
-
-    int status = pclose(shell);
-    if (status != 0) {
-        warnx("Non-zero exit status for shell");
-        for (std::string command : shellCommands) {
-            std::cerr << "\t" << command << std::endl;
-        }
-        return false;
-    }
-
-    return true;
+    if (shellCommands.size() < 1)
+        return true;
+    std::string command = shellCommands[0];
+    for (std::vector<std::string>::size_type i = 1; i < shellCommands.size();
+         i++)
+        command += "; " + shellCommands[i];
+    return system(command.c_str()) == 0;
 }
 
 void
