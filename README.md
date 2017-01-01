@@ -14,6 +14,8 @@ are different from the installed versions and update them for you.
 ## Installation
 DFM only compiles on POSIX platforms, or optionally on Cygwin or MSYS. Because
 it uses POSIX, though, it requires no dependencies outside of the system's libc.
+However, DFM does rely on some features in C++11, namely the regex and smart
+pointers features. This, sadly, rules out OpenBSD 6.0, I believe.
 
 DFM is compiled using CMake and supports compiling in-source if desired.
 Navigate into the build directory and run `cmake /path/to/dfm`. Then, assuming
