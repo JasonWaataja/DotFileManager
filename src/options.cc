@@ -155,16 +155,19 @@ DfmOptions::verifyFlagsConsistency() const
 
     if (operationsCount == 0) {
         warnx("Must specify an operation.");
+        usage();
         return false;
     }
     if (operationsCount > 1) {
         warnx("May only specify one operation.");
+        usage();
         return false;
     }
 
     if (generateConfigFileFlag || dumpConfigFileFlag) {
         if (remainingArguments.size() > 0) {
             warnx("No arguments expected when creating config file.");
+            usage();
             return false;
         }
         return true;
@@ -178,6 +181,7 @@ DfmOptions::verifyFlagsConsistency() const
     if (allFlag == (remainingArguments.size() > 0)) {
         warnx(
             "Must specify either the --all flag or at least one remaining argument, but not both.");
+        usage();
         return false;
     }
     return true;
