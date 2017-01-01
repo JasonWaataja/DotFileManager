@@ -564,11 +564,10 @@ ConfigFileReader::addDefaultCommands()
     addCommand(&ConfigFileReader::createDependenciesAction,
         Command::NO_ARGUMENT_CKECK, -1, "dependencies", "dep", "depend", NULL);
     addCommand(&ConfigFileReader::createRemoveAction,
-        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "remove", "rm", "delete",
-        "uninstall", NULL);
+        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "remove", "rem", "rm",
+        "delete", "uninstall", NULL);
     addCommand(&ConfigFileReader::createInstallAction,
-        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "install", "in", "instll",
-        "i", NULL);
+        Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "install", "in", "i", NULL);
 }
 
 bool
