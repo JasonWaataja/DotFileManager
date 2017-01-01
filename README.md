@@ -11,7 +11,21 @@ file, you can quickly set up a new system with all your configuration files and
 automatically run the necessary scripts to install, uninstall, and update them.
 Another special feature is that DFM can check if files in your syncing directory
 are different from the installed versions and update them for you.
+## Installation
+DFM only compiles on POSIX platforms, or optionally on CYGWIN or MSYS. Because
+it uses POSIX, though, it required no dependencies outside of the system's libc.
 
+DFM is compiled using CMake and supports compiling in-source if desired.
+Navigate into the build directory and run `cmake /path/to/dfm`. Then, assuming
+you are using the Unix Makefiles generator, run `make install clean`, which may
+require root permissions.
+
+When testing on FreeBSD, I noticed that the `man` command on FreeBSD doesn't
+search /usr/local/shar/man on 12.0-CURRENT. I may be missing something, and I
+could change it to install to /usr/share/man, but it makes more sense to me to
+install to `CMAKE_INSTALL_PREFIX`. To get the man pages in the default search
+path on FreBSD, run `cp man/dfm.1 /usr/share/man/man1`, or run cmake with
+`-DCMAKE_INSTALL_PREFIX=/usr`.
 ## Usage
 DFM's man page can be consulted for basic options. DFM requires on operation,
 which can be install, uninstall, or update, which operate on modules. These are
@@ -24,14 +38,12 @@ defaults to the current directory. This means you can specify the directory or
 change into the directory to run the command. DFM then attempts to open a file
 named "config.dfm" in the directory. Specifying an operation operates on the
 modules in the config file.
-
 ## Config File
 ### Modules
 The file called "config.dfm", contains sections called modules. To begin a
 section, create a line with no indentation with the name of the module and a
 colon. Then there is a list of files, and various sections corresponding to
 actions to be taken when the module is installed, uninstalled, or updated.
-
 ### Module Files
 After the module name, you may specify a list of files that the module contains.
 These lines have one level of indentation, and contain one to four parts,
