@@ -249,7 +249,7 @@ ensureDirectoriesExist(const std::string& path)
          */
         return mkdir(path.c_str(), 0777) == 0;
     }
-    return S_ISDIR(pathInfo.st_mode)
+    return S_ISDIR(pathInfo.st_mode);
 }
 
 bool
