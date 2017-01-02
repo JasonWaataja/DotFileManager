@@ -31,6 +31,12 @@
 
 namespace dfm {
 
+/*
+ * The maximum number of file descriptors for use with nftw. I have no idea
+ * what a good value actually is, but it only affects performance.
+ */
+const int MAX_FILE_DESCRIPTORS = 30;
+/* The size of the buffer to use when reading from a binary file. */
 const std::streamsize FILE_READ_SIZE = 1024;
 /*
  * Waits for the user to input a yes or no input on the current line. Accepts

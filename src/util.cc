@@ -21,24 +21,21 @@
  */
 
 #include "util.h"
+#include "config.h"
 
 #include <sys/stat.h>
 
-#include <dirent.h>
 #include <err.h>
-#include <ftw.h>
 #include <libgen.h>
 #include <pwd.h>
 #include <string.h>
 #include <unistd.h>
-
 /* For compatability with OpenBSD, which doesn't include wordexp.h. */
 #ifdef HAVE_WORDEXP_H
 #include <wordexp.h>
 #endif
 
 #include <fstream>
-#include <iostream>
 
 namespace dfm {
 
@@ -209,7 +206,9 @@ deleteDirectory(const std::string& path)
         return true;
     if (!S_ISDIR(pathInfo.st_mode))
         return false;
-    return nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) == 0;
+    return nftw(path.c_str(), deleteDirectoryHelper, MAX_FILE_DESCRIPTORS,
+               FTW_DEPTH)
+        == 0;
 }
 
 bool
@@ -221,7 +220,9 @@ deleteFile(const std::string& path)
     if (S_ISREG(pathInfo.st_mode))
         return remove(path.c_str()) == 0;
     if (S_ISDIR(pathInfo.st_mode))
-        return nftw(path.c_str(), deleteDirectoryHelper, 30, FTW_DEPTH) == 0;
+        return nftw(path.c_str(), deleteDirectoryHelper, MAX_FILE_DESCRIPTORS,
+                   FTW_DEPTH)
+            == 0;
     /* The file at path is not a regular file or a directory. */
     return false;
 }
@@ -241,13 +242,14 @@ ensureDirectoriesExist(const std::string& path)
             return false;
         /*
          * I think that using 0777 here uses the default permissions uses the
-         * user's umask, but I might be wrong.
+         * user's umask, but I might be wrong. I'm also not sure if it's bad
+         * directory to use octal here. I think it normally would be to emulate
+         * values passed to chmod in C, but I think 777 is guaranteed to be all
+         * ones.
          */
         return mkdir(path.c_str(), 0777) == 0;
     }
-    if (S_ISDIR(pathInfo.st_mode))
-        return true;
-    return false;
+    return S_ISDIR(pathInfo.st_mode)
 }
 
 bool
