@@ -114,9 +114,10 @@ ConfigFileReader::isEmptyLine(const std::string& line) const
 }
 
 bool
-ConfigFileReader::isComment(const std::string& line, int expectedIndents) const
+ConfigFileReader::isComment(
+    const std::string& line, unsigned int expectedIndents) const
 {
-    int currentIndex = 0;
+    std::string::size_type currentIndex = 0;
     for (; currentIndex < expectedIndents + 1 && currentIndex < line.length();
          currentIndex++) {
         if (line[currentIndex] == COMMENT_DELIMITER)
@@ -124,7 +125,6 @@ ConfigFileReader::isComment(const std::string& line, int expectedIndents) const
         else if (line[currentIndex] != '\t')
             return false;
     }
-
     if (currentIndex < line.length()
         && line[currentIndex] == COMMENT_DELIMITER)
         return true;
@@ -147,10 +147,8 @@ ConfigFileReader::getExpectedIndents() const
 {
     if (inShell)
         return 2;
-
     if (inModule())
         return 1;
-
     return 0;
 }
 
@@ -185,9 +183,7 @@ ConfigFileReader::isModuleLine(const std::string& line)
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
     std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
-    if (std::regex_match(line, re))
-        return false;
-    return true;
+    return std::regex_match(line, re);
 }
 
 bool
@@ -243,9 +239,8 @@ ConfigFileReader::stripIndents(const std::string& line, int indents)
 void
 ConfigFileReader::addShellAction(const std::string& line)
 {
-    if (inShell) {
+    if (inShell)
         currentShellAction->addCommand(stripIndents(line, 2));
-    }
 }
 
 void
@@ -280,22 +275,19 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
     std::regex commandRe("^(\\S+).*$");
     std::smatch matchResults;
     if (!std::regex_match(localLine, matchResults, commandRe)) {
-        errorMessage(line, "No command found");
+        errorMessage(line, "No command found.");
         return false;
     }
-
     std::string command = matchResults.str(1);
     localLine =
         localLine.substr(matchResults.position(1) + matchResults.length(1),
             localLine.length() - matchResults.length(1));
-
     std::vector<std::string> arguments;
     bool success = splitArguments(localLine, arguments);
     if (!success) {
-        errorMessage(line, "Failed to extract arguments");
+        errorMessage(line, "Failed to extract arguments.");
         return false;
     }
-
     if (isShellCommand(command)) {
         inShell = true;
         currentShellAction = new ShellAction;
@@ -306,7 +298,6 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
             currentShellAction->addCommand(match.str(1));
         return true;
     }
-
     return processCommand(command, arguments);
 }
 
@@ -369,7 +360,7 @@ bool
 ConfigFileReader::processCommand(
     const std::string& commandName, const std::vector<std::string>& arguments)
 {
-    for (Command command : commands) {
+    for (const auto& command : commands) {
         if (command.matchesName(commandName)) {
             std::shared_ptr<ModuleAction> action =
                 command.createAction(arguments, environment);
@@ -441,7 +432,6 @@ ConfigFileReader::close()
 {
     if (inModule())
         warnx("Attempting to close reader while still reading.");
-
     reader.close();
 }
 
@@ -597,7 +587,6 @@ ConfigFileReader::splitArguments(
     const std::string& argumentsLine, std::vector<std::string>& arguments)
 {
     arguments.clear();
-
     /*
      * Most of these could be done with a char lastChar variable, but it's
      * harder for me to think through the logic that way.
@@ -609,7 +598,6 @@ ConfigFileReader::splitArguments(
     bool lastCharQuoteInNonQuoteWord = false;
 
     std::string currentWord;
-
     /*
      * I could probably do something to make this loop more readable, but I
      * don't want to. I tried nesting some of the statements but that led
@@ -619,7 +607,6 @@ ConfigFileReader::splitArguments(
     for (std::string::size_type i = 0; i < argumentsLine.length(); i++) {
         char currentChar = argumentsLine[i];
         bool isWhite = isWhiteSpace(currentChar);
-
         if (inWord && inQuotes && currentChar == '"') {
             if (!lastCharEscape) {
                 if (currentWord.length() == 0)
@@ -679,7 +666,6 @@ ConfigFileReader::splitArguments(
             lastCharClosingQuote = false;
         }
     }
-
     if (inQuotes) {
         warnx("Unclosed quote in word: \"%s\".", argumentsLine.c_str());
         return false;
@@ -690,7 +676,6 @@ ConfigFileReader::splitArguments(
     }
     if (inWord)
         arguments.push_back(currentWord);
-
     return true;
 }
 

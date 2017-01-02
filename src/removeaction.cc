@@ -22,9 +22,9 @@
 
 #include "removeaction.h"
 
-#include <iostream>
-
 #include <err.h>
+
+#include <iostream>
 
 #include "util.h"
 

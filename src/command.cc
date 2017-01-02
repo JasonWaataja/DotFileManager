@@ -88,9 +88,8 @@ Command::getArgumentCheckingType() const
 int
 Command::getExpectedArgumentCount() const
 {
-    if (argumentCheckingType == NO_ARGUMENT_CKECK)
-        return -1;
-    return expectedArgumentCount;
+    return (argumentCheckingType != NO_ARGUMENT_CKECK) ? expectedArgumentCount
+                                                       : -1;
 }
 
 const std::vector<std::string>&
@@ -131,23 +130,21 @@ Command::setCreateActionFunction(std::function<std::shared_ptr<ModuleAction>(
 }
 
 std::shared_ptr<ModuleAction>
-Command::createAction(
-    const std::vector<std::string>& arguments, ReaderEnvironment& environment)
+Command::createAction(const std::vector<std::string>& arguments,
+    ReaderEnvironment& environment) const
 {
     if (argumentCheckingType == EXACT_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountEqual(arguments, expectedArgumentCount))
         return std::shared_ptr<ModuleAction>();
-
     if (argumentCheckingType == MINIMUM_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountAtLeast(arguments, expectedArgumentCount))
         return std::shared_ptr<ModuleAction>();
-
     return createActionFunction(arguments, environment);
 }
 
 std::shared_ptr<ModuleAction>
 Command::createAction(
-    int argc, const std::string argv[], ReaderEnvironment& environment)
+    int argc, const std::string argv[], ReaderEnvironment& environment) const
 {
     assert(argc >= 0);
     std::vector<std::string> arguments(argc);
@@ -174,19 +171,18 @@ Command::checkArgumentCountEqual(
 {
     assert(argc >= 0);
 
-    if (arguments.size() != argc) {
-        /*
-         * Used a string stream here because it makes things more portable. On
-         * my system, arguments.size() is an unsigned long, but I'm not sure if
-         * that will be true everywhere so I went with this.
-         */
-        std::ostringstream messageStream;
-        messageStream << "Incorrect number of arguments, expected exactly "
-                      << argc << ", got " << arguments.size() << ".";
-        warnx("%s", messageStream.str().c_str());
-        return false;
-    }
-    return true;
+    if (arguments.size() == argc)
+        return true;
+    /*
+     * Used a string stream here because it makes things more portable. On
+     * my system, arguments.size() is an unsigned long, but I'm not sure if
+     * that will be true everywhere so I went with this.
+     */
+    std::ostringstream messageStream;
+    messageStream << "Incorrect number of arguments, expected exactly " << argc
+                  << ", got " << arguments.size() << ".";
+    warnx("%s", messageStream.str().c_str());
+    return false;
 }
 
 bool
@@ -195,19 +191,18 @@ Command::checkArgumentCountAtLeast(
 {
     assert(argc >= 0);
 
-    if (arguments.size() < argc) {
-        /*
-         * Used a string stream here because it makes things more portable. On
-         * my system, arguments.size() is an unsigned long, but I'm not sure if
-         * that will be true everywhere so I went with this.
-         */
-        std::ostringstream messageStream;
-        messageStream << "Incorrect number of arguments, expected at least "
-                      << argc << ", got " << arguments.size() << ".";
-        warnx("%s", messageStream.str().c_str());
-        return false;
-    }
-    return true;
+    if (arguments.size() == argc)
+        return true;
+    /*
+     * Used a string stream here because it makes things more portable. On
+     * my system, arguments.size() is an unsigned long, but I'm not sure if
+     * that will be true everywhere so I went with this.
+     */
+    std::ostringstream messageStream;
+    messageStream << "Incorrect number of arguments, expected at least "
+                  << argc << ", got " << arguments.size() << ".";
+    warnx("%s", messageStream.str().c_str());
+    return false;
 }
 
 bool

@@ -49,24 +49,25 @@ Module::setName(const std::string& name)
 bool
 Module::install() const
 {
-    for (std::shared_ptr<ModuleAction> action : installActions) {
+    for (const auto& action : installActions) {
         bool status = action->performAction();
         if (!status) {
-            warnx("Failed to install module \"%s\".", action->getName().c_str());
+            warnx(
+                "Failed to install module \"%s\".", action->getName().c_str());
             return false;
         }
     }
-
     return true;
 }
 
 bool
 Module::uninstall() const
 {
-    for (std::shared_ptr<ModuleAction> action : uninstallActions) {
+    for (const auto& action : uninstallActions) {
         bool status = action->performAction();
         if (!status) {
-            warnx("Failed to uninstall module \"%s\".", action->getName().c_str());
+            warnx("Failed to uninstall module \"%s\".",
+                action->getName().c_str());
             return false;
         }
     }
@@ -77,10 +78,11 @@ Module::uninstall() const
 bool
 Module::update() const
 {
-    for (std::shared_ptr<ModuleAction> action : updateActions) {
+    for (const auto& action : updateActions) {
         bool status = action->performAction();
         if (!status) {
-            warnx("Failed to update module \"%s\".", action->getName().c_str());
+            warnx(
+                "Failed to update module \"%s\".", action->getName().c_str());
             return false;
         }
     }

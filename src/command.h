@@ -68,9 +68,9 @@ public:
 
     std::shared_ptr<ModuleAction> createAction(
         const std::vector<std::string>& arguments,
-        ReaderEnvironment& environment);
+        ReaderEnvironment& environment) const;
     std::shared_ptr<ModuleAction> createAction(
-        int argc, const std::string[], ReaderEnvironment& environment);
+        int argc, const std::string[], ReaderEnvironment& environment) const;
 
     /*
      * Returns whether or not the given name matches any one of the names in

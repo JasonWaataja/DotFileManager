@@ -53,7 +53,6 @@ DotFileManager::run()
         return EXIT_FAILURE;
     if (!performOperation())
         return EXIT_FAILURE;
-
     return EXIT_SUCCESS;
 }
 
@@ -73,10 +72,9 @@ DotFileManager::initializeOptions()
      * Change directories to the one specified by the options. This is so that
      * relative paths specified in the config file work.
      */
-    if (options->hasSourceDirectory) {
-        if (chdir(options->sourceDirectory.c_str()) == -1)
-            err(EXIT_FAILURE, "Failed to change directory.");
-    }
+    if (options->hasSourceDirectory && chdir(options->sourceDirectory.c_str())
+        != 0)
+        err(EXIT_FAILURE, "Failed to change directory.");
     return true;
 }
 
@@ -84,38 +82,31 @@ bool
 DotFileManager::readModules()
 {
     std::string programDirectory;
-    if (options->hasSourceDirectory)
-        programDirectory = options->sourceDirectory;
-    else
-        programDirectory = getCurrentDirectory();
-
+    programDirectory = (options->hasSourceDirectory) ? options->sourceDirectory
+                                                     : getCurrentDirectory();
     std::string configFilePath = programDirectory + "/" + CONFIG_FILE_NAME;
 
     ConfigFileReader reader(configFilePath);
     reader.setOptions(options);
 
     bool status = reader.readModules(std::back_inserter(modules));
-
-    if (!status) {
+    if (!status)
         warnx("Failed to read modules.");
-        return false;
-    }
-
-    return true;
+    reader.close();
+    return status;
 }
 
 bool
 DotFileManager::performOperation()
 {
     if (options->allFlag) {
-        for (Module module : modules) {
+        for (const auto& module : modules) {
             if (!operateOn(module))
                 return false;
         }
         return true;
     }
-
-    for (std::string moduleName : options->remainingArguments) {
+    for (const auto& moduleName : options->remainingArguments) {
         auto nameMatches = [&moduleName](
             const Module& module) { return moduleName == module.getName(); };
         std::vector<Module>::iterator modulePosition =
@@ -124,7 +115,7 @@ DotFileManager::performOperation()
             if (!operateOn(*modulePosition))
                 return false;
         } else {
-            warnx("Unknown module %s.", moduleName.c_str());
+            warnx("Unknown module \"%s\".", moduleName.c_str());
             return false;
         }
     }
@@ -149,7 +140,6 @@ DotFileManager::operateOn(const Module& module)
         if (!getYesOrNo(prompt))
             return true;
     }
-
     if (options->installModulesFlag)
         status = module.install();
     else if (options->uninstallModulesFlag)
@@ -157,7 +147,7 @@ DotFileManager::operateOn(const Module& module)
     else if (options->updateModulesFlag)
         status = module.update();
     else {
-        warnx("No operation for module %s.", module.getName().c_str());
+        warnx("No operation for module \"%s\".", module.getName().c_str());
         return false;
     }
     return status;

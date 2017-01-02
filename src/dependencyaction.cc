@@ -78,7 +78,7 @@ DependencyAction::setDependencies(const char* firstDependency, ...)
     const char* dependency = va_arg(argumentList, const char*);
     while (dependency != NULL) {
         dependencies.push_back(std::string(dependency));
-        va_arg(argumentList, const char*);
+        dependency = va_arg(argumentList, const char*);
     }
     va_end(argumentList);
 }
@@ -92,9 +92,9 @@ DependencyAction::performAction()
         std::cout << std::endl;
         std::cout << getDependenciesAsString() << std::endl;
         std::cout << std::endl;
-        std::cout << "Enter command to install dependencies or leave blank to "
-                     "do nothing."
-                  << std::endl;
+        std::cout
+            << "Enter command to install dependencies or leave blank to do nothing."
+            << std::endl;
 
         /*
          * Print a dollar sign and a space to simulate being in a shell. I'm
@@ -104,7 +104,6 @@ DependencyAction::performAction()
         std::cout << "$ ";
         std::string userInput;
         std::getline(std::cin, userInput);
-
         if (userInput.length() != 0) {
             int status = system(userInput.c_str());
             if (status == -1) {
@@ -125,7 +124,6 @@ DependencyAction::performAction()
             }
         }
     }
-
     return true;
 }
 
@@ -133,11 +131,9 @@ std::string
 DependencyAction::getDependenciesAsString(const std::string& delimiter) const
 {
     std::string dependencyString;
-    if (dependencies.size() > 0)
-        dependencyString = dependencies[0];
-    else
+    if (dependencies.size() < 1)
         return dependencyString;
-
+    dependencyString = dependencies[0];
     for (std::vector<std::string>::size_type i = 1; i < dependencies.size();
          i++) {
         dependencyString += delimiter + dependencies[i];

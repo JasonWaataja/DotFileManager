@@ -194,8 +194,11 @@ private:
      */
     std::vector<Command> commands;
 
+    /*
+     * This is the function that determines which commands can be run and what
+     * kind of arguments checking they require.
+     */
     void addDefaultCommands();
-
     /* Equivalent to line.length() == 0. */
     bool isEmptyLine(const std::string& line) const;
     /*
@@ -207,7 +210,8 @@ private:
      *
      * Returns whether or not the given line is a comment.
      */
-    bool isComment(const std::string& line, int expectedIndents) const;
+    bool isComment(
+        const std::string& line, unsigned int expectedIndents) const;
     /* Returns the number of '\t' characters at the start of the line. */
     int indentCount(const std::string& line) const;
     /*

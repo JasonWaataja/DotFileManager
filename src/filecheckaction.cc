@@ -25,7 +25,6 @@
 #include <sys/stat.h>
 
 #include <assert.h>
-#include <dirent.h>
 #include <err.h>
 #include <libgen.h>
 #include <stdlib.h>
@@ -106,19 +105,12 @@ FileCheckAction::shouldUpdateRegularFile(
     }
     std::string sourceLine;
     std::string destinationLine;
-
     bool sourceReadStatus = false;
     bool destinationReadStatus = false;
-    /* I wish I knew how to directly assign a getline status to a bool. */
-    if (std::getline(sourceReader, sourceLine))
-        sourceReadStatus = true;
-    else
-        sourceReadStatus = false;
 
-    if (std::getline(destinationReader, destinationLine))
-        destinationReadStatus = true;
-    else
-        destinationReadStatus = false;
+    sourceReadStatus = (std::getline(sourceReader, sourceLine)) ? true : false;
+    destinationReadStatus =
+        (std::getline(destinationReader, destinationLine)) ? true : false;
 
     if (sourceReadStatus != destinationReadStatus) {
         sourceReader.close();
@@ -131,16 +123,10 @@ FileCheckAction::shouldUpdateRegularFile(
             destinationReader.close();
             return true;
         }
-        if (std::getline(sourceReader, sourceLine))
-            sourceReadStatus = true;
-        else
-            sourceReadStatus = false;
-
-        if (std::getline(destinationReader, destinationLine))
-            destinationReadStatus = true;
-        else
-            destinationReadStatus = false;
-
+        sourceReadStatus =
+            (std::getline(sourceReader, sourceLine)) ? true : false;
+        destinationReadStatus =
+            (std::getline(destinationReader, destinationLine)) ? true : false;
         if (sourceReadStatus != destinationReadStatus) {
             sourceReader.close();
             destinationReader.close();
@@ -269,8 +255,13 @@ FileCheckAction::performAction()
     if (sourcePath == NULL)
         err(EXIT_FAILURE, NULL);
     char* destinationPath = strdup(this->destinationPath.c_str());
-    if (destinationPath == NULL)
+    /*
+     * I'm not sure if I still should free sourcePath since it's a fatal error.
+     * */
+    if (destinationPath == NULL) {
+        free(sourcePath);
         err(EXIT_FAILURE, NULL);
+    }
 
     /*
      * I'm making copies here because on some system the returned pointer is
@@ -281,8 +272,11 @@ FileCheckAction::performAction()
      */
     std::string sourceBasename = basename(sourcePath);
     std::string sourceDirectory = dirname(sourcePath);
+    free(sourcePath);
+
     std::string destinationBasename = basename(destinationPath);
     std::string destinationDirectory = dirname(destinationPath);
+    free(destinationPath);
 
     InstallAction action(sourceBasename, sourceDirectory, destinationBasename,
         destinationDirectory);
