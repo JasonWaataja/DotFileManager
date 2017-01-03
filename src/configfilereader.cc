@@ -145,6 +145,8 @@ ConfigFileReader::indentCount(const std::string& line) const
 int
 ConfigFileReader::getExpectedIndents() const
 {
+    if (inVariables)
+        return 0;
     if (inShell)
         return 2;
     if (inModule())
@@ -738,5 +740,13 @@ ConfigFileReader::setModuleActionFlags(ModuleAction* action)
 {
     action->setVerbose(options->verboseFlag);
     action->setInteractive(options->interactiveFlag);
+}
+
+bool
+ConfigFileReader::isAssignmentLine(const std::string& line)
+{
+    if (isEmptyLine(line) || isCommentLine(line))
+        return true;
+    
 }
 } /* namespace dfm */

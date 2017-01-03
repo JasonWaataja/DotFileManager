@@ -41,6 +41,46 @@ public:
     const std::string& getDirectory() const;
     void setDirectory(const std::string& directory);
 
+    /*
+     * Sets the variable given by name to value. Overwrites the current value
+     * if it exists. Calling hasVariable() after this method will return true.
+     */
+    void setVariable(const std::string& name, const std::string& value);
+    /*
+     * Removes the value of the variable given by name so that it has no value
+     * and hasVariable returns false. Diffrent from setVariable(name, "")
+     * because the variable still exists, its value is just the empty string.
+     * With unsetVariable, that access fails.
+     */
+    void unsetVariable(const std::string& name);
+    /*
+     * Returns whether or not the given variable is currently in the
+     * environment. This is true if setVariable has been called, but returns
+     * false if unsetVariable() is called after that.
+     *
+     * This method is meant to be called directory before getVariable() so that
+     * it doesn't throw an error when accessing it.
+     *
+     * Returns whether or not the environment has a variable with name.
+     */
+    bool hasVariable(const std::string& name);
+    /*
+     * Gets the value of the variable given by name. Throws an
+     * std::runtime_error if the variable is not set in the current
+     * environment.
+     *
+     * Returns the value of the variable given by name if it exists.
+     */
+    std::string getVariable(const std::string& name);
+    /*
+     * First checks to see if the variable given by name exists. If it does,
+     * true is returned and value is set to the value. Returns false if the
+     * variable is not set and dosen't affect value.
+     *
+     * Returns whether or not the variable given by name is set.
+     */
+    bool accessVariable(const std::string& name, std::string& value);
+
 private:
     std::shared_ptr<DfmOptions> options;
     std::string directory;

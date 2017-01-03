@@ -149,6 +149,11 @@ private:
      */
     ReaderEnvironment environment;
     /*
+     * Wheter or not the reader is at the start of the file and currently
+     * setting variables.
+     */
+    bool inVariables = true;
+    /*
      * Whether or not the reader is currently reading files to install. Lines
      * are processed as files to intall
      */
@@ -229,6 +234,15 @@ private:
      */
     std::string stripIndents(const std::string& line, int indents);
     /*
+     * Tests to see if line assigns a variable. A line assigns a variable if
+     * line begins with no whitespace, the first token is a valid variable
+     * name, the second token is an equals sign, and the third is either a
+     * normal string or a quoted string.
+     *
+     * Returns whether or not line is a line that assigns a variable.
+     */
+    bool isAssignmentLine(const std::string& line);
+    /*
      * Tests to see if the line starts a module and sets moduleName to the name
      * if this is so. These don't check if the line is blank or a comment and
      * process as is because it is assumes the checking was already done.
@@ -276,6 +290,14 @@ private:
     void addShellAction(const std::string& line);
     /* Behavior changes if install or uninstall. */
     void flushShellAction();
+    /*
+     * Assumes that line represents an assignment. Calls the correct variable
+     * methods on environment that assigns the variable values correctly.
+     *
+     * Returns true if the line was well formed and the variable was correctly
+     * set, false otherwise.
+     */
+    bool processLineAsAssignment(const std::string& line);
     /*
      * Executes command or starts new shell.
      *
@@ -395,6 +417,7 @@ ConfigFileReader::readModules(OutputIterator output)
     }
 
     currentLineNo = 1;
+    inVariables = true;
     inFiles = false;
     inModuleInstall = false;
     inModuleUninstall = false;
@@ -434,6 +457,8 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 
     int indents = indentCount(line);
 
+    if (inVariables) {
+    }
     if (inShell) {
         if (indents >= 2) {
             addShellAction(line);
