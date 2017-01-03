@@ -746,7 +746,16 @@ bool
 ConfigFileReader::isAssignmentLine(const std::string& line)
 {
     if (isEmptyLine(line) || isCommentLine(line))
-        return true;
-    
+        return false;
+    std::regex assignmentRe("[^\\s:]+\\s+=\\s+\\S+\\s*");
+}
+
+bool
+ConfigFileReader::isAssignmentLine(const std::string& line, const std::string&
+    name, const std::string& value)
+{
+    if (isEmptyLine(line) || isCommentLine(line))
+        return false;
+    std::regex assignmentRe("([^\\s:])+\\s+=\\s+(\\S+)\\s*");
 }
 } /* namespace dfm */

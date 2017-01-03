@@ -242,6 +242,8 @@ private:
      * Returns whether or not line is a line that assigns a variable.
      */
     bool isAssignmentLine(const std::string& line);
+    bool isAssignmentLIne(const std::string& line, const std::string& name,
+        const std::string& value);
     /*
      * Tests to see if the line starts a module and sets moduleName to the name
      * if this is so. These don't check if the line is blank or a comment and
