@@ -45,6 +45,7 @@ DfmOptions::DfmOptions()
       interactiveFlag(false),
       generateConfigFileFlag(false),
       dumpConfigFileFlag(false),
+      printModulesFlag(false),
       hasSourceDirectory(false)
 {
 }
@@ -65,6 +66,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         { "verbose", no_argument, NULL, 'v' },
         { "generate-config-file", no_argument, NULL, 'g' },
         { "dump-config-file", no_argument, NULL, 'G' },
+        { "print-modules", no_argument, NULL, 'p' },
         { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
 
     int getoptValue = getopt_long_only(
@@ -105,6 +107,9 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
         case 'd':
             hasSourceDirectory = true;
             sourceDirectory = shellExpandPath(optarg);
+            break;
+        case 'p':
+            printModulesFlag = true;
             break;
         case 'v':
             verboseFlag = true;
@@ -152,6 +157,8 @@ DfmOptions::verifyFlagsConsistency() const
         operationsCount++;
     if (dumpConfigFileFlag)
         operationsCount++;
+    if (printModulesFlag)
+        operationsCount++;
 
     if (operationsCount == 0) {
         warnx("Must specify an operation.");
@@ -167,6 +174,14 @@ DfmOptions::verifyFlagsConsistency() const
     if (generateConfigFileFlag || dumpConfigFileFlag) {
         if (remainingArguments.size() > 0) {
             warnx("No arguments expected when creating config file.");
+            usage();
+            return false;
+        }
+        return true;
+    }
+    if (printModulesFlag) {
+        if (remainingArguments.size() > 0) {
+            warnx("No arguments expected when printing modules.");
             usage();
             return false;
         }
@@ -207,7 +222,7 @@ void
 DfmOptions::usage()
 {
     std::cout
-        << "usage: dfm [-Iv] [-c|-g|-G|-i|-u] [-d directory] [-a|[MODULES]]"
+        << "usage: dfm [-Iv] [-c|-g|-G|-i|-u|-p] [-d directory] [-a|[MODULES]]"
         << std::endl;
 }
 } /* namespace dfm */

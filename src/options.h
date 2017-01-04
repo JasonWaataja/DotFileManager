@@ -29,7 +29,7 @@
 namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
-const char GETOPT_SHORT_OPTIONS[] = "iuaIcvgGd:";
+const char GETOPT_SHORT_OPTIONS[] = "iuaIcvgGpd:";
 
 class DfmOptions {
 public:
@@ -55,6 +55,7 @@ public:
     bool interactiveFlag;
     bool generateConfigFileFlag;
     bool dumpConfigFileFlag;
+    bool printModulesFlag;
     std::vector<std::string> remainingArguments;
     bool hasSourceDirectory;
     std::string sourceDirectory;

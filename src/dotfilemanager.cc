@@ -51,6 +51,10 @@ DotFileManager::run()
         return (createConfigFile()) ? EXIT_SUCCESS : EXIT_FAILURE;
     if (!readModules())
         return EXIT_FAILURE;
+    if (options->printModulesFlag) {
+        printModules();
+        return EXIT_SUCCESS;
+    }
     if (!performOperation())
         return EXIT_FAILURE;
     return EXIT_SUCCESS;
@@ -72,8 +76,8 @@ DotFileManager::initializeOptions()
      * Change directories to the one specified by the options. This is so that
      * relative paths specified in the config file work.
      */
-    if (options->hasSourceDirectory && chdir(options->sourceDirectory.c_str())
-        != 0)
+    if (options->hasSourceDirectory
+        && chdir(options->sourceDirectory.c_str()) != 0)
         err(EXIT_FAILURE, "Failed to change directory.");
     return true;
 }
@@ -207,5 +211,12 @@ DotFileManager::writeConfigFile(
     }
     free(entries);
     return true;
+}
+
+void
+DotFileManager::printModules() const
+{
+    for (const auto& module : modules)
+        std::cout << module.getName() << std::endl;
 }
 } /* namespace dfm */

@@ -55,6 +55,11 @@ private:
      * Returns true on success, false on failure.
      */
     bool createConfigFile() const;
+    /*
+     * Print modules to standard output. Assumes the config file has already
+     * been read
+     */
+    void printModules() const;
 
 private:
     /*
