@@ -42,6 +42,7 @@ ConfigFileReader::ConfigFileReader(const std::string& path)
     options = std::shared_ptr<DfmOptions>(new DfmOptions());
     environment = ReaderEnvironment(options);
     addDefaultCommands();
+    addDefaultVariables();
 }
 
 ConfigFileReader::ConfigFileReader(
@@ -145,6 +146,8 @@ ConfigFileReader::indentCount(const std::string& line) const
 int
 ConfigFileReader::getExpectedIndents() const
 {
+    if (inVariables)
+        return 0;
     if (inShell)
         return 2;
     if (inModule())
@@ -315,7 +318,7 @@ ConfigFileReader::processLineAsFile(const std::string& line)
     RemoveAction* removeAction = nullptr;
     FileCheckAction* checkAction = nullptr;
     std::string currentDirectory = environment.getDirectory();
-    std::string homeDirectory = getHomeDirectory();
+    std::string homeDirectory = environment.getVariable("default-directory");
     std::string sourcePath;
     std::string destinationPath;
     if (argumentCount == 1) {
@@ -523,9 +526,11 @@ ConfigFileReader::createInstallAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     InstallAction* action = nullptr;
+    std::string installationDirectory =
+        shellExpandPath(environment.getVariable("default-directory"));
     if (arguments.size() == 1)
-        action = new InstallAction(arguments[0], environment.getDirectory(),
-            shellExpandPath("$HOME"));
+        action = new InstallAction(
+            arguments[0], environment.getDirectory(), installationDirectory);
     /* Assume that we are working in the current directory. */
     if (arguments.size() == 2)
         action = new InstallAction(arguments[0], environment.getDirectory(),
@@ -558,6 +563,12 @@ ConfigFileReader::addDefaultCommands()
         "delete", "uninstall", NULL);
     addCommand(&ConfigFileReader::createInstallAction,
         Command::MINIMUM_COUNT_ARGUMENT_CHECK, 1, "install", "in", "i", NULL);
+}
+
+void
+ConfigFileReader::addDefaultVariables()
+{
+    environment.setVariable("default-directory", getHomeDirectory());
 }
 
 bool
@@ -738,5 +749,57 @@ ConfigFileReader::setModuleActionFlags(ModuleAction* action)
 {
     action->setVerbose(options->verboseFlag);
     action->setInteractive(options->interactiveFlag);
+}
+
+bool
+ConfigFileReader::isAssignmentLine(const std::string& line)
+{
+    if (isEmptyLine(line) || isComment(line, 0))
+        return false;
+    /*
+     * Match a group of non-white characters at the start of a line that also
+     * cannot contain a colon characters. Then some whitespace and an equals
+     * sign. Then a group of words with optional whitespace in between them and
+     * some optionsal space at the end. Even though this method doesn't save
+     * the variable name or value, it still has to capture the words here to
+     * make sure that it follows the rules of quotations.
+     */
+    std::regex assignmentRe("^[^\\s:]+\\s+=((?:\\s*\\S+)+)\\s*$");
+    std::smatch match;
+    if (!std::regex_match(line, match, assignmentRe))
+        return false;
+    std::string valueWords = match.str(1);
+    std::vector<std::string> valueArguments;
+    return (splitArguments(valueWords, valueArguments))
+        ? valueArguments.size() == 1
+        : false;
+}
+
+bool
+ConfigFileReader::isAssignmentLine(
+    const std::string& line, std::string& name, std::string& value)
+{
+    if (isEmptyLine(line) || isComment(line, 0))
+        return false;
+    /*
+     * Match a group of non-white characters at the start of a line that also
+     * cannot contain a colon characters. Then some whitespace and an equals
+     * sign. Then a group of words with optional whitespace in between them and
+     * some optionsal space at the end. Capture the initial group, as well as
+     * the part containing all the words.
+     */
+    std::regex assignmentRe("^([^\\s:]+)\\s+=((?:\\s*\\S+)+)\\s*$");
+    std::smatch match;
+    if (!std::regex_match(line, match, assignmentRe))
+        return false;
+    name = match.str(1);
+    std::string valueWords = match.str(2);
+    std::vector<std::string> valueArguments;
+    if (!splitArguments(valueWords, valueArguments))
+        return false;
+    if (valueArguments.size() != 1)
+        return false;
+    value = valueArguments[0];
+    return true;
 }
 } /* namespace dfm */
