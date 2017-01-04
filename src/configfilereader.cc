@@ -526,9 +526,11 @@ ConfigFileReader::createInstallAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     InstallAction* action = nullptr;
+    std::string installationDirectory =
+        shellExpandPath(environment.getVariable("default-directory"));
     if (arguments.size() == 1)
-        action = new InstallAction(arguments[0], environment.getDirectory(),
-            shellExpandPath("$HOME"));
+        action = new InstallAction(
+            arguments[0], environment.getDirectory(), installationDirectory);
     /* Assume that we are working in the current directory. */
     if (arguments.size() == 2)
         action = new InstallAction(arguments[0], environment.getDirectory(),

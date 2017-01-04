@@ -466,9 +466,10 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
     if (inVariables) {
         std::string variableName;
         std::string variableValue;
-        if (isAssignmentLine(line, variableName, variableValue))
+        if (isAssignmentLine(line, variableName, variableValue)) {
             environment.setVariable(variableName, variableValue);
-        else
+            return true;
+        } else
             inVariables = false;
     }
     if (inShell) {

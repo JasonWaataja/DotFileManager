@@ -50,6 +50,16 @@ ShellAction::performAction()
 {
     if (shellCommands.size() < 1)
         return true;
+    if (isVerbose() && shellCommands.size() > 0) {
+        std::cout << "Executing with shell:";
+        if (shellCommands.size() == 1)
+            std::cout << " \"" << shellCommands[0] << "\"" << std::endl;
+        else {
+            std::cout << std::endl;
+            for (const auto& commandName : shellCommands)
+                std::cout << "\t" << commandName << std::endl;
+        }
+    }
     std::string command = shellCommands[0];
     for (std::vector<std::string>::size_type i = 1; i < shellCommands.size();
          i++)
