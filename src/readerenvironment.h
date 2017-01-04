@@ -24,6 +24,7 @@
 #ifndef READER_ENVIRONMENT_H
 #define READER_ENVIRONMENT_H
 
+#include <map>
 #include <memory>
 
 #include "options.h"
@@ -84,6 +85,7 @@ public:
 private:
     std::shared_ptr<DfmOptions> options;
     std::string directory;
+    std::map<std::string, std::string> variables;
 };
 } /* namespace 2016 */
 

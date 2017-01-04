@@ -204,6 +204,11 @@ private:
      * kind of arguments checking they require.
      */
     void addDefaultCommands();
+    /*
+     * Sets some initial variables that are required for normal functioning to
+     * work to sensible defaults.
+     */
+    void addDefaultVariables();
     /* Equivalent to line.length() == 0. */
     bool isEmptyLine(const std::string& line) const;
     /*
@@ -242,8 +247,8 @@ private:
      * Returns whether or not line is a line that assigns a variable.
      */
     bool isAssignmentLine(const std::string& line);
-    bool isAssignmentLIne(const std::string& line, const std::string& name,
-        const std::string& value);
+    bool isAssignmentLine(
+        const std::string& line, std::string& name, std::string& value);
     /*
      * Tests to see if the line starts a module and sets moduleName to the name
      * if this is so. These don't check if the line is blank or a comment and
@@ -452,7 +457,6 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
 {
     if (isEmptyLine(line))
         return true;
-
     int expectedIndents = getExpectedIndents();
     if (isComment(line, expectedIndents))
         return true;
@@ -460,6 +464,12 @@ ConfigFileReader::processLine(const std::string& line, OutputIterator output)
     int indents = indentCount(line);
 
     if (inVariables) {
+        std::string variableName;
+        std::string variableValue;
+        if (isAssignmentLine(line, variableName, variableValue))
+            environment.setVariable(variableName, variableValue);
+        else
+            inVariables = false;
     }
     if (inShell) {
         if (indents >= 2) {

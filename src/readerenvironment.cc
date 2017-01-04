@@ -61,4 +61,41 @@ ReaderEnvironment::setDirectory(const std::string& directory)
 {
     this->directory = directory;
 }
+
+void
+ReaderEnvironment::setVariable(
+    const std::string& name, const std::string& value)
+{
+    variables[name] = value;
+}
+
+void
+ReaderEnvironment::unsetVariable(const std::string& name)
+{
+    variables.erase(name);
+}
+
+bool
+ReaderEnvironment::hasVariable(const std::string& name)
+{
+    return variables.find(name) != variables.end();
+}
+
+std::string
+ReaderEnvironment::getVariable(const std::string& name)
+{
+    if (!hasVariable(name))
+        throw std::runtime_error("Getting non-existent variable " + name);
+    return variables.at(name);
+}
+
+bool
+ReaderEnvironment::accessVariable(const std::string& name, std::string& value)
+{
+    if (hasVariable(name)) {
+        value = variables.at(name);
+        return true;
+    } else
+        return false;
+}
 } /* namespace dfm */
