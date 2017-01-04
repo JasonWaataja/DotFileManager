@@ -2,7 +2,7 @@
 .SH NAME
 dfm \- A configuration file manager
 .SH SYNOPSIS
-dfm [-Iv] [-c|-g|-G|-i|-u] [-d directory] [-a|[MODULES]]
+dfm [-Iv] [-c|-g|-G|-i|-u|-p] [-d directory] [-a|[MODULES]]
 .SH DESCRIPTION
 Used for installing, uninstalling, and updating configuration files for a user.
 It operates on a directory, and uses a file called config.dfm. To get started,
@@ -34,6 +34,8 @@ write it to standard output.
 Install the given modules
 .IP "-I, --interactive"
 Ask for confirmation when operating on modules, manipulating files, etc.
+.IP "-p --print-modules"
+Print the name of each module read from the config file
 .IP "-u, --uninstall"
 Uninstall the given modules
 .IP "-v, --verbose"
