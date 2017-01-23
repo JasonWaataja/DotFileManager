@@ -23,6 +23,9 @@
 #include "removeaction.h"
 
 #include <err.h>
+#include <libgen.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <iostream>
 
@@ -30,16 +33,20 @@
 
 namespace dfm {
 
-RemoveAction::RemoveAction(const std::string& filePath)
-    : ModuleAction(DEFAULT_REMOVE_ACTION_NAME), filePath(filePath)
+RemoveAction::RemoveAction() : ModuleAction(DEFAULT_REMOVE_ACTION_NAME)
 {
+}
+
+RemoveAction::RemoveAction(const std::string& filePath) : filePath(filePath)
+{
+    updateName();
 }
 
 RemoveAction::RemoveAction(
     const std::string& filename, const std::string& directory)
-    : ModuleAction(DEFAULT_REMOVE_ACTION_NAME),
-      filePath(directory + "/" + filename)
+    : filePath(directory + "/" + filename)
 {
+    updateName();
 }
 
 const std::string&
@@ -52,6 +59,7 @@ void
 RemoveAction::setFilePath(const std::string& filePath)
 {
     this->filePath = filePath;
+    updateName();
 }
 
 void
@@ -59,6 +67,7 @@ RemoveAction::setFilePath(
     const std::string& filename, const std::string& directory)
 {
     filePath = directory + "/" + filename;
+    updateName();
 }
 
 bool
@@ -72,5 +81,22 @@ RemoveAction::performAction()
     }
     verboseMessage("Removing %s.\n\n", filePath.c_str());
     return deleteFile(filePath);
+}
+
+void
+RemoveAction::updateName()
+{
+    char* pathCopy = strdup(filePath.c_str());
+    char* name = basename(pathCopy);
+    setName(name);
+    free(pathCopy);
+}
+
+std::vector<std::string>
+RemoveAction::createConfigLines() const
+{
+    std::vector<std::string> lines;
+    lines.push_back("remove " + filePath);
+    return lines;
 }
 } /* namespace dfm */

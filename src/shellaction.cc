@@ -45,6 +45,12 @@ ShellAction::getShellCommands() const
     return shellCommands;
 }
 
+void
+ShellAction::setShellCommands(const std::vector<std::string>& shellCommands)
+{
+    this->shellCommands = shellCommands;
+}
+
 bool
 ShellAction::performAction()
 {
@@ -71,5 +77,21 @@ void
 ShellAction::addCommand(const std::string& command)
 {
     shellCommands.push_back(command);
+}
+
+void
+ShellAction::updateName()
+{
+    setName("shell command");
+}
+
+std::vector<std::string>
+ShellAction::createConfigLines() const
+{
+    std::vector<std::string> lines;
+    lines.push_back("sh");
+    for (const auto& command : shellCommands)
+        lines.push_back("\t" + command);
+    return lines;
 }
 } /* namespace dfm */

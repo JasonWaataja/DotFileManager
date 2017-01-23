@@ -32,16 +32,17 @@ namespace dfm {
 
 DependencyAction::DependencyAction() : dependencies()
 {
+    updateName();
 }
 
 DependencyAction::DependencyAction(
     const std::vector<std::string>& dependencies)
     : dependencies(dependencies)
 {
+    updateName();
 }
 
 DependencyAction::DependencyAction(const char* firstDependency, ...)
-    : dependencies()
 {
     dependencies.push_back(std::string(firstDependency));
 
@@ -53,6 +54,7 @@ DependencyAction::DependencyAction(const char* firstDependency, ...)
         dependency = va_arg(argumentList, const char*);
     }
     va_end(argumentList);
+    updateName();
 }
 
 const std::vector<std::string>&
@@ -145,5 +147,28 @@ std::string
 DependencyAction::getDependenciesAsString() const
 {
     return getDependenciesAsString(" ");
+}
+
+void
+DependencyAction::updateName()
+{
+    setName("Dependency Check");
+}
+
+std::vector<std::string>
+DependencyAction::createConfigLines() const
+{
+    std::string line = "depend";
+    for (const auto& dependency : dependencies)
+        line += " " + dependency;
+    std::vector<std::string> lines;
+    lines.push_back(line);
+    return lines;
+}
+
+void
+DependencyAction::addDependency(const std::string& dependency)
+{
+    dependencies.push_back(dependency);
 }
 } /* namespace dfm */

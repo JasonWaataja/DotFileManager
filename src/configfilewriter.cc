@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,86 +20,75 @@
  * IN THE SOFTWARE.
  */
 
-#include "moduleaction.h"
+#include "configfilewriter.h"
 
-#include <stdio.h>
+#include <err.h>
 
 namespace dfm {
 
-ModuleAction::ModuleAction() : name(DEFAULT_ACTION_NAME)
+ConfigFileWriter::ConfigFileWriter(
+    const std::string& path, const std::vector<Module> modules)
+    : path(path), modules(modules)
 {
+    writer.open(path);
 }
 
-ModuleAction::ModuleAction(const std::string& name) : name(name)
+ConfigFileWriter::~ConfigFileWriter()
 {
+    if (isOpen())
+        close();
+}
+
+bool
+ConfigFileWriter::writeModules()
+{
+    if (!isOpen()) {
+        warnx("Attempting to write to non-open writer.");
+        return false;
+    }
+    for (const auto& module : modules) {
+        for (const auto& line : module.createConfigLines())
+            writer << line << std::endl;
+        writer << std::endl;
+    }
+    return true;
+}
+
+bool
+ConfigFileWriter::isOpen() const
+{
+    return writer.is_open();
+}
+
+void
+ConfigFileWriter::close()
+{
+    writer.close();
 }
 
 const std::string&
-ModuleAction::getName() const
+ConfigFileWriter::getPath() const
 {
-    return name;
+    return path;
 }
 
 void
-ModuleAction::setName(const std::string& name)
+ConfigFileWriter::setPath(const std::string& path)
 {
-    this->name = name;
+    this->path = path;
+    writer.close();
+    writer.open(path);
 }
 
-bool
-ModuleAction::isVerbose() const
+const std::vector<Module>&
+ConfigFileWriter::getModules() const
 {
-    return verbose;
-}
-
-void
-ModuleAction::setVerbose(bool verbose)
-{
-    this->verbose = verbose;
-}
-
-bool
-ModuleAction::isInteractive() const
-{
-    return interactive;
+    return modules;
 }
 
 void
-ModuleAction::setInteractive(bool interactive)
+ConfigFileWriter::setModules(const std::vector<Module>& modules)
 {
-    this->interactive = interactive;
-}
-
-void
-ModuleAction::verboseMessage(const char* format, ...)
-{
-    if (!verbose)
-        return;
-
-    va_list argumentList;
-    va_start(argumentList, format);
-    vVerboseMessage(format, argumentList);
-    va_end(argumentList);
-}
-
-void
-ModuleAction::vVerboseMessage(const char* format, va_list argumentList)
-{
-    if (!verbose)
-        return;
-
-    vprintf(format, argumentList);
-}
-
-void
-ModuleAction::updateName()
-{
-    name = DEFAULT_ACTION_NAME;
-}
-
-std::vector<std::string>
-ModuleAction::createConfigLines() const
-{
-    return std::vector<std::string>();
+    this->modules = modules;
 }
 } /* namespace dfm */
