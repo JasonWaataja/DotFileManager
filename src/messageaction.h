@@ -31,10 +31,14 @@ namespace dfm {
 
 class MessageAction : public ModuleAction {
 public:
+    MessageAction();
     MessageAction(const std::string& message);
     bool performAction() override;
     const std::string& getMessage() const;
     void setMessage(const std::string& message);
+
+    void updateName() override;
+    std::vector<std::string> createConfigLines() const override;
 
 private:
     std::string message;

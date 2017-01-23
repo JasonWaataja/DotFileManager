@@ -23,11 +23,17 @@
 #include "messageaction.h"
 
 #include <iostream>
+#include <sstream>
 
 namespace dfm {
 
+MessageAction::MessageAction()
+{
+}
+
 MessageAction::MessageAction(const std::string& message) : message(message)
 {
+    updateName();
 }
 
 bool
@@ -47,5 +53,27 @@ void
 MessageAction::setMessage(const std::string& message)
 {
     this->message = message;
+}
+
+void
+MessageAction::updateName()
+{
+    setName("Message");
+}
+
+std::vector<std::string>
+MessageAction::createConfigLines() const
+{
+    std::ostringstream outputStream;
+    for (std::string::size_type i = 0; i < message.length(); i++) {
+        if (message[i] == '"')
+            outputStream << "\\\"";
+        else
+            outputStream << message[i];
+    }
+    std::string line = "message \"" + outputStream.str() + "\"";
+    std::vector<std::string> lines;
+    lines.push_back(line);
+    return lines;
 }
 } /* namespace dfm */

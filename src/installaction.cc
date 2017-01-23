@@ -31,6 +31,10 @@
 
 namespace dfm {
 
+InstallAction::InstallAction() : ModuleAction("generic install action")
+{
+}
+
 InstallAction::InstallAction(const std::string& filename,
     const std::string& sourceDirectory,
     const std::string& destinationDirectory)
@@ -75,6 +79,7 @@ void
 InstallAction::setFilename(const std::string& filename)
 {
     this->filename = filename;
+    updateName();
 }
 
 const std::string&
@@ -140,5 +145,24 @@ InstallAction::performAction()
             destinationDirectory.c_str());
     }
     return copyFile(sourcePath, destinationPath);
+}
+
+void
+InstallAction::updateName()
+{
+    setName(filename);
+}
+
+std::vector<std::string>
+InstallAction::createConfigLines() const
+{
+    std::string line = "install";
+    line += " " + filename;
+    line += " " + sourceDirectory;
+    line += " " + installFilename;
+    line += " " + destinationDirectory;
+    std::vector<std::string> lines;
+    lines.push_back(line);
+    return lines;
 }
 } /* namespace dfm */
