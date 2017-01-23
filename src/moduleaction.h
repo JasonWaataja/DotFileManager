@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <string>
+#include <vector>
 
 namespace dfm {
 
@@ -46,6 +47,23 @@ public:
     void setVerbose(bool verbose);
     bool isInteractive() const;
     void setInteractive(bool interactive);
+
+    virtual void updateName();
+    /*
+     * Creates a list of lines that would create the given command when used in
+     * a dfm config file.
+     *
+     * NOTE: This does not have indentation. The indentation is left to caller
+     * of this method when writing to config files.
+     *
+     * Another thing is that although most of the commands shouldn't generate
+     * any indentation, something like a shell command would because it is
+     * indented relative to itself.
+     *
+     * Returns a list of lines that when put into a config file would generate
+     * the given command.
+     */
+    virtual std::vector<std::string> createConfigLines() const;
 
 private:
     std::string name;

@@ -145,11 +145,11 @@ DotFileManager::operateOn(const Module& module)
             return true;
     }
     if (options->installModulesFlag)
-        status = module.install();
+        status = module.install(options->sourceDirectory);
     else if (options->uninstallModulesFlag)
-        status = module.uninstall();
+        status = module.uninstall(options->sourceDirectory);
     else if (options->updateModulesFlag)
-        status = module.update();
+        status = module.update(options->sourceDirectory);
     else {
         warnx("No operation for module \"%s\".", module.getName().c_str());
         return false;
