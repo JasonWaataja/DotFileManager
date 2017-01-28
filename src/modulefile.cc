@@ -90,7 +90,7 @@ std::string
 ModuleFile::getSourcePath(const std::string& sourceDirectory) const
 {
     std::string sourcePath = shellExpandPath(sourceDirectory + "/" + filename);
-    return getCanonicalPath(sourcePath);
+    return sourcePath;
 }
 
 std::string
@@ -98,7 +98,7 @@ ModuleFile::getDestinationPath() const
 {
     std::string destinationPath =
         shellExpandPath(destinationDirectory + "/" + destinationFilename);
-    return getCanonicalPath(destinationPath);
+    return destinationPath;
 }
 
 std::shared_ptr<InstallAction>
