@@ -1,6 +1,10 @@
 # Change Log
 This project adheres to Semantic Versioning
 
+## [0.1.2] - 2017-01-28
+### Fixed
+- Fix bug where it doesn't work.
+
 ## [0.1.1] - 2017-01-22
 ### Fixed
 - Fix when shell expansions are evaluated.
