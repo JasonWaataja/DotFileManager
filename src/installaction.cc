@@ -139,7 +139,7 @@ InstallAction::performAction()
             "File %s doesn't exist, can't be installed.", sourcePath.c_str());
         return false;
     }
-    std::string installDir = shellExpandPath(destinationDirectory)
+    std::string installDir = shellExpandPath(destinationDirectory);
     if (!ensureDirectoriesExist(installDir)) {
         warnx(
             "Failed to use destination directory %s, isn't directory or couldn't be created.",
