@@ -1,6 +1,14 @@
 # Change Log
 This project adheres to Semantic Versioning
 
+## [0.1.3] - 2017-0522
+### Fixed
+- Fix bug where it doesn't work.
+- No really, it actually didn't work but now it can install stuff correctly.
+- Fix a spelling mistake and some formatting.
+- Fix a bugs a while ago, like right after the last release and then forget
+  about what they were.
+
 ## [0.1.2] - 2017-01-28
 ### Fixed
 - Fix bug where it doesn't work.

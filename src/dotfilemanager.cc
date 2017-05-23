@@ -88,6 +88,10 @@ DotFileManager::readModules()
     std::string programDirectory;
     programDirectory = (options->hasSourceDirectory) ? options->sourceDirectory
                                                      : getCurrentDirectory();
+    if (!options->hasSourceDirectory) {
+        options->sourceDirectory = getCurrentDirectory();
+        options->hasSourceDirectory = true;
+    }
     std::string configFilePath = programDirectory + "/" + CONFIG_FILE_NAME;
 
     ConfigFileReader reader(configFilePath);

@@ -24,8 +24,6 @@
 
 #include <err.h>
 
-#include <iostream>
-
 namespace dfm {
 
 Module::Module() : name(DEFAULT_MODULE_NAMES)
@@ -61,8 +59,7 @@ Module::install(const std::string& sourceDirectory) const
         }
     }
     for (const auto& action : installActions) {
-        bool status = action->performAction();
-        if (!status) {
+        if (!action->performAction()) {
             warnx("Failed to perform install action \"%s\".",
                 action->getName().c_str());
             return false;
@@ -84,8 +81,7 @@ Module::uninstall(const std::string& sourceDirectory) const
         }
     }
     for (const auto& action : uninstallActions) {
-        bool status = action->performAction();
-        if (!status) {
+        if (!action->performAction()) {
             warnx("Failed to perform uninstall action \"%s\".",
                 action->getName().c_str());
             return false;
@@ -108,8 +104,7 @@ Module::update(const std::string& sourceDirectory) const
         }
     }
     for (const auto& action : updateActions) {
-        bool status = action->performAction();
-        if (!status) {
+        if (!action->performAction()) {
             warnx("Failed to perform update action \"%s\".",
                 action->getName().c_str());
             return false;

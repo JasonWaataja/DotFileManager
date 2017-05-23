@@ -20,7 +20,6 @@
  * IN THE SOFTWARE.
  */
 
-
 #ifndef DOT_FILE_MANAGER_H
 #define DOT_FILE_MANAGER_H
 
