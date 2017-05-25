@@ -1,6 +1,3 @@
-include (CheckIncludeFiles)
-
-
 find_package (PkgConfig REQUIRED)
 
 execute_process (
@@ -8,7 +5,7 @@ execute_process (
 	OUTPUT_VARIABLE GLIB_COMPILE_RESOURCES
 	OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-add_custom_command(
+add_custom_command (
 	OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.c
 	DEPENDS res/gdfm.gresource.xml res/ui/mainwindow.glade
 	COMMAND ${GLIB_COMPILE_RESOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/res/gdfm.gresource.xml --target=${CMAKE_CURRENT_BINARY_DIR}/resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}/res --generate-source)
@@ -16,29 +13,15 @@ add_custom_command(
 # set_source_files_properties (${CMAKE_CURRENT_BINARY_DIR}/resources.c
 # PROPERTIES GENERATED TRUE)
 
+include_directories (${CMAKE_SOURCE_DIR}/DotFileManagerCommon/src)
 
 set (
 	SOURCES
 	main.cc
 	gdfmwindow.cc
-	command.cc
-	configfilereader.cc
-	dependencyaction.cc
-	filecheckaction.cc
-	installaction.cc
-	messageaction.cc
-	moduleaction.cc
-	module.cc
-	options.cc
-	readerenvironment.cc
-	removeaction.cc
-	shellaction.cc
-	util.cc
 	createmoduledialog.cc
-	modulefile.cc
 	messageeditor.cc
 	shelleditor.cc
-	configfilewriter.cc
 	modulefileeditor.cc
 	moduleactioneditor.cc
 	installactioneditor.cc
@@ -47,13 +30,9 @@ set (
 	dependencyeditor.cc
 	${CMAKE_CURRENT_BINARY_DIR}/resources.c)
 
-check_include_files (wordexp.h HAVE_WORDEXP_H)
-configure_file (
-	${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/config.h)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
 add_executable (gdfm ${SOURCES})
+add_dependencies (dfm dfmcommon)
+target_link_libraries (gdfm dfmcommon)
 set_property(TARGET gdfm PROPERTY CXX_STANDARD 11)
 
 
