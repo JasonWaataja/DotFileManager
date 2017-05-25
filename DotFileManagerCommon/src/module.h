@@ -27,6 +27,10 @@
 #include <string>
 #include <vector>
 
+#ifdef HAS_GRAPHICS
+#include <gtkmm.h>
+#endif
+
 #include "moduleaction.h"
 #include "modulefile.h"
 
@@ -58,6 +62,11 @@ public:
     const std::string& getName() const;
     void setName(const std::string& name);
     const std::vector<ModuleFile> getFiles() const;
+#ifdef HAS_GRAPHICS
+    Gtk::Window* getParent() const;
+    /* Not, this also sets all ModuleActions as well. */
+    void setParent(Gtk::Window* parent);
+#endif
 
     std::vector<std::string> createConfigLines() const;
 
@@ -67,6 +76,9 @@ private:
     std::vector<std::shared_ptr<ModuleAction>> installActions;
     std::vector<std::shared_ptr<ModuleAction>> uninstallActions;
     std::vector<std::shared_ptr<ModuleAction>> updateActions;
+#ifdef HAS_GRAPHICS
+    Gtk::Window* parent = nullptr;
+#endif
 };
 } /* namespace dfm */
 

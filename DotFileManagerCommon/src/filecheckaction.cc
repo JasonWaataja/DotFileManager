@@ -28,11 +28,13 @@
 #include <err.h>
 #include <libgen.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <fstream>
 
+#ifdef HAS_GRAPHICS
+#include "filecheckeditor.h"
+#endif
 #include "installaction.h"
 #include "util.h"
 
@@ -306,4 +308,13 @@ FileCheckAction::createConfigLines() const
     lines.push_back("remove " + sourcePath + " " + destinationPath);
     return lines;
 }
+
+#ifdef HAS_GRAPHICS
+void
+FileCheckAction::graphicalEdit(Gtk::Window& parent)
+{
+    FileCheckEditor editor(parent, this);
+    editor.run();
+}
+#endif
 } /* namespace dfm */
