@@ -35,7 +35,7 @@
 #include "shellaction.h"
 #include "shelleditor.h"
 
-namespace gdfm {
+namespace dfm {
 
 ModuleActionEditor::ModuleActionEditor(Gtk::Window& parent)
     : Gtk::Dialog("Create a Module Action", parent, true)
@@ -113,4 +113,4 @@ ModuleActionEditor::getAction()
 {
     return action;
 }
-} /* namespace gdfm  */
+} /* namespace dfm  */

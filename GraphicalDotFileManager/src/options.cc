@@ -29,7 +29,7 @@
 
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 /*
  * I couyld use default values since this requires C++ 11 and it's easier and
@@ -225,4 +225,4 @@ DfmOptions::usage()
         << "usage: dfm [-Iv] [-c|-g|-G|-i|-u|-p] [-d directory] [-a|[MODULES]]"
         << std::endl;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

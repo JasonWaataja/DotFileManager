@@ -29,7 +29,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace gdfm {
+namespace dfm {
 
 Command::Command()
     : createActionFunction(getDefaultAction()),
@@ -211,4 +211,4 @@ Command::matchesName(const std::string& name) const
     return std::find(callableNames.begin(), callableNames.end(), name)
         != callableNames.end();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

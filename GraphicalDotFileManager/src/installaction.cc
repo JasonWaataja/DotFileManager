@@ -30,7 +30,7 @@
 #include "installactioneditor.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 InstallAction::InstallAction() : ModuleAction("generic install action")
 {
@@ -174,4 +174,4 @@ InstallAction::graphicalEdit(Gtk::Window& parent)
     InstallActionEditor editor(parent, this);
     editor.run();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

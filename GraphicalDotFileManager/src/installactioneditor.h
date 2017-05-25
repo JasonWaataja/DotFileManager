@@ -27,7 +27,7 @@
 
 #include "installaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class InstallActionEditor : public Gtk::Dialog {
 public:

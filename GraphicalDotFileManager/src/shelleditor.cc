@@ -27,7 +27,7 @@
 #include <sstream>
 #include <string>
 
-namespace gdfm {
+namespace dfm {
 
 ShellEditor::ShellEditor(Gtk::Window& parent, ShellAction* action)
     : Gtk::Dialog("Edit Shell Commands", parent, true), action(action)
@@ -67,4 +67,4 @@ ShellEditor::onResponse(int responseId)
         commands.push_back(line);
     action->setShellCommands(commands);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

@@ -39,7 +39,7 @@
 #include "modulefileeditor.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 GdfmWindow::GdfmWindow(
     BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder)
@@ -1020,4 +1020,4 @@ GdfmWindow::onMoveDownButtonClicked()
      */
     modulesStore->iter_swap(modulesStore->get_iter(startPath), endIter);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

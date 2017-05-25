@@ -27,7 +27,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class InstallAction : public ModuleAction {
 public:
@@ -60,6 +60,6 @@ private:
     std::string installFilename;
     std::string destinationDirectory;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* INSTALL_ACTION_H */

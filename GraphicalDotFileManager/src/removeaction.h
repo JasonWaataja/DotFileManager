@@ -25,7 +25,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 const char DEFAULT_REMOVE_ACTION_NAME[] = "remove action";
 
@@ -47,6 +47,6 @@ public:
 private:
     std::string filePath;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* REMOVE_ACTION_H */

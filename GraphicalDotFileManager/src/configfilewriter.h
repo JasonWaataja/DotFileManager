@@ -29,7 +29,7 @@
 
 #include "module.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ConfigFileWriter {
 public:
@@ -51,6 +51,6 @@ private:
     std::string path;
     std::vector<Module> modules;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* CONFIG_FILE_WRITER_H */

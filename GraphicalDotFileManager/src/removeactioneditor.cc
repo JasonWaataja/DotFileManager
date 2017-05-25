@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-namespace gdfm {
+namespace dfm {
 
 RemoveActionEditor::RemoveActionEditor(
     Gtk::Window& parent, RemoveAction* action)
@@ -58,4 +58,4 @@ RemoveActionEditor::onResponse(int responseId)
     if (filePath.length() > 0)
         action->setFilePath(filePath);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

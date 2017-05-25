@@ -28,7 +28,7 @@
 
 #include "options.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ReaderEnvironment {
 public:

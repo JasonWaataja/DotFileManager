@@ -27,7 +27,7 @@
 
 #include "messageeditor.h"
 
-namespace gdfm {
+namespace dfm {
 
 MessageAction::MessageAction()
 {
@@ -89,4 +89,4 @@ MessageAction::createConfigLines() const
     lines.push_back(line);
     return lines;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

@@ -37,7 +37,7 @@
 #include "installaction.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 FileCheckAction::FileCheckAction()
 {
@@ -314,4 +314,4 @@ FileCheckAction::graphicalEdit(Gtk::Window& parent)
     FileCheckEditor editor(parent, this);
     editor.run();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

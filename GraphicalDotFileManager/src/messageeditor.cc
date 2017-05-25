@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-namespace gdfm {
+namespace dfm {
 
 MessageEditor::MessageEditor(Gtk::Window& parent, MessageAction* action)
     : Gtk::Dialog("Edit Message", parent, true), action(action)
@@ -58,4 +58,4 @@ MessageEditor::onResponse(int responseId)
     if (message.length() > 0)
         action->setMessage(message);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

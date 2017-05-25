@@ -26,7 +26,7 @@
 #include <string>
 #include <vector>
 
-namespace gdfm {
+namespace dfm {
 
 /* Inital colon gets getopt to return ":" on missing required argument.  */
 const char GETOPT_SHORT_OPTIONS[] = "iuaIcvgGpd:";
@@ -74,6 +74,6 @@ private:
     bool verifyFlagsConsistency() const;
     bool verifyDirectoryExists() const;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* OPTIONS_H */

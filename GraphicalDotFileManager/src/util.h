@@ -29,7 +29,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-namespace gdfm {
+namespace dfm {
 
 /*
  * The maximum number of file descriptors for use with nftw. I have no idea
@@ -189,6 +189,6 @@ int returnOne(const struct dirent* entry);
  * Returns a path pointing to the same file with extra slashes removed, etc.
  */
 std::string getCanonicalPath(const std::string& path);
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* UTIL_H */

@@ -32,7 +32,7 @@
 #include "moduleaction.h"
 #include "modulefile.h"
 
-namespace gdfm {
+namespace dfm {
 
 const char DEFAULT_MODULE_NAMES[] = "Generic Module";
 
@@ -74,6 +74,6 @@ private:
     std::vector<std::shared_ptr<ModuleAction>> updateActions;
     Gtk::Window* parent = nullptr;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MODULE_H */

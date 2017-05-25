@@ -32,7 +32,7 @@
 #include "removeactioneditor.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 RemoveAction::RemoveAction() : ModuleAction(DEFAULT_REMOVE_ACTION_NAME)
 {
@@ -107,4 +107,4 @@ RemoveAction::graphicalEdit(Gtk::Window& parent)
     RemoveActionEditor editor(parent, this);
     editor.run();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

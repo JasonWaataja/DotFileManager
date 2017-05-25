@@ -27,7 +27,7 @@
 
 #include "shellaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ShellEditor : public Gtk::Dialog {
 public:
@@ -43,6 +43,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* SHELL_EDITOR_H */

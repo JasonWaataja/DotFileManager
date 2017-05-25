@@ -29,7 +29,7 @@
 
 #include "messageaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class MessageEditor : public Gtk::Dialog {
 public:
@@ -46,6 +46,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MESSAGE_EDITOR_H */

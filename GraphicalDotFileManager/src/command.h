@@ -31,7 +31,7 @@
 #include "module.h"
 #include "readerenvironment.h"
 
-namespace gdfm {
+namespace dfm {
 
 class Command {
 public:
@@ -120,6 +120,6 @@ private:
         const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* COMMAND_H */

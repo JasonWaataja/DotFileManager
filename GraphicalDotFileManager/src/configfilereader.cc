@@ -34,7 +34,7 @@
 #include "removeaction.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 ConfigFileReader::ConfigFileReader(const std::string& path)
     : path(path), reader(path)
@@ -770,4 +770,4 @@ ConfigFileReader::isAssignmentLine(
     value = valueArguments[0];
     return true;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

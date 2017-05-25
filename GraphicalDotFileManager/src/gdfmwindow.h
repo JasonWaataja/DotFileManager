@@ -31,7 +31,7 @@
 
 #include "module.h"
 
-namespace gdfm {
+namespace dfm {
 
 class GdfmWindow : public Gtk::ApplicationWindow {
 public:
@@ -236,6 +236,6 @@ private:
     /* Same as getInstallRow() with update. */
     Gtk::TreeRowReference getUpdateRow(const Gtk::TreeRow& moduleRow);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* GDFMWINDOW_H */

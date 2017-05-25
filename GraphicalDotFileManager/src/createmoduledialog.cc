@@ -32,7 +32,7 @@
 #include "removeaction.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 CreateModuleDialog::CreateModuleDialog(Gtk::Window& parent)
     : Gtk::Dialog("Create Module", parent, true)
@@ -184,4 +184,4 @@ CreateModuleDialog::onRemoveFileButtonClicked()
         filesList->erase(rowIter);
     }
 }
-} /* namespace gdfm */
+} /* namespace dfm */

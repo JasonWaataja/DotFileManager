@@ -27,7 +27,7 @@
 
 #include "dependencyaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class DependencyEditor : public Gtk::Dialog {
 public:
@@ -43,6 +43,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* DEPENDENCY_EDITOR_H */

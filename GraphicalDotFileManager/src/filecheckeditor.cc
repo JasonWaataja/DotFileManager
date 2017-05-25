@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-namespace gdfm {
+namespace dfm {
 
 FileCheckEditor::FileCheckEditor(Gtk::Window& parent, FileCheckAction* action)
     : Gtk::Dialog("Edit File Check Action", parent, true), action(action)
@@ -90,4 +90,4 @@ FileCheckEditor::onResponse(int responseId)
     action->setDestinationPath(destinationPath);
     free(sourcePathCopy);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

@@ -24,7 +24,7 @@
 
 #include <assert.h>
 
-namespace gdfm {
+namespace dfm {
 
 ModuleFileEditor::ModuleFileEditor(Gtk::Window& parent, ModuleFile* file)
     : Gtk::Dialog("Edit File", parent, true), file(file)
@@ -87,4 +87,4 @@ ModuleFileEditor::onResponse(int responseId)
     file->setDestinationDirectory(destinationDirectory);
     file->setDestinationFilename(destinationFilename);
 }
-} /* namespace gdfm */
+} /* namespace dfm */

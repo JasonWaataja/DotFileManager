@@ -28,7 +28,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 const char SHELL_PROCESS[] = "/usr/bin/env bash";
 const char DEFAULT_SHELL_ACTION_NAME[] = "shell command";
@@ -50,6 +50,6 @@ public:
 private:
     std::vector<std::string> shellCommands;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* SHELL_ACTION_H */

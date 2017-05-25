@@ -30,7 +30,7 @@
 
 #include <gtkmm.h>
 
-namespace gdfm {
+namespace dfm {
 
 const char DEFAULT_ACTION_NAME[] = "generic action";
 
@@ -82,6 +82,6 @@ private:
     bool interactive = false;
     Gtk::Window* parent = nullptr;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MODULE_ACTION_H */

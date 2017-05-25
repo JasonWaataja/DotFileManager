@@ -27,7 +27,7 @@
 
 #include "filecheckaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class FileCheckEditor : public Gtk::Dialog {
 public:
@@ -44,6 +44,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* FILE_CHECK_EDITOR_H */

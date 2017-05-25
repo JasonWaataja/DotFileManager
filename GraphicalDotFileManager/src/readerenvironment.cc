@@ -24,7 +24,7 @@
 
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 ReaderEnvironment::ReaderEnvironment() : directory(getCurrentDirectory())
 {
@@ -98,4 +98,4 @@ ReaderEnvironment::accessVariable(const std::string& name, std::string& value)
     } else
         return false;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

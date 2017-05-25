@@ -27,7 +27,7 @@
 
 #include "modulefile.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ModuleFileEditor : public Gtk::Dialog {
 public:
@@ -48,6 +48,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MODULE_FILE_EDITOR_H */

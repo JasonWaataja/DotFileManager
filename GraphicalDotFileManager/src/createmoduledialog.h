@@ -29,7 +29,7 @@
 
 #include "module.h"
 
-namespace gdfm {
+namespace dfm {
 
 class CreateModuleDialog : public Gtk::Dialog {
 public:
@@ -63,6 +63,6 @@ private:
     void onFilesViewSelectionChanged();
     void onRemoveFileButtonClicked();
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* CREATE_MODULE_DIALOG_H */

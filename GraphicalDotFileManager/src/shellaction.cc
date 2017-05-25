@@ -29,7 +29,7 @@
 
 #include "shelleditor.h"
 
-namespace gdfm {
+namespace dfm {
 
 ShellAction::ShellAction()
     : ModuleAction(DEFAULT_SHELL_ACTION_NAME), shellCommands()
@@ -103,4 +103,4 @@ ShellAction::createConfigLines() const
         lines.push_back("\t" + command);
     return lines;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

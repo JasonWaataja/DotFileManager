@@ -27,7 +27,7 @@
 
 #include "removeaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class RemoveActionEditor : public Gtk::Dialog {
 public:

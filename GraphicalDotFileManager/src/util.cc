@@ -38,7 +38,7 @@
 
 #include <fstream>
 
-namespace gdfm {
+namespace dfm {
 
 bool
 getYesOrNo()
@@ -366,4 +366,4 @@ getCanonicalPath(const std::string& path)
     free(realPath);
     return asString;
 }
-} /* namespace gdfm */
+} /* namespace dfm */

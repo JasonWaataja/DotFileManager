@@ -30,7 +30,7 @@
 #include "installaction.h"
 #include "removeaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ModuleFile {
 public:
@@ -67,6 +67,6 @@ private:
     std::string destinationDirectory;
     std::string destinationFilename;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MODULE_FILE_H */

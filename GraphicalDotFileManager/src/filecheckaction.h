@@ -31,7 +31,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class FileCheckAction : public ModuleAction {
 public:

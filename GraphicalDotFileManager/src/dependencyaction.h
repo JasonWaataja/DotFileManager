@@ -27,7 +27,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class DependencyAction : public ModuleAction {
 public:

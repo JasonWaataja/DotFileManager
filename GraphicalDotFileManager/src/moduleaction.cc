@@ -24,7 +24,7 @@
 
 #include <stdio.h>
 
-namespace gdfm {
+namespace dfm {
 
 ModuleAction::ModuleAction() : name(DEFAULT_ACTION_NAME)
 {
@@ -119,4 +119,4 @@ ModuleAction::createConfigLines() const
 {
     return std::vector<std::string>();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

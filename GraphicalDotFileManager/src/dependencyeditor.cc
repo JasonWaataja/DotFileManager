@@ -27,7 +27,7 @@
 
 #include <assert.h>
 
-namespace gdfm {
+namespace dfm {
 
 DependencyEditor::DependencyEditor(
     Gtk::Window& parent, DependencyAction* action)
@@ -71,4 +71,4 @@ DependencyEditor::onResponse(int responseId)
         action->addDependency(line);
     }
 }
-} /* namespace gdfm */
+} /* namespace dfm */

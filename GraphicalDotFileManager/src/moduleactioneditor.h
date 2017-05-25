@@ -29,7 +29,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class ModuleActionEditor : public Gtk::Dialog {
 public:
@@ -55,6 +55,6 @@ private:
 
     void onCreateActionButtonClicked();
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MODULE_ACTION_EDITOR_H */

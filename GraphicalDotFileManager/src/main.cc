@@ -34,7 +34,7 @@ main(int argc, char* argv[])
     try {
         auto builder = Gtk::Builder::create_from_resource(
             "/com/waataja/gdfm/ui/mainwindow.glade");
-        gdfm::GdfmWindow* window = nullptr;
+        dfm::GdfmWindow* window = nullptr;
         builder->get_widget_derived("main_window", window);
         int status = application->run(*window);
         delete window;

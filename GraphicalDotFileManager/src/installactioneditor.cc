@@ -26,7 +26,7 @@
 
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 InstallActionEditor::InstallActionEditor(
     Gtk::Window& window, InstallAction* action)
@@ -89,4 +89,4 @@ InstallActionEditor::onResponse(int responseId)
     else
         action->setInstallFilename(action->getFilename());
 }
-} /* namespace gdfm */
+} /* namespace dfm */

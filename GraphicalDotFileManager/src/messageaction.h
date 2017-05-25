@@ -27,7 +27,7 @@
 
 #include "moduleaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 class MessageAction : public ModuleAction {
 public:
@@ -44,6 +44,6 @@ public:
 private:
     std::string message;
 };
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* MESSAGE_ACTION_H */

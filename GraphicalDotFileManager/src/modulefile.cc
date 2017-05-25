@@ -25,7 +25,7 @@
 #include "modulefileeditor.h"
 #include "util.h"
 
-namespace gdfm {
+namespace dfm {
 
 ModuleFile::ModuleFile()
 {
@@ -140,4 +140,4 @@ ModuleFile::graphicalEdit(Gtk::Window& window)
     ModuleFileEditor editor(window, this);
     editor.run();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

@@ -30,7 +30,7 @@
 
 #include "dependencyeditor.h"
 
-namespace gdfm {
+namespace dfm {
 
 DependencyAction::DependencyAction() : dependencies()
 {
@@ -180,4 +180,4 @@ DependencyAction::graphicalEdit(Gtk::Window& parent)
     DependencyEditor editor(parent, this);
     editor.run();
 }
-} /* namespace gdfm */
+} /* namespace dfm */

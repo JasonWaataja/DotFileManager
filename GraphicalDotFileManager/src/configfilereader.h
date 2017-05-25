@@ -41,7 +41,7 @@
 #include "removeaction.h"
 #include "shellaction.h"
 
-namespace gdfm {
+namespace dfm {
 
 /*
  * The default name that the program should look for in the source directory as
@@ -542,6 +542,6 @@ ConfigFileReader::flushModule(OutputIterator output)
     inModuleUpdate = false;
     output++;
 }
-} /* namespace gdfm */
+} /* namespace dfm */
 
 #endif /* CONFIG_FILE_READER_H */

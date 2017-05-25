@@ -24,7 +24,7 @@
 
 #include <err.h>
 
-namespace gdfm {
+namespace dfm {
 
 Module::Module() : name(DEFAULT_MODULE_NAMES)
 {
@@ -226,4 +226,4 @@ Module::createConfigLines() const
     }
     return lines;
 }
-} /* namespace gdfm */
+} /* namespace dfm */
