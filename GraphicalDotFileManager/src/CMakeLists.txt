@@ -13,6 +13,7 @@ add_custom_command (
 # set_source_files_properties (${CMAKE_CURRENT_BINARY_DIR}/resources.c
 # PROPERTIES GENERATED TRUE)
 
+set (HAS_GRAPHICS TRUE)
 include_directories (${CMAKE_SOURCE_DIR}/DotFileManagerCommon/src)
 
 set (

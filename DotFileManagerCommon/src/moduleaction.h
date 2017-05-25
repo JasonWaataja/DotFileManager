@@ -54,7 +54,6 @@ public:
 
     virtual void updateName();
 
-#ifdef HAS_GRAPHICS
     /*
      * Creates a list of lines that would create the given command when used in
      * a dfm config file.
@@ -70,6 +69,7 @@ public:
      * the given command.
      */
     virtual std::vector<std::string> createConfigLines() const;
+#ifdef HAS_GRAPHICS
     Gtk::Window* getParent() const;
     void setParent(Gtk::Window* parent);
     /*

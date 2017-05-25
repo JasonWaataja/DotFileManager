@@ -64,7 +64,7 @@ public:
     const std::vector<ModuleFile> getFiles() const;
 #ifdef HAS_GRAPHICS
     Gtk::Window* getParent() const;
-    /* Not, this also sets all ModuleActions as well. */
+    /* Note, this also sets all ModuleActions as well. */
     void setParent(Gtk::Window* parent);
 #endif
 

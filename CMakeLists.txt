@@ -8,3 +8,4 @@ endif (NOT ${UNIX})
 
 add_subdirectory (DotFileManagerCommon)
 add_subdirectory (DotFileManager)
+add_subdirectory (GraphicalDotFileManager)
