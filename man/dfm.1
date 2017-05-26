@@ -1,0 +1,128 @@
+.TH dfm 1 "May 2017" "0.1.3" "dfm man page"
+.SH NAME
+dfm \- A configuration file manager
+.SH SYNOPSIS
+dfm [-Iv] [-c|-g|-G|-i|-u|-p] [-d directory] [-a|[MODULES]]
+.SH DESCRIPTION
+Used for installing, uninstalling, and updating configuration files for a user.
+It operates on a directory, and uses a file called config.dfm. To get started,
+run dfm -g -d config_file_directory. This will generate a
+simple default config file that you can use.
+
+When passed --insall, --uninstall, or --check as an operation, must either be
+passed the --all flag or a list of modules.
+
+Using --generate-config-file or --dump-config file creates a generic config
+file for the directory specified by --directory or the current directory if not
+specified. The --generate-config-file option writes to a config file in the
+directory and the --dump-config-file option writes to standard output.
+
+For information on the config file, see below.
+.IP "-a, --all"
+Perform the operation on all modules
+.IP "-c, --check"
+Check the installable files for if they need to be updated.
+.IP "-d, --directory"
+Specify the directory to work in, defaults to the current directory
+.IP "-g, --generate-config-file"
+Generate a generic config file with all the files in the given directory and
+write it to a config file in that directory.
+.IP "-G --dump-config-file"
+Generate a generic config file with all the files in a given directory and
+write it to standard output.
+.IP "-i, --install"
+Install the given modules
+.IP "-I, --interactive"
+Ask for confirmation when operating on modules, manipulating files, etc.
+.IP "-p --print-modules"
+Print the name of each module read from the config file
+.IP "-u, --uninstall"
+Uninstall the given modules
+.IP "-v, --verbose"
+Print extra information
+.SH CONFIG FILE
+The config file config.dfm contains the information that dfm uses to manipulate
+files. Components are separated into modules, which each contain their own
+files and scripts for installing, uninstalling, or updating files and
+configurations.
+
+The program operates on a directory, and all files to use are relative to that
+directory. It defaults to the current directory, but can be specified with the
+-d option.
+
+To start a module, create a line with the module name and a colon such as
+"my-module:". This starts a new module with the given name. After that, each
+line represents a list of files in the config directory to install, uninstall,
+or update. Specifying just a file name will install to the current user's home
+directory, specifying a directory after that will install to that directory. If
+three arguments are present, the first is the filename, the second is the
+directory to look for the file in, which can be anywhere, and the third is the
+installation directory. If four arguments are present, then the first two are
+the same as if three were present, but the third is the name of the file to
+install as, and the fourth is the directory to install to.
+
+Files specified in the initial section are always installed, uninstalled, or
+updated when using those operations.
+
+There are three additional sections which can be specified: install, uninstall,
+or update. These are only run when the given operation is specified from the
+command line. These sections begin with "install:", "uninstall:", or "update:"
+respectively without any indentation (otherwise they would be interpreted as
+files to install).
+
+When in one of these three sections, there are various commands available. To
+use one, create a line with one indentation and the name of a command, followed
+by a list of arguments, which may be quoted. The most important commands are
+"message", which prints the first argument to the user, and the "shell" command,
+which runs the shell command given by the rest of the line. This doesn't have to
+be quoted. After using the "shell" command, you may put additional shell
+commands below with two indentations. Whole install scripts may be specified
+this way.
+
+Most commands have aliases that can be used that are shorter. For example,
+"message" can be called with "msg", or just "m", and "shell" may be called with
+"sh".
+
+For a full list of commands, see github.com/JasonWaataja/DotFileManager.
+
+.SH EXAMPLES
+
+Install all modules in the directory "$HOME/git/dotfiles".
+.nf
+
+dfm -d ~/git/dotfiles -ia
+.fi
+
+Uninstall the vim module interactively, printing extra information.
+.nf
+
+dfm -uIv vim
+.fi
+
+Generate a configuration file for the directory "$HOME/git/dotfiles" and write
+it there.
+.nf
+
+dfm -g -d ~/git/dotfiles
+.fi
+
+Example config file.
+.nf
+.RS
+vim:
+	.vimrc
+install:
+	sh
+		git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+i3:
+	.i3/config ~
+install:
+	message "Please reload i3."
+uninstall:
+	msg "Please reload i3."
+update:
+	m "Please reload i3."
+.RE
+.fi
+.SH AUTHOR
+Jason Waataja <jasonswaataja@gmail.com>
