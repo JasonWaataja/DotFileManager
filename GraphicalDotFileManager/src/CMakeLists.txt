@@ -15,6 +15,8 @@ add_custom_command (
 
 set (HAS_GRAPHICS TRUE)
 include_directories (${CMAKE_SOURCE_DIR}/DotFileManagerCommon/src)
+# For config.h
+include_directories (${CMAKE_BINARY_DIR}/DotFileManagerCommon/src)
 
 set (
 	SOURCES
