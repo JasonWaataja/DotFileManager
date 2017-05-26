@@ -23,6 +23,8 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include "config.h"
+
 #include <memory>
 #include <string>
 #include <vector>

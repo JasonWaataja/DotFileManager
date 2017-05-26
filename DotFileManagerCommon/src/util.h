@@ -23,6 +23,8 @@
 #include <dirent.h>
 #include <ftw.h>
 
+#include "config.h"
+
 #include <iostream>
 #include <string>
 

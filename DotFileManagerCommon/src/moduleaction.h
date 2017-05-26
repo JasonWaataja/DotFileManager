@@ -23,6 +23,8 @@
 #ifndef MODULE_ACTION_H
 #define MODULE_ACTION_H
 
+#include "config.h"
+
 #include <stdarg.h>
 
 #include <string>

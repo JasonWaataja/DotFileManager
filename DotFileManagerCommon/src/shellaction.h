@@ -23,6 +23,8 @@
 #ifndef SHELL_ACTION_H
 #define SHELL_ACTION_H
 
+#include "config.h"
+
 #include <string>
 #include <vector>
 

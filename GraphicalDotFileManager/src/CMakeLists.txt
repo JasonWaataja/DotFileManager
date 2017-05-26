@@ -34,7 +34,7 @@ set (
 	${CMAKE_CURRENT_BINARY_DIR}/resources.c)
 
 add_executable (gdfm ${SOURCES})
-add_dependencies (dfm dfmcommon)
+add_dependencies (gdfm dfmcommon)
 target_link_libraries (gdfm dfmcommon)
 set_property(TARGET gdfm PROPERTY CXX_STANDARD 11)
 

@@ -23,6 +23,8 @@
 #ifndef READER_ENVIRONMENT_H
 #define READER_ENVIRONMENT_H
 
+#include "config.h"
+
 #include <map>
 #include <memory>
 

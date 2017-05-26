@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "filecheckaction.h"
 
 #include <sys/stat.h>

@@ -23,6 +23,8 @@
 #ifndef FILE_CHECK_H
 #define FILE_CHECK_H
 
+#include "config.h"
+
 #include <dirent.h>
 
 #include <memory>

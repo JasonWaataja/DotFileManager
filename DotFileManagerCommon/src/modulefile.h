@@ -23,6 +23,8 @@
 #ifndef MODULE_FILE_H
 #define MODULE_FILE_H
 
+#include "config.h"
+
 #include <memory>
 #include <string>
 
@@ -60,7 +62,7 @@ public:
 
     std::vector<std::string> createConfigLines() const;
 #ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
+    void graphicalEdit(Gtk::Window& parent);
 #endif
 
 private:

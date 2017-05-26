@@ -23,6 +23,8 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
+#include "config.h"
+
 #include <err.h>
 #include <stdarg.h>
 

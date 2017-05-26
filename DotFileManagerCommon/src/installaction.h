@@ -23,6 +23,8 @@
 #ifndef INSTALL_ACTION_H
 #define INSTALL_ACTION_H
 
+#include "config.h"
+
 #include <string>
 
 #include "moduleaction.h"

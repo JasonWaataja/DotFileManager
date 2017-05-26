@@ -23,6 +23,8 @@
 #ifndef DEPENDENCY_ACTION_H
 #define DEPENDENCY_ACTION_H
 
+#include "config.h"
+
 #include <vector>
 
 #include "moduleaction.h"

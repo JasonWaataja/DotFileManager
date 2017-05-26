@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "modulefile.h"
 
 #ifdef HAS_GRAPHICS

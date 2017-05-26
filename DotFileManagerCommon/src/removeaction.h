@@ -23,6 +23,8 @@
 #ifndef REMOVE_ACTION_H
 #define REMOVE_ACTION_H
 
+#include "config.h"
+
 #include "moduleaction.h"
 
 namespace dfm {
