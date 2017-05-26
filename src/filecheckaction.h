@@ -23,6 +23,8 @@
 #ifndef FILE_CHECK_H
 #define FILE_CHECK_H
 
+#include "config.h"
+
 #include <dirent.h>
 
 #include <memory>
@@ -53,6 +55,9 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
+#ifdef HAS_GRAPHICS
+    void graphicalEdit(Gtk::Window& parent) override;
+#endif
 
 private:
     /* Returns if neither path is a zero-length string. */

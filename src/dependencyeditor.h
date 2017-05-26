@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef DEPENDENCY_EDITOR_H
+#define DEPENDENCY_EDITOR_H
 
 #include "config.h"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "dependencyaction.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class DependencyEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    DependencyEditor(Gtk::Window& parent, DependencyAction* action);
 
 private:
-    std::string message;
+    DependencyAction* action;
+
+    Gtk::Label dependenciesLabel;
+    Gtk::ScrolledWindow scrolledWindow;
+    Gtk::TextView dependenciesView;
+    Glib::RefPtr<Gtk::TextBuffer> dependenciesBuffer;
+
+    void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_ACTION_H */
+#endif /* DEPENDENCY_EDITOR_H */

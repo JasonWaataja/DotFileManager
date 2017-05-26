@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "dependencyaction.h"
 
 #include <err.h>
@@ -27,6 +29,10 @@
 #include <stdlib.h>
 
 #include <iostream>
+
+#ifdef HAS_GRAPHICS
+#include "dependencyeditor.h"
+#endif
 
 namespace dfm {
 
@@ -171,4 +177,13 @@ DependencyAction::addDependency(const std::string& dependency)
 {
     dependencies.push_back(dependency);
 }
+
+#ifdef HAS_GRAPHICS
+void
+DependencyAction::graphicalEdit(Gtk::Window& parent)
+{
+	DependencyEditor editor(parent, this);
+	editor.run();
+}
+#endif
 } /* namespace dfm */

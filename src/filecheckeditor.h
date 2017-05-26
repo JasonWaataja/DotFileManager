@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,32 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef FILE_CHECK_EDITOR_H
+#define FILE_CHECK_EDITOR_H
 
 #include "config.h"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "filecheckaction.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class FileCheckEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    FileCheckEditor(Gtk::Window& parent, FileCheckAction* action);
 
 private:
-    std::string message;
+    FileCheckAction* action;
+
+    Gtk::Grid grid;
+    Gtk::Label sourcePathLabel;
+    Gtk::Entry sourcePathEntry;
+    Gtk::Label destinationPathLabel;
+    Gtk::Entry destinationPathEntry;
+
+    void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_ACTION_H */
+#endif /* FILE_CHECK_EDITOR_H */

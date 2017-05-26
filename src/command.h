@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #ifndef COMMAND_H
 #define COMMAND_H
 

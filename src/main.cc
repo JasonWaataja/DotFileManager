@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,10 +20,41 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
+#ifdef HAS_GRAPHICS
+#include <stdlib.h>
+
+#include <iostream>
+
+#include "gdfmwindow.h"
+#else /* HAS_GRAPHICS */
 #include "dotfilemanager.h"
+#endif /* HAS_GRAPHICS */
 
 int
 main(int argc, char* argv[])
 {
+#ifdef HAS_GRAPHICS
+    auto application =
+        Gtk::Application::create(argc, argv, "com.waataja.gdfm");
+    try {
+        auto builder = Gtk::Builder::create_from_resource(
+            "/com/waataja/gdfm/ui/mainwindow.glade");
+        dfm::GdfmWindow* window = nullptr;
+        builder->get_widget_derived("main_window", window);
+        int status = application->run(*window);
+        delete window;
+        return status;
+    } catch (const Glib::FileError e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const Gio::ResourceError& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const Gtk::BuilderError& e) {
+        std::cerr << e.what() << std::endl;
+    }
+    return EXIT_FAILURE;
+#else /* HAS_GRAPHICS */
     return dfm::DotFileManager(argc, argv).run();
+#endif /* HAS_GRAPHICS */
 }

@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "moduleaction.h"
 
 #include <stdio.h>
@@ -102,4 +104,23 @@ ModuleAction::createConfigLines() const
 {
     return std::vector<std::string>();
 }
+
+#ifdef HAS_GRAPHICS
+void
+ModuleAction::graphicalEdit(Gtk::Window& parent)
+{
+}
+
+Gtk::Window*
+ModuleAction::getParent() const
+{
+	return parent;
+}
+
+void
+ModuleAction::setParent(Gtk::Window* parent)
+{
+	this->parent = parent;
+}
+#endif
 } /* namespace dfm */

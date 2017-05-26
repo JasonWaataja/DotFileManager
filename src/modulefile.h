@@ -23,6 +23,8 @@
 #ifndef MODULE_FILE_H
 #define MODULE_FILE_H
 
+#include "config.h"
+
 #include <memory>
 #include <string>
 
@@ -59,6 +61,9 @@ public:
         const std::string& sourceDirectory) const;
 
     std::vector<std::string> createConfigLines() const;
+#ifdef HAS_GRAPHICS
+    void graphicalEdit(Gtk::Window& parent);
+#endif
 
 private:
     std::string filename;

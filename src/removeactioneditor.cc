@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,44 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
-
 #include "config.h"
 
-#include <string>
+#include "removeactioneditor.h"
 
-#include "moduleaction.h"
+#include <assert.h>
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
-public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
+RemoveActionEditor::RemoveActionEditor(
+    Gtk::Window& parent, RemoveAction* action)
+    : Gtk::Dialog("Edit Remove Action", parent, true), action(action)
+{
+    assert(action != nullptr);
 
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    pathLabel.set_text("Path:");
+    get_content_area()->add(pathLabel);
 
-private:
-    std::string message;
-};
+    pathEntry.set_placeholder_text("Path");
+    pathEntry.set_text(action->getFilePath());
+    get_content_area()->add(pathEntry);
+
+    show_all_children();
+
+    add_button("Ok", Gtk::RESPONSE_OK);
+    add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+    signal_response().connect(
+        sigc::mem_fun(*this, &RemoveActionEditor::onResponse));
+}
+
+void
+RemoveActionEditor::onResponse(int responseId)
+{
+    if (responseId != Gtk::RESPONSE_OK)
+        return;
+
+    std::string filePath = pathEntry.get_text();
+    if (filePath.length() > 0)
+        action->setFilePath(filePath);
+}
 } /* namespace dfm */
-
-#endif /* MESSAGE_ACTION_H */

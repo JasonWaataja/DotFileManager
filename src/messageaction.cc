@@ -20,10 +20,16 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "messageaction.h"
 
 #include <iostream>
 #include <sstream>
+
+#ifdef HAS_GRAPHICS
+#include "messageeditor.h"
+#endif
 
 namespace dfm {
 
@@ -39,9 +45,26 @@ MessageAction::MessageAction(const std::string& message) : message(message)
 bool
 MessageAction::performAction()
 {
+#ifdef HAS_GRAPHICS
+    if (!getParent())
+        return false;
+    Gtk::MessageDialog dialog(*getParent(), message, false, Gtk::MESSAGE_INFO,
+        Gtk::BUTTONS_OK, true);
+    dialog.run();
+#else
     std::cout << message << std::endl;
+#endif
     return true;
 }
+
+#ifdef HAS_GRAPHICS
+void
+MessageAction::graphicalEdit(Gtk::Window& parent)
+{
+    MessageEditor editor(parent, this);
+    editor.run();
+}
+#endif
 
 const std::string&
 MessageAction::getMessage() const

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,34 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef INSTALL_ACTION_EDITOR_H
+#define INSTALL_ACTION_EDITOR_H
 
 #include "config.h"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "installaction.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class InstallActionEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    InstallActionEditor(Gtk::Window& window, InstallAction* action);
 
 private:
-    std::string message;
-};
-} /* namespace dfm */
+    InstallAction* action;
 
-#endif /* MESSAGE_ACTION_H */
+    Gtk::Grid grid;
+    Gtk::Label filenameLabel;
+    Gtk::Entry filenameEntry;
+    Gtk::Label destinationLabel;
+    Gtk::Entry destinationEntry;
+    Gtk::Label installFilenameLabel;
+    Gtk::Entry installFilenameEntry;
+
+    void onResponse(int responseId);
+};
+} /* namespace 2017 */
+
+#endif /* INSTALL_ACTION_EDITOR_H */

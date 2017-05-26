@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,29 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef REMOVE_ACTION_EDITOR_H
+#define REMOVE_ACTION_EDITOR_H
 
 #include "config.h"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "removeaction.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class RemoveActionEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    RemoveActionEditor(Gtk::Window& parent, RemoveAction* action);
 
 private:
-    std::string message;
-};
-} /* namespace dfm */
+    RemoveAction* action;
 
-#endif /* MESSAGE_ACTION_H */
+    Gtk::Label pathLabel;
+    Gtk::Entry pathEntry;
+
+    void onResponse(int responseId);
+};
+} /* namespace 2017 */
+
+#endif /* REMOVE_ACTION_EDITOR_H */

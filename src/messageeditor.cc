@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,44 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
-
 #include "config.h"
 
-#include <string>
+#include "messageeditor.h"
 
-#include "moduleaction.h"
+#include <assert.h>
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
-public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
+MessageEditor::MessageEditor(Gtk::Window& parent, MessageAction* action)
+    : Gtk::Dialog("Edit Message", parent, true), action(action)
+{
+    assert(action != nullptr);
 
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    messageLabel.set_text("Message:");
+    get_content_area()->pack_start(messageLabel, false, false);
 
-private:
-    std::string message;
-};
+    get_content_area()->pack_start(scrolledWindow, true, true);
+
+    messageBuffer = messageView.get_buffer();
+    messageBuffer->set_text(action->getMessage());
+    scrolledWindow.add(messageView);
+
+    show_all_children();
+
+    add_button("OK", Gtk::RESPONSE_OK);
+    add_button("Cancel", Gtk::RESPONSE_CANCEL);
+
+    signal_response().connect(
+        sigc::mem_fun(*this, &MessageEditor::onResponse));
+}
+
+void
+MessageEditor::onResponse(int responseId)
+{
+    if (responseId != Gtk::RESPONSE_OK)
+        return;
+    std::string message = messageBuffer->get_text();
+    if (message.length() > 0)
+        action->setMessage(message);
+}
 } /* namespace dfm */
-
-#endif /* MESSAGE_ACTION_H */

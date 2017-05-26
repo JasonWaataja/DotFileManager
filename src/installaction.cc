@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "installaction.h"
 
 #include <dirent.h>
@@ -27,6 +29,9 @@
 
 #include <iostream>
 
+#ifdef HAS_GRAPHICS
+#include "installactioneditor.h"
+#endif
 #include "util.h"
 
 namespace dfm {
@@ -166,4 +171,13 @@ InstallAction::createConfigLines() const
     lines.push_back(line);
     return lines;
 }
+
+#ifdef HAS_GRAPHICS
+void
+InstallAction::graphicalEdit(Gtk::Window& parent)
+{
+    InstallActionEditor editor(parent, this);
+    editor.run();
+}
+#endif
 } /* namespace dfm */

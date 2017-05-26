@@ -23,6 +23,8 @@
 #ifndef REMOVE_ACTION_H
 #define REMOVE_ACTION_H
 
+#include "config.h"
+
 #include "moduleaction.h"
 
 namespace dfm {
@@ -42,6 +44,9 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
+#ifdef HAS_GRAPHICS
+    void graphicalEdit(Gtk::Window& parent) override;
+#endif
 
 private:
     std::string filePath;

@@ -20,12 +20,18 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "shellaction.h"
 
 #include <err.h>
 #include <stdio.h>
 
 #include <iostream>
+
+#ifdef HAS_GRAPHICS
+#include "shelleditor.h"
+#endif
 
 namespace dfm {
 
@@ -94,4 +100,13 @@ ShellAction::createConfigLines() const
         lines.push_back("\t" + command);
     return lines;
 }
+
+#ifdef HAS_GRAPHICS
+void
+ShellAction::graphicalEdit(Gtk::Window& parent)
+{
+    ShellEditor editor(parent, this);
+    editor.run();
+}
+#endif
 } /* namespace dfm */

@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "dotfilemanager.h"
 
 #include <dirent.h>

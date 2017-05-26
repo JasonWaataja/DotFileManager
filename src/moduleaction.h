@@ -23,10 +23,16 @@
 #ifndef MODULE_ACTION_H
 #define MODULE_ACTION_H
 
+#include "config.h"
+
 #include <stdarg.h>
 
 #include <string>
 #include <vector>
+
+#ifdef HAS_GRAPHICS
+#include <gtkmm.h>
+#endif
 
 namespace dfm {
 
@@ -49,6 +55,7 @@ public:
     void setInteractive(bool interactive);
 
     virtual void updateName();
+
     /*
      * Creates a list of lines that would create the given command when used in
      * a dfm config file.
@@ -64,11 +71,29 @@ public:
      * the given command.
      */
     virtual std::vector<std::string> createConfigLines() const;
+#ifdef HAS_GRAPHICS
+    Gtk::Window* getParent() const;
+    void setParent(Gtk::Window* parent);
+    /*
+         * This method is a method to open a dialog to edit the given action.
+     * This
+         * is not meant to be in the DFM version of this file because it
+     * requires
+         * pulling in gtkmm which is not what I want for the command line
+     * version.
+         * This method should create a popup with several fields for editing.
+         */
+    virtual void graphicalEdit(Gtk::Window& parent);
+#endif
 
 private:
     std::string name;
     bool verbose = false;
     bool interactive = false;
+#ifdef HAS_GRAPHICS
+    /* For making dialogs. */
+    Gtk::Window* parent = nullptr;
+#endif
 };
 } /* namespace dfm */
 

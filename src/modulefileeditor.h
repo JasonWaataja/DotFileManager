@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,36 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef MODULE_FILE_EDITOR_H
+#define MODULE_FILE_EDITOR_H
 
 #include "config.h"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "modulefile.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class ModuleFileEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    ModuleFileEditor(Gtk::Window& parent, ModuleFile* file);
 
 private:
-    std::string message;
+    ModuleFile* file;
+
+    Gtk::HBox filenameBox;
+    Gtk::Label filenameLabel;
+    Gtk::Entry filenameEntry;
+    Gtk::HBox destinationDirectoryBox;
+    Gtk::Label destinationDirectoryLabel;
+    Gtk::Entry destinationDirectoryEntry;
+    Gtk::HBox destinationFilenameBox;
+    Gtk::Label destinationFilenameLabel;
+    Gtk::Entry destinationFilenameEntry;
+
+    void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_ACTION_H */
+#endif /* MODULE_FILE_EDITOR_H */

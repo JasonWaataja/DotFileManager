@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,34 +20,51 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef CREATE_MODULE_DIALOG_H
+#define CREATE_MODULE_DIALOG_H
 
 #include "config.h"
 
-#include <string>
+#include <memory>
 
-#include "moduleaction.h"
+#include <gtkmm.h>
+
+#include "module.h"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class CreateModuleDialog : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
+    CreateModuleDialog(Gtk::Window& parent);
+    virtual ~CreateModuleDialog();
 
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    std::shared_ptr<Module> getModule();
 
 private:
-    std::string message;
+    Gtk::VBox* contentBox;
+    Gtk::HBox* nameBox;
+    Gtk::Label* nameLabel;
+    Gtk::Entry* nameEntry;
+    Gtk::HBox* filesBox;
+    Gtk::ScrolledWindow* scrollWindow;
+    Gtk::TreeView* filesView;
+    Gtk::VBox* actionBox;
+    Gtk::Entry* filenameEntry;
+    Gtk::Entry* destinationEntry;
+    Gtk::Button* addFileButton;
+    Gtk::Button* removeFileButton;
+
+    Glib::RefPtr<Gtk::TreeSelection> filesViewSelection;
+    Glib::RefPtr<Gtk::ListStore> filesList;
+    Gtk::TreeModelColumnRecord record;
+    Gtk::TreeModelColumn<Glib::ustring> filenameColumn;
+    Gtk::TreeModelColumn<Glib::ustring> destinationColumn;
+
+    /* Signal handlers. */
+    void onAddFileButtonClicked();
+    void onFilesViewSelectionChanged();
+    void onRemoveFileButtonClicked();
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_ACTION_H */
+#endif /* CREATE_MODULE_DIALOG_H */
