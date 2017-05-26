@@ -7,3 +7,6 @@ if (NOT ${UNIX})
 endif (NOT ${UNIX})
 
 add_subdirectory (src)
+if (NOT HAS_GRAPHICS)
+	add_subdirectory (man)
+endif (NOT HAS_GRAPHICS)
