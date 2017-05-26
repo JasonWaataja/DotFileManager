@@ -1,11 +1,9 @@
 cmake_minimum_required (VERSION 2.9)
 
-project (DotFileManagerAll)
+project (DotFileManager)
 
 if (NOT ${UNIX})
 	message (FATAL_ERROR "Can only compile on UNIX platform, exiting.")
 endif (NOT ${UNIX})
 
-add_subdirectory (DotFileManagerCommon)
-add_subdirectory (DotFileManager)
-add_subdirectory (GraphicalDotFileManager)
+add_subdirectory (src)
