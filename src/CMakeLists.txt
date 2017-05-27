@@ -40,7 +40,7 @@ set_property(TARGET dfm dfmcommon PROPERTY CXX_STANDARD 11)
 
 if (HAS_GRAPHICS)
 	add_executable (gdfm ${GDFM_SOURCES})
-	target_link_libraries (dfm dfmcommon)
+	target_link_libraries (gdfm dfmcommon)
 	set_property(TARGET gdfm PROPERTY CXX_STANDARD 11)
 
 	pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)

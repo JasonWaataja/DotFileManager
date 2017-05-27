@@ -98,7 +98,7 @@ public:
     virtual void editInstall(InstallAction& action) override;
     virtual void editRemove(RemoveAction& action) override;
     virtual void editShell(ShellAction& action) override;
-    virtual void editModulefile(ModuleFile& moduleFile) override;
+    virtual void editModuleFile(ModuleFile& moduleFile) override;
 
 private:
     std::string currentFilePath;

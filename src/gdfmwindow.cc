@@ -39,12 +39,12 @@
 #include "createmoduledialog.h"
 #include "dependencyeditor.h"
 #include "filecheckeditor.h"
-#include "installeditor.h"
+#include "installactioneditor.h"
 #include "messageeditor.h"
 #include "moduleactioneditor.h"
 #include "modulefile.h"
 #include "modulefileeditor.h"
-#include "removeeditor.h"
+#include "removeactioneditor.h"
 #include "shelleditor.h"
 #include "util.h"
 
@@ -205,7 +205,7 @@ GdfmWindow::loadFile(const std::string& path)
         return false;
     }
     for (auto& module : modules)
-        module.setParent(this);
+        module.setWindow(this);
     currentFilePath = path;
     setModulesViewFromModules(modules);
     return true;
@@ -1033,13 +1033,13 @@ GdfmWindow::onMoveDownButtonClicked()
 void
 GdfmWindow::message(const std::string& message, MessageType type)
 {
-    MessageType dialogType;
+    Gtk::MessageType dialogType;
     switch (type) {
     case MESSAGE_INFO:
         dialogType = Gtk::MESSAGE_INFO;
     case MESSAGE_WARNING:
         dialogType = Gtk::MESSAGE_WARNING;
-    case MESSAGE_ERRO:
+    case MESSAGE_ERROR:
         dialogType = Gtk::MESSAGE_ERROR;
     }
     Gtk::MessageDialog dialog(
@@ -1048,9 +1048,16 @@ GdfmWindow::message(const std::string& message, MessageType type)
 }
 
 void
+GdfmWindow::editMessage(MessageAction& action)
+{
+    MessageEditor editor(*this, &action);
+    editor.run();
+};
+
+void
 GdfmWindow::editDependency(DependencyAction& action)
 {
-    DependencyEditor editor(this, &action);
+    DependencyEditor editor(*this, &action);
     editor.run();
 }
 
@@ -1064,14 +1071,14 @@ GdfmWindow::editFileCheck(FileCheckAction& action)
 void
 GdfmWindow::editInstall(InstallAction& action)
 {
-    InstallEditor editor(*this, &action);
+    InstallActionEditor editor(*this, &action);
     editor.run();
 }
 
 void
 GdfmWindow::editRemove(RemoveAction& action)
 {
-    RemoveEditor editor(*this, &action);
+    RemoveActionEditor editor(*this, &action);
     editor.run();
 }
 
