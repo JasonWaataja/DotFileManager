@@ -30,11 +30,10 @@
 #include <string>
 #include <vector>
 
-#ifdef HAS_GRAPHICS
-#include <gtkmm.h>
-#endif
-
 namespace dfm {
+
+/* Forward declaration to prevent circular dependency. */
+class AbstractWindow;
 
 const char DEFAULT_ACTION_NAME[] = "generic action";
 
@@ -54,6 +53,10 @@ public:
     bool isInteractive() const;
     void setInteractive(bool interactive);
 
+    /*
+     * Run to make sure the name is set to the correct value before accessing
+     * it to display it.
+     */
     virtual void updateName();
 
     /*
@@ -71,29 +74,20 @@ public:
      * the given command.
      */
     virtual std::vector<std::string> createConfigLines() const;
-#ifdef HAS_GRAPHICS
-    Gtk::Window* getParent() const;
-    void setParent(Gtk::Window* parent);
+    AbstractWindow* getWindow() const;
+    void setWindow(AbstractWindow* window);
     /*
-         * This method is a method to open a dialog to edit the given action.
-     * This
-         * is not meant to be in the DFM version of this file because it
-     * requires
-         * pulling in gtkmm which is not what I want for the command line
-     * version.
-         * This method should create a popup with several fields for editing.
-         */
-    virtual void graphicalEdit(Gtk::Window& parent);
-#endif
+     * Edit the action using a gui if available. This functional is probably
+     * not going to be called in the command line version.
+     */
+    virtual void graphicalEdit();
 
 private:
     std::string name;
     bool verbose = false;
     bool interactive = false;
-#ifdef HAS_GRAPHICS
-    /* For making dialogs. */
-    Gtk::Window* parent = nullptr;
-#endif
+    /* For making dialogs. Null if no window is available. */
+    AbstractWindow* window = nullptr;
 };
 } /* namespace dfm */
 

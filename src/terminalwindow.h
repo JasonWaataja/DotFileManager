@@ -20,41 +20,32 @@
  * IN THE SOFTWARE.
  */
 
+
+#ifndef TERMINAL_WINDOW_H
+#define TERMINAL_WINDOW_H
+
 #include "config.h"
 
-#ifdef HAS_GRAPHICS
-#include <stdlib.h>
+#include "abstractwindow.h"
 
-#include <iostream>
+namespace dfm {
 
-#include "gdfmwindow.h"
-#else /* HAS_GRAPHICS */
-#include "dotfilemanager.h"
-#endif /* HAS_GRAPHICS */
+/*
+ * TerminalWindow is an implementation of AbstractWindow that does nothing
+ * except message to the terminal output. The command line version is not
+ * expected to edit anything.
+ */
+class TerminalWindow : public AbstractWindow {
+public:
+    void message(const std::string& message, MessageType type) override;
+    virtual void editMessage(MessageAction& action) override;
+    virtual void editDependency(DependencyAction& action) override;
+    virtual void editFileCheck(FileCheckAction& action) override;
+    virtual void editInstall(InstallAction& action) override;
+    virtual void editRemove(RemoveAction& action) override;
+    virtual void editShell(ShellAction& action) override;
+    virtual void editModuleFile(ModuleFile& moduleFile) override;
+};
+} /* namespace dfm */
 
-int
-main(int argc, char* argv[])
-{
-#ifdef HAS_GRAPHICS
-    auto application =
-        Gtk::Application::create(argc, argv, "com.waataja.gdfm");
-    try {
-        auto builder = Gtk::Builder::create_from_resource(
-            "/com/waataja/gdfm/ui/mainwindow.glade");
-        dfm::GdfmWindow* window = nullptr;
-        builder->get_widget_derived("main_window", window);
-        int status = application->run(*window);
-        delete window;
-        return status;
-    } catch (const Glib::FileError e) {
-        std::cerr << e.what() << std::endl;
-    } catch (const Gio::ResourceError& e) {
-        std::cerr << e.what() << std::endl;
-    } catch (const Gtk::BuilderError& e) {
-        std::cerr << e.what() << std::endl;
-    }
-    return EXIT_FAILURE;
-#else /* HAS_GRAPHICS */
-    return dfm::DotFileManager(argc, argv).run();
-#endif /* HAS_GRAPHICS */
-}
+#endif /* TERMINAL_WINDOW_H */

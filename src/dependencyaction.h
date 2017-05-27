@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+#include <string>
 #include <vector>
 
 #include "moduleaction.h"
@@ -58,9 +59,7 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent) override;
-#endif
+    void graphicalEdit() override;
 
 private:
     std::vector<std::string> dependencies;

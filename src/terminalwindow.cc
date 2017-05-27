@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,38 +20,52 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SHELL_ACTION_H
-#define SHELL_ACTION_H
-
 #include "config.h"
 
-#include <string>
-#include <vector>
+#include "terminalwindow.h"
 
-#include "moduleaction.h"
+#include <iostream>
 
 namespace dfm {
 
-const char SHELL_PROCESS[] = "/usr/bin/env bash";
-const char DEFAULT_SHELL_ACTION_NAME[] = "shell command";
+void
+TerminalWindow::message(const std::string& message, MessageType)
+{
+    std::cout << message << std::endl;
+}
 
-class ShellAction : public ModuleAction {
-public:
-    ShellAction();
-    ShellAction(const std::string& name);
-    const std::vector<std::string>& getShellCommands() const;
-    void setShellCommands(const std::vector<std::string>& shellCommands);
+void
+TerminalWindow::editMessage(MessageAction& action)
+{
+}
 
-    bool performAction() override;
-    void addCommand(const std::string& command);
+void
+TerminalWindow::editDependency(DependencyAction&)
+{
+}
 
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-    void graphicalEdit() override;
+void
+TerminalWindow::editFileCheck(FileCheckAction&)
+{
+}
 
-private:
-    std::vector<std::string> shellCommands;
-};
+void
+TerminalWindow::editInstall(InstallAction&)
+{
+}
+
+void
+TerminalWindow::editRemove(RemoveAction&)
+{
+}
+
+void
+TerminalWindow::editShell(ShellAction&)
+{
+}
+
+void
+TerminalWindow::editModuleFile(ModuleFile& moduleFile)
+{
+}
 } /* namespace dfm */
-
-#endif /* SHELL_ACTION_H */

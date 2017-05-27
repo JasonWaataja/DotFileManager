@@ -1,2 +1,1 @@
 #cmakedefine HAVE_WORDEXP_H
-#cmakedefine HAS_GRAPHICS

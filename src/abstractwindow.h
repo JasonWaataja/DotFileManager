@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,70 +20,41 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef ABSTRACT_WINDOW_H
+#define ABSTRACT_WINDOW_H
+
 #include "config.h"
 
+#include "dependencyaction.h"
+#include "filecheckaction.h"
+#include "installaction.h"
 #include "messageaction.h"
-
-#include <iostream>
-#include <sstream>
-
-#include "abstractwindow.h"
+#include "modulefile.h"
+#include "removeaction.h"
+#include "shellaction.h"
 
 namespace dfm {
 
-MessageAction::MessageAction()
-{
-}
-
-MessageAction::MessageAction(const std::string& message) : message(message)
-{
-    updateName();
-}
-
-bool
-MessageAction::performAction()
-{
-    getWindow()->message(message, AbstractWindow::MESSAGE_INFO);
-    return true;
-}
-
-void
-MessageAction::graphicalEdit()
-{
-    getWindow()->editMessage(*this);
-}
-
-const std::string&
-MessageAction::getMessage() const
-{
-    return message;
-}
-
-void
-MessageAction::setMessage(const std::string& message)
-{
-    this->message = message;
-}
-
-void
-MessageAction::updateName()
-{
-    setName("Message");
-}
-
-std::vector<std::string>
-MessageAction::createConfigLines() const
-{
-    std::ostringstream outputStream;
-    for (std::string::size_type i = 0; i < message.length(); i++) {
-        if (message[i] == '"')
-            outputStream << "\\\"";
-        else
-            outputStream << message[i];
-    }
-    std::string line = "message \"" + outputStream.str() + "\"";
-    std::vector<std::string> lines;
-    lines.push_back(line);
-    return lines;
-}
+/*
+ * AbstractWindow represents a UI object that can provide messages, edit
+ * modules, etc.
+ *
+ * It would have more sense to name this AbstractUI, however the use of
+ * "window" implies that there can be multiple windows within the same
+ * application, as is the case with GTK.
+ */
+class AbstractWindow {
+public:
+    enum MessageType { MESSAGE_INFO, MESSAGE_WARNING, MESSAGE_ERROR };
+    virtual void message(const std::string& message, MessageType type) = 0;
+    virtual void editMessage(MessageAction& action) = 0;
+    virtual void editDependency(DependencyAction& action) = 0;
+    virtual void editFileCheck(FileCheckAction& action) = 0;
+    virtual void editInstall(InstallAction& action) = 0;
+    virtual void editRemove(RemoveAction& action) = 0;
+    virtual void editShell(ShellAction& action) = 0;
+    virtual void editModuleFile(ModuleFile& moduleFile) = 0;
+};
 } /* namespace dfm */
+
+#endif /* ABSTRACT_WINDOW_H */

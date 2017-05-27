@@ -37,8 +37,15 @@
 #include "configfilereader.h"
 #include "configfilewriter.h"
 #include "createmoduledialog.h"
+#include "dependencyeditor.h"
+#include "filecheckeditor.h"
+#include "installactioneditor.h"
+#include "messageeditor.h"
 #include "moduleactioneditor.h"
+#include "modulefile.h"
 #include "modulefileeditor.h"
+#include "removeactioneditor.h"
+#include "shelleditor.h"
 #include "util.h"
 
 namespace dfm {
@@ -197,8 +204,8 @@ GdfmWindow::loadFile(const std::string& path)
         dialog.run();
         return false;
     }
-    for (auto &module : modules)
-        module.setParent(this);
+    for (auto& module : modules)
+        module.setWindow(this);
     currentFilePath = path;
     setModulesViewFromModules(modules);
     return true;
@@ -446,12 +453,12 @@ GdfmWindow::onModulesViewRowActivated(
     /* I could use a switch statement here, but changing it wasn't worth it. */
     if (type == MODULE_ACTION_ROW) {
         std::shared_ptr<ModuleAction> action = row[actionColumn];
-        action->graphicalEdit(*this);
+        action->graphicalEdit();
         /* This is just in case the action name changed. */
         row[actionNameColumn] = action->getName();
     } else if (type == MODULE_FILE_ROW) {
         std::shared_ptr<ModuleFile> file = row[moduleFileColumn];
-        file->graphicalEdit(*this);
+        file->graphicalEdit();
         /* This is also just in case the name changed. */
         row[fileColumn] = file->getFilename();
     }
@@ -698,7 +705,7 @@ GdfmWindow::onModuleFileEditItemActivated(Gtk::TreeRowReference row)
     Gtk::TreeRow selectedRow = *iter;
     std::shared_ptr<ModuleFile> file = selectedRow[moduleFileColumn];
     if (file)
-        file->graphicalEdit(*this);
+        file->graphicalEdit();
 }
 
 void
@@ -721,7 +728,7 @@ GdfmWindow::onModuleActionEditItemActivated(Gtk::TreeRowReference row)
     Gtk::TreeRow selectedRow = *iter;
     std::shared_ptr<ModuleAction> action = selectedRow[actionColumn];
     if (action)
-        action->graphicalEdit(*this);
+        action->graphicalEdit();
 }
 
 void
@@ -1021,5 +1028,71 @@ GdfmWindow::onMoveDownButtonClicked()
      * moving one row, though, a swap works.
      */
     modulesStore->iter_swap(modulesStore->get_iter(startPath), endIter);
+}
+
+void
+GdfmWindow::message(const std::string& message, MessageType type)
+{
+    Gtk::MessageType dialogType;
+    switch (type) {
+    case MESSAGE_INFO:
+        dialogType = Gtk::MESSAGE_INFO;
+    case MESSAGE_WARNING:
+        dialogType = Gtk::MESSAGE_WARNING;
+    case MESSAGE_ERROR:
+        dialogType = Gtk::MESSAGE_ERROR;
+    }
+    Gtk::MessageDialog dialog(
+        *this, message, false, dialogType, Gtk::BUTTONS_OK, true);
+    dialog.run();
+}
+
+void
+GdfmWindow::editMessage(MessageAction& action)
+{
+    MessageEditor editor(*this, &action);
+    editor.run();
+};
+
+void
+GdfmWindow::editDependency(DependencyAction& action)
+{
+    DependencyEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editFileCheck(FileCheckAction& action)
+{
+    FileCheckEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editInstall(InstallAction& action)
+{
+    InstallActionEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editRemove(RemoveAction& action)
+{
+    RemoveActionEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editShell(ShellAction& action)
+{
+    ShellEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editModuleFile(ModuleFile& moduleFile)
+{
+    ModuleFileEditor editor(*this, &moduleFile);
+    editor.run();
 }
 } /* namespace dfm */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,38 +20,37 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SHELL_ACTION_H
-#define SHELL_ACTION_H
-
 #include "config.h"
 
-#include <string>
-#include <vector>
+#include <stdlib.h>
 
-#include "moduleaction.h"
+#include <iostream>
 
-namespace dfm {
+#include "gdfmwindow.h"
 
-const char SHELL_PROCESS[] = "/usr/bin/env bash";
-const char DEFAULT_SHELL_ACTION_NAME[] = "shell command";
-
-class ShellAction : public ModuleAction {
-public:
-    ShellAction();
-    ShellAction(const std::string& name);
-    const std::vector<std::string>& getShellCommands() const;
-    void setShellCommands(const std::vector<std::string>& shellCommands);
-
-    bool performAction() override;
-    void addCommand(const std::string& command);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-    void graphicalEdit() override;
-
-private:
-    std::vector<std::string> shellCommands;
-};
-} /* namespace dfm */
-
-#endif /* SHELL_ACTION_H */
+/*
+ * GDFM is a graphical from end to DFM. It uses the same configuration file and
+ * settings.
+ */
+int
+main(int argc, char* argv[])
+{
+    auto application =
+        Gtk::Application::create(argc, argv, "com.waataja.gdfm");
+    try {
+        auto builder = Gtk::Builder::create_from_resource(
+            "/com/waataja/gdfm/ui/mainwindow.glade");
+        dfm::GdfmWindow* window = nullptr;
+        builder->get_widget_derived("main_window", window);
+        int status = application->run(*window);
+        delete window;
+        return status;
+    } catch (const Glib::FileError e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const Gio::ResourceError& e) {
+        std::cerr << e.what() << std::endl;
+    } catch (const Gtk::BuilderError& e) {
+        std::cerr << e.what() << std::endl;
+    }
+    return EXIT_FAILURE;
+}

@@ -34,9 +34,7 @@
 
 #include <fstream>
 
-#ifdef HAS_GRAPHICS
-#include "filecheckeditor.h"
-#endif
+#include "abstractwindow.h"
 #include "installaction.h"
 #include "util.h"
 
@@ -311,12 +309,9 @@ FileCheckAction::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
 void
-FileCheckAction::graphicalEdit(Gtk::Window& parent)
+FileCheckAction::graphicalEdit()
 {
-    FileCheckEditor editor(parent, this);
-    editor.run();
+    getWindow()->editFileCheck(*this);
 }
-#endif
 } /* namespace dfm */

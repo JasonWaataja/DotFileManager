@@ -29,9 +29,7 @@
 
 #include <iostream>
 
-#ifdef HAS_GRAPHICS
-#include "installactioneditor.h"
-#endif
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -172,12 +170,9 @@ InstallAction::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
 void
-InstallAction::graphicalEdit(Gtk::Window& parent)
+InstallAction::graphicalEdit()
 {
-    InstallActionEditor editor(parent, this);
-    editor.run();
+    getWindow()->editInstall(*this);
 }
-#endif
 } /* namespace dfm */

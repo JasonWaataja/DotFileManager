@@ -29,9 +29,7 @@
 
 #include <iostream>
 
-#ifdef HAS_GRAPHICS
-#include "shelleditor.h"
-#endif
+#include "abstractwindow.h"
 
 namespace dfm {
 
@@ -101,12 +99,9 @@ ShellAction::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
 void
-ShellAction::graphicalEdit(Gtk::Window& parent)
+ShellAction::graphicalEdit()
 {
-    ShellEditor editor(parent, this);
-    editor.run();
+    getWindow()->editShell(*this);
 }
-#endif
 } /* namespace dfm */

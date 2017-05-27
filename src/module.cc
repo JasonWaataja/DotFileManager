@@ -211,23 +211,21 @@ Module::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
-Gtk::Window*
-Module::getParent() const
+AbstractWindow*
+Module::getWindow() const
 {
-    return parent;
+    return window;
 }
 
 void
-Module::setParent(Gtk::Window* parent)
+Module::setWindow(AbstractWindow* window)
 {
-    this->parent = parent;
+    this->window = window;
     for (auto& module : installActions)
-        module->setParent(parent);
+        module->setWindow(window);
     for (auto& module : uninstallActions)
-        module->setParent(parent);
+        module->setWindow(window);
     for (auto& module : updateActions)
-        module->setParent(parent);
+        module->setWindow(window);
 }
-#endif
 } /* namespace dfm */
