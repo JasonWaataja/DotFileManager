@@ -103,6 +103,8 @@ DotFileManager::readModules()
     if (!status)
         warnx("Failed to read modules.");
     reader.close();
+    for (auto& module : modules)
+        module.setWindow(&window);
     return status;
 }
 
