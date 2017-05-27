@@ -111,7 +111,7 @@ ModuleAction::graphicalEdit()
     /* Do nothing on a generic action. */
 }
 
-AbstractWindow
+AbstractWindow*
 ModuleAction::getWindow() const
 {
     return window;

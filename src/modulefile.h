@@ -28,12 +28,14 @@
 #include <memory>
 #include <string>
 
-#include "abstractwindow.h"
 #include "filecheckaction.h"
 #include "installaction.h"
 #include "removeaction.h"
 
 namespace dfm {
+
+/* Forward declaration to prevent circular dependency. */
+class AbstractWindow;
 
 class ModuleFile {
 public:

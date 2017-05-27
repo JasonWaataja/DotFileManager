@@ -30,9 +30,10 @@
 #include <string>
 #include <vector>
 
-#include "abstractwindow.h"
-
 namespace dfm {
+
+/* Forward declaration to prevent circular dependency. */
+class AbstractWindow;
 
 const char DEFAULT_ACTION_NAME[] = "generic action";
 

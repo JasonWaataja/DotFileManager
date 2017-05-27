@@ -34,6 +34,7 @@
 
 #include <fstream>
 
+#include "abstractwindow.h"
 #include "installaction.h"
 #include "util.h"
 

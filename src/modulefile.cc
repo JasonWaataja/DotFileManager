@@ -24,6 +24,7 @@
 
 #include "modulefile.h"
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {

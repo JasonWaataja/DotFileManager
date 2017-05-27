@@ -31,6 +31,7 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -105,6 +106,6 @@ RemoveAction::createConfigLines() const
 void
 RemoveAction::graphicalEdit()
 {
-    getWindow->editRemove(*this);
+    getWindow()->editRemove(*this);
 }
 } /* namespace dfm */

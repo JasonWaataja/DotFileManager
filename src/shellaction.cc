@@ -29,6 +29,8 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
+
 namespace dfm {
 
 ShellAction::ShellAction()
@@ -100,6 +102,6 @@ ShellAction::createConfigLines() const
 void
 ShellAction::graphicalEdit()
 {
-    getWindow->editShell(*this);
+    getWindow()->editShell(*this);
 }
 } /* namespace dfm */

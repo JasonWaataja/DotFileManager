@@ -37,14 +37,14 @@ namespace dfm {
  */
 class TerminalWindow : public AbstractWindow {
 public:
-    void message(const char* message, MessageType type) override;
+    void message(const std::string& message, MessageType type) override;
     virtual void editMessage(MessageAction& action) override;
     virtual void editDependency(DependencyAction& action) override;
     virtual void editFileCheck(FileCheckAction& action) override;
     virtual void editInstall(InstallAction& action) override;
     virtual void editRemove(RemoveAction& action) override;
     virtual void editShell(ShellAction& action) override;
-    virtual void editModulefile(ModuleFile& moduleFile) override;
+    virtual void editModuleFile(ModuleFile& moduleFile) override;
 };
 } /* namespace dfm */
 

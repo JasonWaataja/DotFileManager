@@ -29,6 +29,7 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -172,6 +173,6 @@ InstallAction::createConfigLines() const
 void
 InstallAction::graphicalEdit()
 {
-    getWindow->editInstall(*this);
+    getWindow()->editInstall(*this);
 }
 } /* namespace dfm */

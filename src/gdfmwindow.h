@@ -91,7 +91,7 @@ public:
     std::shared_ptr<Module> createModuleDialog();
 
     /* Overriding AbstractWindow */
-    void message(const char *message, MessageType type) override;
+    void message(const std::string& message, MessageType type) override;
     virtual void editMessage(MessageAction& action) override;
     virtual void editDependency(DependencyAction& action) override;
     virtual void editFileCheck(FileCheckAction& action) override;

@@ -27,6 +27,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "abstractwindow.h"
+
 namespace dfm {
 
 MessageAction::MessageAction()
@@ -48,7 +50,7 @@ MessageAction::performAction()
 void
 MessageAction::graphicalEdit()
 {
-    getWindow()->editMessage();
+    getWindow()->editMessage(*this);
 }
 
 const std::string&

@@ -30,6 +30,8 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
+
 namespace dfm {
 
 DependencyAction::DependencyAction() : dependencies()

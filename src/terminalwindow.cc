@@ -29,7 +29,7 @@
 namespace dfm {
 
 void
-TerminalWindow::message(const char* message, MessageType)
+TerminalWindow::message(const std::string& message, MessageType)
 {
     std::cout << message << std::endl;
 }

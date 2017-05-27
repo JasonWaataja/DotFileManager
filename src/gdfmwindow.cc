@@ -1031,7 +1031,7 @@ GdfmWindow::onMoveDownButtonClicked()
 }
 
 void
-GdfmWindow::message(const char* message, MessageType type)
+GdfmWindow::message(const std::string& message, MessageType type)
 {
     MessageType dialogType;
     switch (type) {

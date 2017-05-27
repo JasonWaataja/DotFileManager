@@ -10,8 +10,8 @@ if (HAS_GRAPHICS)
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/resources.c
 		DEPENDS res/gdfm.gresource.xml res/ui/mainwindow.glade
 		COMMAND ${GLIB_COMPILE_RESOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/res/gdfm.gresource.xml --target=${CMAKE_CURRENT_BINARY_DIR}/resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}/res --generate-source)
-	#	set_source_files_properties (${CMAKE_CURRENT_BINARY_DIR}/resources.c
-	#	PROPERTIES GENERATED TRUE)
+	set_source_files_properties (${CMAKE_CURRENT_BINARY_DIR}/resources.c
+		PROPERTIES GENERATED TRUE)
 endif (HAS_GRAPHICS)
 
 check_include_files (wordexp.h HAVE_WORDEXP_H)
@@ -19,46 +19,34 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
 	${CMAKE_CURRENT_BINARY_DIR}/config.h)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
-set (SOURCES main.cc module.cc moduleaction.cc installaction.cc removeaction.cc
+set (COMMON_SOURCES module.cc moduleaction.cc installaction.cc removeaction.cc
 	options.cc shellaction.cc messageaction.cc configfilereader.cc command.cc
 	dependencyaction.cc readerenvironment.cc filecheckaction.cc util.cc
 	configfilewriter.cc modulefile.cc)
 
-if (HAS_GRAPHICS)
-	set (
-		SOURCES
-		${SOURCES}
-		gdfmwindow.cc
-		createmoduledialog.cc
-		messageeditor.cc
-		shelleditor.cc
-		modulefileeditor.cc
-		moduleactioneditor.cc
-		installactioneditor.cc
-		filecheckeditor.cc
-		removeactioneditor.cc
-		dependencyeditor.cc
-		${CMAKE_CURRENT_BINARY_DIR}/resources.c)
-else (HAS_GRAPHICS)
-	set (SOURCES ${SOURCES} dotfilemanager.cc)
-endif (HAS_GRAPHICS)
+set (DFM_SOURCES dfm.cc dotfilemanager.cc terminalwindow.cc)
+
+set (GDFM_SOURCES gdfm.cc gdfmwindow.cc createmoduledialog.cc messageeditor.cc
+	shelleditor.cc modulefileeditor.cc moduleactioneditor.cc
+	installactioneditor.cc filecheckeditor.cc removeactioneditor.cc
+	dependencyeditor.cc ${CMAKE_CURRENT_BINARY_DIR}/resources.c)
+
+add_library (dfmcommon STATIC ${COMMON_SOURCES})
+add_executable (dfm ${DFM_SOURCES})
+target_link_libraries (dfm dfmcommon)
+install (TARGETS dfm DESTINATION bin)
+
+set_property(TARGET dfm dfmcommon PROPERTY CXX_STANDARD 11)
 
 if (HAS_GRAPHICS)
-	set (EXEC gdfm)
-else (HAS_GRAPHICS)
-	set (EXEC dfm)
-endif (HAS_GRAPHICS)
-add_executable (${EXEC} ${SOURCES})
-set_property(TARGET ${EXEC} PROPERTY CXX_STANDARD 11)
+	add_executable (gdfm ${GDFM_SOURCES})
+	target_link_libraries (dfm dfmcommon)
+	set_property(TARGET gdfm PROPERTY CXX_STANDARD 11)
 
-
-if (HAS_GRAPHICS)
 	pkg_check_modules(GTKMM REQUIRED gtkmm-3.0)
 	include_directories(${GTKMM_INCLUDE_DIRS})
 	link_directories(${GTKMM_LIBRARY_DIRS})
 	add_definitions(${GTKMM_CFLAGS_OTHER})
-	target_link_libraries(${EXEC} ${GTKMM_LIBRARIES})
+	target_link_libraries(gdfm ${GTKMM_LIBRARIES})
+	install (TARGETS gdfm DESTINATION bin)
 endif (HAS_GRAPHICS)
-
-install (TARGETS ${EXEC} DESTINATION bin)
-
