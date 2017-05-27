@@ -1,7 +1,7 @@
 include (CheckIncludeFiles)
-find_package (PkgConfig REQUIRED)
 
 if (HAS_GRAPHICS)
+	find_package (PkgConfig REQUIRED)
 	execute_process (
 		COMMAND ${PKG_CONFIG_EXECUTABLE} --variable=glib_compile_resources gio-2.0
 		OUTPUT_VARIABLE GLIB_COMPILE_RESOURCES
