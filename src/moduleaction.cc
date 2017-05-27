@@ -105,22 +105,21 @@ ModuleAction::createConfigLines() const
     return std::vector<std::string>();
 }
 
-#ifdef HAS_GRAPHICS
 void
-ModuleAction::graphicalEdit(Gtk::Window& parent)
+ModuleAction::graphicalEdit()
 {
+    /* Do nothing on a generic action. */
 }
 
-Gtk::Window*
-ModuleAction::getParent() const
+AbstractWindow
+ModuleAction::getWindow() const
 {
-	return parent;
+    return window;
 }
 
 void
-ModuleAction::setParent(Gtk::Window* parent)
+ModuleAction::setWindow(AbstractWindow* window)
 {
-	this->parent = parent;
+    this->window = window;
 }
-#endif
 } /* namespace dfm */

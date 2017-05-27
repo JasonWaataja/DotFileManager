@@ -24,9 +24,6 @@
 
 #include "modulefile.h"
 
-#ifdef HAS_GRAPHICS
-#include "modulefileeditor.h"
-#endif
 #include "util.h"
 
 namespace dfm {
@@ -138,12 +135,21 @@ ModuleFile::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
-void
-ModuleFile::graphicalEdit(Gtk::Window& window)
+AbstractWindow*
+ModuleFile::getWindow() const
 {
-    ModuleFileEditor editor(window, this);
-    editor.run();
+    return window;
 }
-#endif
+
+void
+ModuleFile::setWindow(AbstractWindow* window)
+{
+    this->window = window;
+}
+
+void
+ModuleFile::graphicalEdit()
+{
+    getWindow()->editModuleFile(*this);
+}
 } /* namespace dfm */

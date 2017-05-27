@@ -27,10 +27,6 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef HAS_GRAPHICS
-#include "messageeditor.h"
-#endif
-
 namespace dfm {
 
 MessageAction::MessageAction()
@@ -45,26 +41,15 @@ MessageAction::MessageAction(const std::string& message) : message(message)
 bool
 MessageAction::performAction()
 {
-#ifdef HAS_GRAPHICS
-    if (!getParent())
-        return false;
-    Gtk::MessageDialog dialog(*getParent(), message, false, Gtk::MESSAGE_INFO,
-        Gtk::BUTTONS_OK, true);
-    dialog.run();
-#else
-    std::cout << message << std::endl;
-#endif
+    getWindow()->message(message, AbstractWindow::MESSAGE_INFO);
     return true;
 }
 
-#ifdef HAS_GRAPHICS
 void
-MessageAction::graphicalEdit(Gtk::Window& parent)
+MessageAction::graphicalEdit()
 {
-    MessageEditor editor(parent, this);
-    editor.run();
+    getWindow()->editMessage();
 }
-#endif
 
 const std::string&
 MessageAction::getMessage() const

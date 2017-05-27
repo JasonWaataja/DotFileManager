@@ -28,6 +28,7 @@
 #include <memory>
 #include <string>
 
+#include "abstractwindow.h"
 #include "filecheckaction.h"
 #include "installaction.h"
 #include "removeaction.h"
@@ -50,6 +51,8 @@ public:
     void setDestinationDirectory(const std::string& destinationDirectory);
     const std::string& getDestinationFilename() const;
     void setDestinationFilename(const std::string& destinationFilename);
+    AbstractWindow* getWindow() const;
+    void setWindow(AbstractWindow* window);
 
     std::string getSourcePath(const std::string& sourceDirectory) const;
     std::string getDestinationPath() const;
@@ -61,14 +64,14 @@ public:
         const std::string& sourceDirectory) const;
 
     std::vector<std::string> createConfigLines() const;
-#ifdef HAS_GRAPHICS
-    void graphicalEdit(Gtk::Window& parent);
-#endif
+    void graphicalEdit();
+
 
 private:
     std::string filename;
     std::string destinationDirectory;
     std::string destinationFilename;
+    AbstractWindow* window = nullptr;
 };
 } /* namespace dfm */
 

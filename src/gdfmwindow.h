@@ -92,12 +92,13 @@ public:
 
     /* Overriding AbstractWindow */
     void message(const char *message, MessageType type) override;
-    virtual void editdependency(dependencyaction& action) override;
-    virtual void editfilecheck(filecheckaction& action) override;
-    virtual void editinstall(installaction& action) override;
-    virtual void editremove(removeaction& action) override;
-    virtual void editshell(shellaction& action) override;
-    virtual void editmodulefile(modulefile& modulefile) override;
+    virtual void editMessage(MessageAction& action) override;
+    virtual void editDependency(DependencyAction& action) override;
+    virtual void editFileCheck(FileCheckAction& action) override;
+    virtual void editInstall(InstallAction& action) override;
+    virtual void editRemove(RemoveAction& action) override;
+    virtual void editShell(ShellAction& action) override;
+    virtual void editModulefile(ModuleFile& moduleFile) override;
 
 private:
     std::string currentFilePath;

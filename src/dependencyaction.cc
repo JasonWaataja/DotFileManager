@@ -30,10 +30,6 @@
 
 #include <iostream>
 
-#ifdef HAS_GRAPHICS
-#include "dependencyeditor.h"
-#endif
-
 namespace dfm {
 
 DependencyAction::DependencyAction() : dependencies()
@@ -178,12 +174,9 @@ DependencyAction::addDependency(const std::string& dependency)
     dependencies.push_back(dependency);
 }
 
-#ifdef HAS_GRAPHICS
 void
-DependencyAction::graphicalEdit(Gtk::Window& parent)
+DependencyAction::graphicalEdit()
 {
-	DependencyEditor editor(parent, this);
-	editor.run();
+    getWindow()->editDependency(*this);
 }
-#endif
 } /* namespace dfm */

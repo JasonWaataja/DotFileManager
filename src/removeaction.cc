@@ -31,9 +31,6 @@
 
 #include <iostream>
 
-#ifdef HAS_GRAPHICS
-#include "removeactioneditor.h"
-#endif
 #include "util.h"
 
 namespace dfm {
@@ -105,12 +102,9 @@ RemoveAction::createConfigLines() const
     return lines;
 }
 
-#ifdef HAS_GRAPHICS
 void
-RemoveAction::graphicalEdit(Gtk::Window& parent)
+RemoveAction::graphicalEdit()
 {
-    RemoveActionEditor editor(parent, this);
-    editor.run();
+    getWindow->editRemove(*this);
 }
-#endif
 } /* namespace dfm */

@@ -29,38 +29,43 @@
 namespace dfm {
 
 void
-TerminalWindow::message(const char *message, MessageType)
+TerminalWindow::message(const char* message, MessageType)
 {
     std::cout << message << std::endl;
 }
 
 void
-editDependency(DependencyAction&)
+TerminalWindow::editMessage(MessageAction& action)
 {
 }
 
 void
-editFileCheck(FileCheckAction&)
+TerminalWindow::editDependency(DependencyAction&)
 {
 }
 
 void
-editInstall(InstallAction&)
+TerminalWindow::editFileCheck(FileCheckAction&)
 {
 }
 
 void
-editRemove(RemoveAction&)
+TerminalWindow::editInstall(InstallAction&)
 {
 }
 
 void
-editShell(ShellAction&)
+TerminalWindow::editRemove(RemoveAction&)
 {
 }
 
 void
-editModuleFile(ModuleFile& moduleFile)
+TerminalWindow::editShell(ShellAction&)
+{
+}
+
+void
+TerminalWindow::editModuleFile(ModuleFile& moduleFile)
 {
 }
 } /* namespace dfm */

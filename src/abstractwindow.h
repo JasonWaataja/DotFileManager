@@ -45,12 +45,9 @@ namespace dfm {
  */
 class AbstractWindow {
 public:
-    enum MessageType {
-        MESSAGE_INFO,
-        MESSAGE_WARNING,
-        MESSAGE_ERROR
-    };
-    virtual void message(const char *message, MessageType type) = 0;
+    enum MessageType { MESSAGE_INFO, MESSAGE_WARNING, MESSAGE_ERROR };
+    virtual void message(const char* message, MessageType type) = 0;
+    virtual void editMessage(MessageAction& action);
     virtual void editDependency(DependencyAction& action) = 0;
     virtual void editFileCheck(FileCheckAction& action) = 0;
     virtual void editInstall(InstallAction& action) = 0;

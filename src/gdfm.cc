@@ -22,20 +22,19 @@
 
 #include "config.h"
 
-#ifdef HAS_GRAPHICS
 #include <stdlib.h>
 
 #include <iostream>
 
 #include "gdfmwindow.h"
-#else /* HAS_GRAPHICS */
-#include "dotfilemanager.h"
-#endif /* HAS_GRAPHICS */
 
+/*
+ * GDFM is a graphical from end to DFM. It uses the same configuration file and
+ * settings.
+ */
 int
 main(int argc, char* argv[])
 {
-#ifdef HAS_GRAPHICS
     auto application =
         Gtk::Application::create(argc, argv, "com.waataja.gdfm");
     try {
@@ -54,7 +53,4 @@ main(int argc, char* argv[])
         std::cerr << e.what() << std::endl;
     }
     return EXIT_FAILURE;
-#else /* HAS_GRAPHICS */
-    return dfm::DotFileManager(argc, argv).run();
-#endif /* HAS_GRAPHICS */
 }

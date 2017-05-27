@@ -20,32 +20,16 @@
  * IN THE SOFTWARE.
  */
 
-
-#ifndef TERMINAL_WINDOW_H
-#define TERMINAL_WINDOW_H
-
 #include "config.h"
 
-#include "abstractwindow.h"
-
-namespace dfm {
+#include "dotfilemanager.h"
 
 /*
- * TerminalWindow is an implementation of AbstractWindow that does nothing
- * except message to the terminal output. The command line version is not
- * expected to edit anything.
+ * DFM is a program that manages configuration files for various programs. It
+ * uses a user made configuration file or can generate one on its own.
  */
-class TerminalWindow : public AbstractWindow {
-public:
-    void message(const char* message, MessageType type) override;
-    virtual void editMessage(MessageAction& action) override;
-    virtual void editDependency(DependencyAction& action) override;
-    virtual void editFileCheck(FileCheckAction& action) override;
-    virtual void editInstall(InstallAction& action) override;
-    virtual void editRemove(RemoveAction& action) override;
-    virtual void editShell(ShellAction& action) override;
-    virtual void editModulefile(ModuleFile& moduleFile) override;
-};
-} /* namespace dfm */
-
-#endif /* TERMINAL_WINDOW_H */
+int
+main(int argc, char* argv[])
+{
+    return dfm::DotFileManager(argc, argv).run();
+}
