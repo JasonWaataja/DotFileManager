@@ -31,11 +31,12 @@
 
 #include <gtkmm.h>
 
+#include "abstractwindow.h"
 #include "module.h"
 
 namespace dfm {
 
-class GdfmWindow : public Gtk::ApplicationWindow {
+class GdfmWindow : public Gtk::ApplicationWindow, AbstractWindow {
 public:
     GdfmWindow(
         BaseObjectType* cobject, const Glib::RefPtr<Gtk::Builder>& builder);
@@ -88,6 +89,15 @@ public:
      * pointer otherwise.
      */
     std::shared_ptr<Module> createModuleDialog();
+
+    /* Overriding AbstractWindow */
+    void message(const char *message, MessageType type) override;
+    virtual void editdependency(dependencyaction& action) override;
+    virtual void editfilecheck(filecheckaction& action) override;
+    virtual void editinstall(installaction& action) override;
+    virtual void editremove(removeaction& action) override;
+    virtual void editshell(shellaction& action) override;
+    virtual void editmodulefile(modulefile& modulefile) override;
 
 private:
     std::string currentFilePath;

@@ -37,8 +37,15 @@
 #include "configfilereader.h"
 #include "configfilewriter.h"
 #include "createmoduledialog.h"
+#include "dependencyeditor.h"
+#include "filecheckeditor.h"
+#include "installeditor.h"
+#include "messageeditor.h"
 #include "moduleactioneditor.h"
+#include "modulefile.h"
 #include "modulefileeditor.h"
+#include "removeeditor.h"
+#include "shelleditor.h"
 #include "util.h"
 
 namespace dfm {
@@ -1021,5 +1028,64 @@ GdfmWindow::onMoveDownButtonClicked()
      * moving one row, though, a swap works.
      */
     modulesStore->iter_swap(modulesStore->get_iter(startPath), endIter);
+}
+
+void
+GdfmWindow::message(const char *message, MessageType type)
+{
+    MessageType dialogType;
+    switch (type) {
+    case MESSAGE_INFO:
+        dialogType = Gtk::MESSAGE_INFO;
+    case MESSAGE_WARNING:
+        dialogType = Gtk::MESSAGE_WARNING;
+    case MESSAGE_ERRO:
+        dialogType = Gtk::MESSAGE_ERROR;
+    }
+    Gtk::MessageDialog dialog(*this, message, false, dialogType,
+        Gtk::BUTTONS_OK, true);
+    dialog.run();
+}
+
+void
+GdfmWindow::editDependency(DependencyAction& action )
+{
+	DependencyEditor editor(this, &action);
+	editor.run();
+}
+
+void
+GdfmWindow::editFileCheck(FileCheckAction&)
+{
+    FileCheckEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editInstall(InstallAction&)
+{
+    InstallEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editRemove(RemoveAction&)
+{
+    RemoveEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editShell(ShellAction&)
+{
+    ShellEditor editor(*this, &action);
+    editor.run();
+}
+
+void
+GdfmWindow::editModuleFile(ModuleFile& moduleFile)
+{
+    ModuleFileEditor editor(*this, &action);
+    editor.run();
 }
 } /* namespace dfm */
