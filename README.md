@@ -2,24 +2,53 @@
 A program for managing your dot files
 
 ## Synopsis
+### The Problem
+When you have a new computer or VM, you often want it to have the same
+configuration files  you're used to in your text editors, window managers, etc.
+Many people accomplish this by using a git repository and an install script.
+Sometimes that script uses symlinks to make the process easier.
+
+### The Solution
+DotFileManager solves this by having a process to take a directory and install
+its contents into various places on your system while maintaining the ability to
+run arbitrary commands.
+
+### What is it?
 DFM is a program that manages configuration files which are meant to be synced
 with another service. What makes DFM special is that it copies files without
 using symlinks, meaning that you can change them once you copy them into their
-locations. DFM's man feauter, though, is that it groups files and scripts into
+locations. DFM's main feature, though, is that it groups files and scripts into
 modules, or groups of information about files. Using a simple configuration
 file, you can quickly set up a new system with all your configuration files and
 automatically run the necessary scripts to install, uninstall, and update them.
 Another special feature is that DFM can check if files in your syncing directory
 are different from the installed versions and update them for you.
+
+### What Does it Add?
+There are many advantages to using DFM in conjunction with a git repository or
+file-syncing service.
+
+1. Easy setup and flexibility - With simple line in a config file, you can tell
+   DFM to install to anywhere on your computer. Yet, it also supports shell
+   commands, messaging the user, prompting for a command to enter, etc.
+2. Modularity - Instead of making functions for specific modules, you can easily
+   install or update modules of a specific name when the files update.
+3. Installing, updading, and uninstalling - When you specify a file for a
+   module, it installs when you specify installs updates if you specify update,
+   or is removed if you specify unintall to the program.
+4. Graphical interface - You can build DFM with a graphical interface, making it
+   all much easier if you don't like the command line interface.
+
 ## Installation
 DFM only compiles on POSIX platforms, or optionally on Cygwin or MSYS. Because
 it uses POSIX, though, it requires no dependencies outside of the system's libc.
 However, DFM does rely on some features in C++11, namely the regex and smart
-pointers features.
+pointers features. If you compile the graphical interface, you need gtkmm3.
 
-DFM is compiled using CMake and supports compiling in-source if desired.
-Navigate into the build directory and run `cmake /path/to/dfm`. Then, assuming
-you are using the Unix Makefiles generator, run `make install clean`, which may
+DFM is compiled using CMake and supports compiling in-tree if desired. Navigate
+into the build directory and run `cmake /path/to/dfm`. If you want the graphical
+interface, then run `cmake -DHAS_GRAPHICS=ON /path/to/dfm`. Then, assuming you
+are using the "Unix Makefiles" generator, run `make install clean`, which may
 require root permissions.
 
 DFM builds on most platforms that I've tested, with the exception of OpenBSD. To
@@ -35,6 +64,7 @@ could change it to install to /usr/share/man, but it makes more sense to me to
 install to `CMAKE_INSTALL_PREFIX`. To get the man pages in the default search
 path on FreeBSD, run `cp man/dfm.1 /usr/share/man/man1`, or run cmake with
 `-DCMAKE_INSTALL_PREFIX=/usr`.
+
 ## Usage
 DFM's man page can be consulted for basic options. DFM requires on operation,
 which can be install, uninstall, or update, which operate on modules. These are
