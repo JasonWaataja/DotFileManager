@@ -221,6 +221,8 @@ void
 Module::setWindow(AbstractWindow* window)
 {
     this->window = window;
+    for (auto& file : files)
+        file.setWindow(window);
     for (auto& module : installActions)
         module->setWindow(window);
     for (auto& module : uninstallActions)
