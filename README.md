@@ -28,13 +28,13 @@ are different from the installed versions and update them for you.
 There are many advantages to using DFM in conjunction with a git repository or
 file-syncing service.
 
-1. Easy setup and flexibility - With simple line in a config file, you can tell
-   DFM to install to anywhere on your computer. Yet, it also supports shell
+1. Easy setup and flexibility - With a simple line in a config file, you can
+   tell DFM to install to anywhere on your computer. Yet, it also supports shell
    commands, messaging the user, prompting for a command to enter, etc.
 2. Modularity - Instead of making functions for specific modules, you can easily
    install or update modules of a specific name when the files update.
 3. Installing, updading, and uninstalling - When you specify a file for a
-   module, it installs when you specify installs updates if you specify update,
+   module, it installs when you specify install, updates if you specify update,
    or is removed if you specify unintall to the program.
 4. Graphical interface - You can build DFM with a graphical interface, making it
    all much easier if you don't like the command line interface.
@@ -137,7 +137,7 @@ with the command, which allows for creating install scripts.
 Example:
 
 	my-modle:
-		install:
+	install:
 		message "This message is printed when installing."
 	uninstall:
 		sh echo "This shell command is executed when uninstalling."
