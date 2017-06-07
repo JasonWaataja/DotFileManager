@@ -6,7 +6,9 @@ A program for managing your dot files
 When you have a new computer or VM, you often want it to have the same
 configuration files  you're used to in your text editors, window managers, etc.
 Many people accomplish this by using a git repository and an install script.
-Sometimes that script uses symlinks to make the process easier.
+Sometimes that script just uses symlinks to make the process easier. It would be
+nicer to simply be able to copy all files into their desired location and update
+them when necessary.
 
 ### The Solution
 DotFileManager solves this by having a process to take a directory and install
@@ -35,7 +37,7 @@ file-syncing service.
    install or update modules of a specific name when the files update.
 3. Installing, updading, and uninstalling - When you specify a file for a
    module, it installs when you specify install, updates if you specify update,
-   or is removed if you specify unintall to the program.
+   or is removed if you specify uninstall to the program.
 4. Graphical interface - You can build DFM with a graphical interface, making it
    all much easier if you don't like the command line interface.
 
