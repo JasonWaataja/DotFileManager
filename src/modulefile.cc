@@ -39,16 +39,16 @@ ModuleFile::ModuleFile(const std::string& filename) : filename{filename}
 
 ModuleFile::ModuleFile(
     const std::string& filename, const std::string& destinationDirectory)
-    : ModuleFile(filename, destinationDirectory, filename)
+    : ModuleFile{filename, destinationDirectory, filename}
 {
 }
 
 ModuleFile::ModuleFile(const std::string& filename,
     const std::string& destinationDirectory,
     const std::string& destinationFilename)
-    : filename(filename),
-      destinationDirectory(destinationDirectory),
-      destinationFilename(destinationFilename)
+    : filename{filename},
+      destinationDirectory{destinationDirectory},
+      destinationFilename{destinationFilename}
 {
 }
 
@@ -91,47 +91,51 @@ ModuleFile::setDestinationFilename(const std::string& destinationFilename)
 std::string
 ModuleFile::getSourcePath(const std::string& sourceDirectory) const
 {
-    std::string sourcePath = shellExpandPath(sourceDirectory + "/" + filename);
+    std::string sourcePath{shellExpandPath(sourceDirectory + "/" + filename)};
     return sourcePath;
 }
 
 std::string
 ModuleFile::getDestinationPath() const
 {
-    std::string destinationPath =
-        shellExpandPath(destinationDirectory + "/" + destinationFilename);
+    std::string destinationPath{
+        shellExpandPath(destinationDirectory + "/" + destinationFilename)};
     return destinationPath;
 }
 
 std::shared_ptr<InstallAction>
 ModuleFile::createInstallAction(const std::string& sourceDirectory) const
 {
-    return std::shared_ptr<InstallAction>(new InstallAction(
-        filename, sourceDirectory, destinationFilename, destinationDirectory));
+    return std::shared_ptr<InstallAction>{new InstallAction{
+        filename, sourceDirectory, destinationFilename, destinationDirectory}};
 }
 
 std::shared_ptr<RemoveAction>
 ModuleFile::createUninstallAction() const
 {
-    return std::shared_ptr<RemoveAction>(
-        new RemoveAction(getDestinationPath()));
+    return std::shared_ptr<RemoveAction>{
+        new RemoveAction{getDestinationPath()}};
 }
 
 std::shared_ptr<FileCheckAction>
 ModuleFile::createUpdateAction(const std::string& sourceDirectory) const
 {
-    return std::shared_ptr<FileCheckAction>(new FileCheckAction(
-        getSourcePath(sourceDirectory), getDestinationPath()));
+    return std::shared_ptr<FileCheckAction>{new FileCheckAction{
+        getSourcePath(sourceDirectory), getDestinationPath()}};
 }
 
 std::vector<std::string>
 ModuleFile::createConfigLines() const
 {
-    std::string line = filename;
-    line += " " + destinationDirectory;
-    line += " " + destinationFilename;
-    std::vector<std::string> lines;
-    lines.push_back(line);
+    std::string line{filename};
+    bool includeDestinationFilename = destinationFilename != filename;
+    bool includeDestinationDirectory =
+        includeDestinationFilename || destinationDirectory != "~";
+    if (includeDestinationDirectory)
+        line += " " + destinationDirectory;
+    if (includeDestinationFilename)
+        line += " " + destinationFilename;
+    std::vector<std::string> lines{line};
     return lines;
 }
 
