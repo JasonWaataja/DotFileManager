@@ -438,8 +438,8 @@ GdfmWindow::onActionAbout()
     dialog.set_website(
         "http://github.com/JasonWaataja/GraphicalDotFileManager");
     dialog.set_website_label("website");
-    dialog.set_authors(std::vector<Glib::ustring>{
-        "Jason Waataja <jasonswaataja@gmail.com>" });
+    dialog.set_authors(
+        std::vector<Glib::ustring>{"Jason Waataja <jasonswaataja@gmail.com>"});
     dialog.run();
 }
 
@@ -501,23 +501,24 @@ GdfmWindow::onModulesViewButtonPressEvent(GdkEventButton* button)
         Gtk::TreeRow selectedRow = *selectedIter;
         Gtk::TreeRowReference selectedRowReference(modulesStore, selectedPath);
         RowType type = selectedRow[rowTypeColumn];
-        auto addMenuItem = [this, &menu, &selectedRowReference](
-            const std::string& name,
-            const sigc::slot<void, Gtk::TreeRowReference>& slot) {
-            Gtk::MenuItem* item = Gtk::manage(new Gtk::MenuItem(name));
-            item->signal_activate().connect(
-                sigc::bind<Gtk::TreeRowReference>(slot, selectedRowReference));
-            menu->append(*item);
-        };
+        auto addMenuItem =
+            [this, &menu, &selectedRowReference](const std::string& name,
+                const sigc::slot<void, Gtk::TreeRowReference>& slot) {
+                Gtk::MenuItem* item = Gtk::manage(new Gtk::MenuItem(name));
+                item->signal_activate().connect(
+                    sigc::bind<Gtk::TreeRowReference>(
+                        slot, selectedRowReference));
+                menu->append(*item);
+            };
         if (type == MODULE_ROW) {
             addMenuItem("Edit",
                 sigc::mem_fun(*this, &GdfmWindow::onModuleEditItemActivated));
-            addMenuItem(
-                "Remove", sigc::mem_fun(*this,
-                              &GdfmWindow::onModuleRemoveItemActivated));
-            addMenuItem(
-                "Add File", sigc::mem_fun(*this,
-                                &GdfmWindow::onModuleAddFileItemActivated));
+            addMenuItem("Remove",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleRemoveItemActivated));
+            addMenuItem("Add File",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleAddFileItemActivated));
             addMenuItem("Add Install Action",
                 sigc::mem_fun(*this,
                     &GdfmWindow::onModuleAddInstallActionItemActivated));
@@ -527,29 +528,29 @@ GdfmWindow::onModulesViewButtonPressEvent(GdkEventButton* button)
             addMenuItem("Add Update Action",
                 sigc::mem_fun(
                     *this, &GdfmWindow::onModuleAddUpdateActionItemActivated));
-            addMenuItem(
-                "Install", sigc::mem_fun(*this,
-                               &GdfmWindow::onModuleInstallItemActivated));
-            addMenuItem(
-                "Uninstall", sigc::mem_fun(*this,
-                                 &GdfmWindow::onModuleUninstallItemActivated));
-            addMenuItem(
-                "Update", sigc::mem_fun(*this,
-                              &GdfmWindow::onModuleUpdateItemActivated));
+            addMenuItem("Install",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleInstallItemActivated));
+            addMenuItem("Uninstall",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleUninstallItemActivated));
+            addMenuItem("Update",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleUpdateItemActivated));
         } else if (type == MODULE_FILE_ROW) {
-            addMenuItem(
-                "Edit", sigc::mem_fun(*this,
-                            &GdfmWindow::onModuleFileEditItemActivated));
-            addMenuItem(
-                "Remove", sigc::mem_fun(*this,
-                              &GdfmWindow::onModuleFileRemoveItemActivated));
+            addMenuItem("Edit",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleFileEditItemActivated));
+            addMenuItem("Remove",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleFileRemoveItemActivated));
         } else if (type == MODULE_ACTION_ROW) {
-            addMenuItem(
-                "Edit", sigc::mem_fun(*this,
-                            &GdfmWindow::onModuleActionEditItemActivated));
-            addMenuItem(
-                "Remove", sigc::mem_fun(*this,
-                              &GdfmWindow::onModuleActionRemoveItemActivated));
+            addMenuItem("Edit",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleActionEditItemActivated));
+            addMenuItem("Remove",
+                sigc::mem_fun(
+                    *this, &GdfmWindow::onModuleActionRemoveItemActivated));
         } else
             return;
     }

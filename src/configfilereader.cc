@@ -41,21 +41,21 @@ namespace dfm {
 ConfigFileReader::ConfigFileReader(const std::string& path)
     : path(path), reader(path)
 {
-    options = std::shared_ptr<DfmOptions>(new DfmOptions());
-    environment = ReaderEnvironment(options);
+    options = std::shared_ptr<DfmOptions>{new DfmOptions{}};
+    environment = ReaderEnvironment{options};
     addDefaultCommands();
     addDefaultVariables();
 }
 
 ConfigFileReader::ConfigFileReader(
     const std::string& path, std::shared_ptr<DfmOptions> options)
-    : path(path), reader(path), options(options), environment(options)
+    : path{path}, reader{path}, options{options}, environment{options}
 {
     addDefaultCommands();
 }
 
 ConfigFileReader::ConfigFileReader(const char* path)
-    : ConfigFileReader(std::string(path))
+    : ConfigFileReader{std::string{path}}
 {
 }
 
@@ -170,7 +170,7 @@ ConfigFileReader::isModuleLine(
      * whitespace. There may be trailing whitespace after the colon.
      */
     try {
-        std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
+        std::regex re{"^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$"};
         std::smatch match;
         if (std::regex_match(line, match, re)) {
             moduleName = match.str(1);
@@ -187,7 +187,7 @@ ConfigFileReader::isModuleLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
-    std::regex re("^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$");
+    std::regex re{"^(\\S+(?:\\s+\\S+)*)\\s*:\\s*$"};
     return std::regex_match(line, re);
 }
 
@@ -196,7 +196,7 @@ ConfigFileReader::isInstallLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
-    std::regex re("^install\\s*:\\s*$");
+    std::regex re{"^install\\s*:\\s*$"};
     return std::regex_match(line, re);
 }
 
@@ -209,7 +209,7 @@ ConfigFileReader::isUninstallLine(const std::string& line)
      * The line must start with uninstall, then there must be a colon, which
      * may be surrounded by whitespace.
      */
-    std::regex re("^uninstall\\s*:\\s*$");
+    std::regex re{"^uninstall\\s*:\\s*$"};
     return std::regex_match(line, re);
 }
 
@@ -218,7 +218,7 @@ ConfigFileReader::isUpdateLine(const std::string& line)
 {
     if (isEmptyLine(line) || isComment(line, 0))
         return false;
-    std::regex re("^update\\s*:\\s*$");
+    std::regex re{"^update\\s*:\\s*$"};
     return std::regex_match(line, re);
 }
 
@@ -253,17 +253,17 @@ ConfigFileReader::flushShellAction()
 {
     if (inModuleInstall) {
         currentModule->addInstallAction(
-            std::shared_ptr<ModuleAction>(currentShellAction));
+            std::shared_ptr<ModuleAction>{currentShellAction});
         inShell = false;
         currentShellAction = nullptr;
     } else if (inModuleUninstall) {
         currentModule->addUninstallAction(
-            std::shared_ptr<ModuleAction>(currentShellAction));
+            std::shared_ptr<ModuleAction>{currentShellAction});
         inShell = false;
         currentShellAction = nullptr;
     } else if (inModuleUpdate) {
         currentModule->addUpdateAction(
-            std::shared_ptr<ModuleAction>(currentShellAction));
+            std::shared_ptr<ModuleAction>{currentShellAction});
         inShell = false;
         currentShellAction = nullptr;
     }
@@ -272,18 +272,18 @@ ConfigFileReader::flushShellAction()
 bool
 ConfigFileReader::processLineAsCommand(const std::string& line)
 {
-    std::string localLine = stripIndents(line, 1);
+    std::string localLine{stripIndents(line, 1)};
     /*
      * Match a string that's not whitespace at the beginning, which is the
      * command. Capture the command and the rest of the line.
      */
-    std::regex commandRe("^(\\S+).*$");
+    std::regex commandRe{"^(\\S+).*$"};
     std::smatch matchResults;
     if (!std::regex_match(localLine, matchResults, commandRe)) {
         errorMessage(line, "No command found.");
         return false;
     }
-    std::string command = matchResults.str(1);
+    std::string command{matchResults.str(1)};
     localLine =
         localLine.substr(matchResults.position(1) + matchResults.length(1),
             localLine.length() - matchResults.length(1));
@@ -297,7 +297,7 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
         inShell = true;
         currentShellAction = new ShellAction;
         /* Match everything after one group of whitespace. */
-        std::regex re("^\\s+(.*)$");
+        std::regex re{"^\\s+(.*)$"};
         std::smatch match;
         if (std::regex_match(localLine, match, re))
             currentShellAction->addCommand(match.str(1));
@@ -309,7 +309,7 @@ ConfigFileReader::processLineAsCommand(const std::string& line)
 bool
 ConfigFileReader::processLineAsFile(const std::string& line)
 {
-    std::string localLine = stripIndents(line, 1);
+    std::string localLine{stripIndents(line, 1)};
     std::vector<std::string> arguments;
     if (!splitArguments(line, arguments)) {
         errorMessage(line, "Failed to extract arguments");
@@ -335,8 +335,8 @@ ConfigFileReader::processCommand(
 {
     for (const auto& command : commands) {
         if (command.matchesName(commandName)) {
-            std::shared_ptr<ModuleAction> action =
-                command.createAction(arguments, environment);
+            std::shared_ptr<ModuleAction> action{
+                command.createAction(arguments, environment)};
             setModuleActionFlags(action);
             if (inModuleInstall) {
                 currentModule->addInstallAction(action);
@@ -363,7 +363,7 @@ ConfigFileReader::processCommand(
 void
 ConfigFileReader::startNewModule(const std::string& name)
 {
-    currentModule = new Module(name);
+    currentModule = new Module{name};
     inFiles = true;
     inModuleInstall = false;
     inModuleUninstall = false;
@@ -415,7 +415,7 @@ ConfigFileReader::addCommand(
         createActionFunction,
     const char* firstName, ...)
 {
-    Command command(std::string(firstName), createActionFunction);
+    Command command{std::string{firstName}, createActionFunction};
     va_list argumentList;
     va_start(argumentList, firstName);
     const char* name = va_arg(argumentList, const char*);
@@ -435,7 +435,7 @@ ConfigFileReader::addCommand(
     Command::ArgumentCheck argumentCheckingType, int expectedArgumentCount,
     const char* firstName, ...)
 {
-    Command command(std::string(firstName), createActionFunction);
+    Command command{std::string{firstName}, createActionFunction};
     va_list argumentList;
     va_start(argumentList, firstName);
     const char* name = va_arg(argumentList, const char*);
@@ -464,14 +464,14 @@ std::shared_ptr<ModuleAction>
 ConfigFileReader::createMessageAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
-    return std::shared_ptr<ModuleAction>(new MessageAction(arguments[0]));
+    return std::shared_ptr<ModuleAction>{new MessageAction{arguments[0]}};
 }
 
 std::shared_ptr<ModuleAction>
 ConfigFileReader::createDependenciesAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
-    return std::shared_ptr<DependencyAction>(new DependencyAction(arguments));
+    return std::shared_ptr<DependencyAction>{new DependencyAction{arguments}};
 }
 
 std::shared_ptr<ModuleAction>
@@ -479,16 +479,16 @@ ConfigFileReader::createRemoveAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     if (arguments.size() == 1) {
-        std::shared_ptr<RemoveAction> action(new RemoveAction(arguments[0]));
+        std::shared_ptr<RemoveAction> action{new RemoveAction{arguments[0]}};
         return action;
     } else if (arguments.size() == 2) {
-        std::shared_ptr<RemoveAction> action(
-            new RemoveAction(arguments[0], arguments[1]));
+        std::shared_ptr<RemoveAction> action{
+            new RemoveAction{arguments[0], arguments[1]}};
         return action;
     }
 
     warnx("Too many arguments to create remove action, can only accept two.");
-    return std::shared_ptr<ModuleAction>();
+    return std::shared_ptr<ModuleAction>{};
 }
 
 std::shared_ptr<ModuleAction>
@@ -496,28 +496,28 @@ ConfigFileReader::createInstallAction(
     const std::vector<std::string>& arguments, ReaderEnvironment& environment)
 {
     InstallAction* action = nullptr;
-    std::string installationDirectory =
-        shellExpandPath(environment.getVariable("default-directory"));
+    std::string installationDirectory{
+        shellExpandPath(environment.getVariable("default-directory"))};
     if (arguments.size() == 1)
-        action = new InstallAction(
-            arguments[0], environment.getDirectory(), installationDirectory);
+        action = new InstallAction{
+            arguments[0], environment.getDirectory(), installationDirectory};
     /* Assume that we are working in the current directory. */
     if (arguments.size() == 2)
-        action = new InstallAction(arguments[0], environment.getDirectory(),
-            shellExpandPath(arguments[1]));
+        action = new InstallAction{arguments[0], environment.getDirectory(),
+            shellExpandPath(arguments[1])};
     if (arguments.size() == 3)
-        action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
-            shellExpandPath(arguments[2]));
+        action = new InstallAction{arguments[0], shellExpandPath(arguments[1]),
+            shellExpandPath(arguments[2])};
     if (arguments.size() == 4)
-        action = new InstallAction(arguments[0], shellExpandPath(arguments[1]),
-            arguments[2], shellExpandPath(arguments[3]));
+        action = new InstallAction{arguments[0], shellExpandPath(arguments[1]),
+            arguments[2], shellExpandPath(arguments[3])};
 
     if (action == nullptr) {
         warnx(
             "Too many arguments to create an install action, can only accept two to four.");
-        return std::shared_ptr<ModuleAction>();
+        return std::shared_ptr<ModuleAction>{};
     }
-    return std::shared_ptr<ModuleAction>(action);
+    return std::shared_ptr<ModuleAction>{action};
 }
 
 void
@@ -544,22 +544,22 @@ ConfigFileReader::addDefaultVariables()
 bool
 ConfigFileReader::isWhiteSpace(const std::string& string)
 {
-    std::regex whiteRe("\\s+");
+    std::regex whiteRe{"\\s+"};
     return std::regex_match(string, whiteRe);
 }
 
 bool
 ConfigFileReader::isWhiteSpace(const char* string)
 {
-    std::regex whiteRe("\\s+");
+    std::regex whiteRe{"\\s+"};
     return std::regex_match(string, whiteRe);
 }
 
 bool
 ConfigFileReader::isWhiteSpace(char c)
 {
-    std::regex whiteRe("\\s");
-    char string[] = { c, '\0' };
+    std::regex whiteRe{"\\s"};
+    char string[] = {c, '\0'};
     return std::regex_match(string, whiteRe);
 }
 
@@ -734,7 +734,7 @@ ConfigFileReader::isAssignmentLine(const std::string& line)
      * the variable name or value, it still has to capture the words here to
      * make sure that it follows the rules of quotations.
      */
-    std::regex assignmentRe("^[^\\s:]+\\s+=((?:\\s*\\S+)+)\\s*$");
+    std::regex assignmentRe{"^[^\\s:]+\\s+=((?:\\s*\\S+)+)\\s*$"};
     std::smatch match;
     if (!std::regex_match(line, match, assignmentRe))
         return false;
@@ -758,12 +758,12 @@ ConfigFileReader::isAssignmentLine(
      * some optionsal space at the end. Capture the initial group, as well as
      * the part containing all the words.
      */
-    std::regex assignmentRe("^([^\\s:]+)\\s+=((?:\\s*\\S+)+)\\s*$");
+    std::regex assignmentRe{"^([^\\s:]+)\\s+=((?:\\s*\\S+)+)\\s*$"};
     std::smatch match;
     if (!std::regex_match(line, match, assignmentRe))
         return false;
     name = match.str(1);
-    std::string valueWords = match.str(2);
+    std::string valueWords{match.str(2)};
     std::vector<std::string> valueArguments;
     if (!splitArguments(valueWords, valueArguments))
         return false;

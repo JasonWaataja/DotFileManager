@@ -30,7 +30,7 @@ namespace dfm {
 
 ConfigFileWriter::ConfigFileWriter(
     const std::string& path, const std::vector<Module> modules)
-    : path(path), modules(modules)
+    : path{path}, modules{modules}
 {
     writer.open(path);
 }

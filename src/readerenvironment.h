@@ -88,6 +88,6 @@ private:
     std::string directory;
     std::map<std::string, std::string> variables;
 };
-} /* namespace 2016 */
+} // namespace dfm
 
 #endif /* READER_ENVIRONMENT_H */

@@ -64,6 +64,6 @@ public:
 private:
     std::vector<std::string> dependencies;
 };
-} /* namespace 2016 */
+} // namespace dfm
 
 #endif /* DEPENDENCY_ACTION_H */

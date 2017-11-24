@@ -71,6 +71,6 @@ private:
     std::string sourcePath;
     std::string destinationPath;
 };
-} /* namespace 2016 */
+} // namespace dfm
 
 #endif /* FILE_CHECK_H */

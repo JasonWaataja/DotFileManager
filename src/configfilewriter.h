@@ -25,9 +25,9 @@
 
 #include "config.h"
 
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "module.h"
 

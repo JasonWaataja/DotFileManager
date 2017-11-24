@@ -71,8 +71,8 @@ public:
 
 private:
     std::string filename;
-    std::string destinationDirectory;
-    std::string destinationFilename;
+    std::string destinationDirectory = "~";
+    std::string destinationFilename = filename;
     AbstractWindow* window = nullptr;
 };
 } /* namespace dfm */
