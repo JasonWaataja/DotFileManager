@@ -23,6 +23,8 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
+#include "config.h"
+
 #include <string>
 #include <vector>
 

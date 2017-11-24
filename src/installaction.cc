@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "installaction.h"
 
 #include <dirent.h>
@@ -27,6 +29,7 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -165,5 +168,11 @@ InstallAction::createConfigLines() const
     std::vector<std::string> lines;
     lines.push_back(line);
     return lines;
+}
+
+void
+InstallAction::graphicalEdit()
+{
+    getWindow()->editInstall(*this);
 }
 } /* namespace dfm */

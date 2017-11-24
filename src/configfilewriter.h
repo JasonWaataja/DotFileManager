@@ -23,6 +23,8 @@
 #ifndef CONFIG_FILE_WRITER_H
 #define CONFIG_FILE_WRITER_H
 
+#include "config.h"
+
 #include <string>
 #include <vector>
 #include <fstream>

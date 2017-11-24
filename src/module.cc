@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "module.h"
 
 #include <err.h>
@@ -207,5 +209,25 @@ Module::createConfigLines() const
             lines.push_back("\t" + line);
     }
     return lines;
+}
+
+AbstractWindow*
+Module::getWindow() const
+{
+    return window;
+}
+
+void
+Module::setWindow(AbstractWindow* window)
+{
+    this->window = window;
+    for (auto& file : files)
+        file.setWindow(window);
+    for (auto& module : installActions)
+        module->setWindow(window);
+    for (auto& module : uninstallActions)
+        module->setWindow(window);
+    for (auto& module : updateActions)
+        module->setWindow(window);
 }
 } /* namespace dfm */

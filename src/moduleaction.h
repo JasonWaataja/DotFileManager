@@ -23,12 +23,17 @@
 #ifndef MODULE_ACTION_H
 #define MODULE_ACTION_H
 
+#include "config.h"
+
 #include <stdarg.h>
 
 #include <string>
 #include <vector>
 
 namespace dfm {
+
+/* Forward declaration to prevent circular dependency. */
+class AbstractWindow;
 
 const char DEFAULT_ACTION_NAME[] = "generic action";
 
@@ -48,7 +53,12 @@ public:
     bool isInteractive() const;
     void setInteractive(bool interactive);
 
+    /*
+     * Run to make sure the name is set to the correct value before accessing
+     * it to display it.
+     */
     virtual void updateName();
+
     /*
      * Creates a list of lines that would create the given command when used in
      * a dfm config file.
@@ -64,11 +74,20 @@ public:
      * the given command.
      */
     virtual std::vector<std::string> createConfigLines() const;
+    AbstractWindow* getWindow() const;
+    void setWindow(AbstractWindow* window);
+    /*
+     * Edit the action using a gui if available. This functional is probably
+     * not going to be called in the command line version.
+     */
+    virtual void graphicalEdit();
 
 private:
     std::string name;
     bool verbose = false;
     bool interactive = false;
+    /* For making dialogs. Null if no window is available. */
+    AbstractWindow* window = nullptr;
 };
 } /* namespace dfm */
 

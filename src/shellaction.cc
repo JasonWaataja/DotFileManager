@@ -20,12 +20,16 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "shellaction.h"
 
 #include <err.h>
 #include <stdio.h>
 
 #include <iostream>
+
+#include "abstractwindow.h"
 
 namespace dfm {
 
@@ -93,5 +97,11 @@ ShellAction::createConfigLines() const
     for (const auto& command : shellCommands)
         lines.push_back("\t" + command);
     return lines;
+}
+
+void
+ShellAction::graphicalEdit()
+{
+    getWindow()->editShell(*this);
 }
 } /* namespace dfm */

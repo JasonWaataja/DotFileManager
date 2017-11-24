@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "command.h"
 
 #include <assert.h>

@@ -23,6 +23,9 @@
 #ifndef DEPENDENCY_ACTION_H
 #define DEPENDENCY_ACTION_H
 
+#include "config.h"
+
+#include <string>
 #include <vector>
 
 #include "moduleaction.h"
@@ -56,6 +59,7 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
+    void graphicalEdit() override;
 
 private:
     std::vector<std::string> dependencies;

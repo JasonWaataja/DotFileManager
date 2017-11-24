@@ -23,6 +23,8 @@
 #ifndef MESSAGE_ACTION_H
 #define MESSAGE_ACTION_H
 
+#include "config.h"
+
 #include <string>
 
 #include "moduleaction.h"
@@ -39,6 +41,7 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
+    void graphicalEdit() override;
 
 private:
     std::string message;

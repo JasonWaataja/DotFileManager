@@ -23,10 +23,13 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include "config.h"
+
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "abstractwindow.h"
 #include "moduleaction.h"
 #include "modulefile.h"
 
@@ -58,6 +61,9 @@ public:
     const std::string& getName() const;
     void setName(const std::string& name);
     const std::vector<ModuleFile> getFiles() const;
+    AbstractWindow* getWindow() const;
+    /* Note, this also sets all ModuleActions as well. */
+    void setWindow(AbstractWindow* window);
 
     std::vector<std::string> createConfigLines() const;
 
@@ -67,6 +73,7 @@ private:
     std::vector<std::shared_ptr<ModuleAction>> installActions;
     std::vector<std::shared_ptr<ModuleAction>> uninstallActions;
     std::vector<std::shared_ptr<ModuleAction>> updateActions;
+    AbstractWindow* window = nullptr;
 };
 } /* namespace dfm */
 

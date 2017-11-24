@@ -20,14 +20,16 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef UTIL_H
+#define UTIL_H
+
+#include "config.h"
+
 #include <dirent.h>
 #include <ftw.h>
 
 #include <iostream>
 #include <string>
-
-#ifndef UTIL_H
-#define UTIL_H
 
 namespace dfm {
 

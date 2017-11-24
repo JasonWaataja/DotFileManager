@@ -20,10 +20,14 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "messageaction.h"
 
 #include <iostream>
 #include <sstream>
+
+#include "abstractwindow.h"
 
 namespace dfm {
 
@@ -39,8 +43,14 @@ MessageAction::MessageAction(const std::string& message) : message(message)
 bool
 MessageAction::performAction()
 {
-    std::cout << message << std::endl;
+    getWindow()->message(message, AbstractWindow::MESSAGE_INFO);
     return true;
+}
+
+void
+MessageAction::graphicalEdit()
+{
+    getWindow()->editMessage(*this);
 }
 
 const std::string&

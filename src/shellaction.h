@@ -23,6 +23,8 @@
 #ifndef SHELL_ACTION_H
 #define SHELL_ACTION_H
 
+#include "config.h"
+
 #include <string>
 #include <vector>
 
@@ -45,6 +47,7 @@ public:
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
+    void graphicalEdit() override;
 
 private:
     std::vector<std::string> shellCommands;

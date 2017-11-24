@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,10 +20,32 @@
  * IN THE SOFTWARE.
  */
 
-#include "dotfilemanager.h"
+#ifndef FILE_CHECK_EDITOR_H
+#define FILE_CHECK_EDITOR_H
 
-int
-main(int argc, char* argv[])
-{
-    return dfm::DotFileManager(argc, argv).run();
-}
+#include "config.h"
+
+#include <gtkmm.h>
+
+#include "filecheckaction.h"
+
+namespace dfm {
+
+class FileCheckEditor : public Gtk::Dialog {
+public:
+    FileCheckEditor(Gtk::Window& parent, FileCheckAction* action);
+
+private:
+    FileCheckAction* action;
+
+    Gtk::Grid grid;
+    Gtk::Label sourcePathLabel;
+    Gtk::Entry sourcePathEntry;
+    Gtk::Label destinationPathLabel;
+    Gtk::Entry destinationPathEntry;
+
+    void onResponse(int responseId);
+};
+} /* namespace dfm */
+
+#endif /* FILE_CHECK_EDITOR_H */

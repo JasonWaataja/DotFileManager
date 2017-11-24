@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "dotfilemanager.h"
 
 #include <dirent.h>
@@ -101,6 +103,8 @@ DotFileManager::readModules()
     if (!status)
         warnx("Failed to read modules.");
     reader.close();
+    for (auto& module : modules)
+        module.setWindow(&window);
     return status;
 }
 

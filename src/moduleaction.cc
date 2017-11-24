@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "moduleaction.h"
 
 #include <stdio.h>
@@ -101,5 +103,23 @@ std::vector<std::string>
 ModuleAction::createConfigLines() const
 {
     return std::vector<std::string>();
+}
+
+void
+ModuleAction::graphicalEdit()
+{
+    /* Do nothing on a generic action. */
+}
+
+AbstractWindow*
+ModuleAction::getWindow() const
+{
+    return window;
+}
+
+void
+ModuleAction::setWindow(AbstractWindow* window)
+{
+    this->window = window;
 }
 } /* namespace dfm */

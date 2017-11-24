@@ -20,8 +20,11 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "modulefile.h"
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -131,5 +134,23 @@ ModuleFile::createConfigLines() const
     std::vector<std::string> lines;
     lines.push_back(line);
     return lines;
+}
+
+AbstractWindow*
+ModuleFile::getWindow() const
+{
+    return window;
+}
+
+void
+ModuleFile::setWindow(AbstractWindow* window)
+{
+    this->window = window;
+}
+
+void
+ModuleFile::graphicalEdit()
+{
+    getWindow()->editModuleFile(*this);
 }
 } /* namespace dfm */

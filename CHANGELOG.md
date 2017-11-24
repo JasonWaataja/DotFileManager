@@ -1,7 +1,21 @@
 # Change Log
 This project adheres to Semantic Versioning
 
-## [0.1.3] - 2017-0522
+## [0.1.4] - 2017-11-24
+### Added
+- Add GraphicalDotFileManager into this repository. That means there's now an
+  entirely new project in this one.
+
+### Changed
+- Make the graphical and command line versions use the same source code for
+  their shared behavior which means changing the entire build system.
+- Update README to make it easier to understand for a newcomer and include build
+  instructions for the new project.
+
+### Fixed
+- Fix crash when opening module file in gui.
+
+## [0.1.3] - 2017-05-22
 ### Fixed
 - Fix bug where it doesn't work.
 - No really, it actually didn't work but now it can install stuff correctly.

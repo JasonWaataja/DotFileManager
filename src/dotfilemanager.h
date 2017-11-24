@@ -23,10 +23,13 @@
 #ifndef DOT_FILE_MANAGER_H
 #define DOT_FILE_MANAGER_H
 
+#include "config.h"
+
 #include <memory>
 
 #include "module.h"
 #include "options.h"
+#include "terminalwindow.h"
 
 namespace dfm {
 
@@ -69,6 +72,7 @@ private:
      */
     bool writeConfigFile(const std::string& directory, std::ostream&
         outputStream) const;
+    TerminalWindow window;
 };
 } /* namespace 2016 */
 

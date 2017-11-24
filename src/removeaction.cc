@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "removeaction.h"
 
 #include <err.h>
@@ -29,6 +31,7 @@
 
 #include <iostream>
 
+#include "abstractwindow.h"
 #include "util.h"
 
 namespace dfm {
@@ -98,5 +101,11 @@ RemoveAction::createConfigLines() const
     std::vector<std::string> lines;
     lines.push_back("remove " + filePath);
     return lines;
+}
+
+void
+RemoveAction::graphicalEdit()
+{
+    getWindow()->editRemove(*this);
 }
 } /* namespace dfm */

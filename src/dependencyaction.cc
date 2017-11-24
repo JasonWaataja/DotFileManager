@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "dependencyaction.h"
 
 #include <err.h>
@@ -27,6 +29,8 @@
 #include <stdlib.h>
 
 #include <iostream>
+
+#include "abstractwindow.h"
 
 namespace dfm {
 
@@ -170,5 +174,11 @@ void
 DependencyAction::addDependency(const std::string& dependency)
 {
     dependencies.push_back(dependency);
+}
+
+void
+DependencyAction::graphicalEdit()
+{
+    getWindow()->editDependency(*this);
 }
 } /* namespace dfm */

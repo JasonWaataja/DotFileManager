@@ -20,6 +20,8 @@
  * IN THE SOFTWARE.
  */
 
+#include "config.h"
+
 #include "filecheckaction.h"
 
 #include <sys/stat.h>
@@ -28,11 +30,11 @@
 #include <err.h>
 #include <libgen.h>
 #include <stdlib.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <fstream>
 
+#include "abstractwindow.h"
 #include "installaction.h"
 #include "util.h"
 
@@ -305,5 +307,11 @@ FileCheckAction::createConfigLines() const
     std::vector<std::string> lines;
     lines.push_back("remove " + sourcePath + " " + destinationPath);
     return lines;
+}
+
+void
+FileCheckAction::graphicalEdit()
+{
+    getWindow()->editFileCheck(*this);
 }
 } /* namespace dfm */
