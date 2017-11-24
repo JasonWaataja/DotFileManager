@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to Semantic Versioning
 
-## [Unreleased]
+## [0.1.4] - 2017-11-24
 ### Added
 - Add GraphicalDotFileManager into this repository. That means there's now an
   entirely new project in this one.
