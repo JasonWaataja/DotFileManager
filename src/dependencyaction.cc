@@ -41,14 +41,14 @@ DependencyAction::DependencyAction() : dependencies()
 
 DependencyAction::DependencyAction(
     const std::vector<std::string>& dependencies)
-    : dependencies(dependencies)
+    : dependencies{dependencies}
 {
     updateName();
 }
 
 DependencyAction::DependencyAction(const char* firstDependency, ...)
 {
-    dependencies.push_back(std::string(firstDependency));
+    dependencies.push_back(std::string{firstDependency});
 
     va_list argumentList;
     va_start(argumentList, firstDependency);
@@ -77,7 +77,7 @@ void
 DependencyAction::setDependencies(const char* firstDependency, ...)
 {
     dependencies.clear();
-    dependencies.push_back(std::string(firstDependency));
+    dependencies.push_back(std::string{firstDependency});
 
     va_list argumentList;
     va_start(argumentList, firstDependency);
@@ -162,7 +162,7 @@ DependencyAction::updateName()
 std::vector<std::string>
 DependencyAction::createConfigLines() const
 {
-    std::string line = "depend";
+    std::string line{"depend"};
     for (const auto& dependency : dependencies)
         line += " " + dependency;
     std::vector<std::string> lines;

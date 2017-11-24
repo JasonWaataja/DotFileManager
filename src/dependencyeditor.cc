@@ -33,7 +33,7 @@ namespace dfm {
 
 DependencyEditor::DependencyEditor(
     Gtk::Window& parent, DependencyAction* action)
-    : Gtk::Dialog("Edit Dependency Action", parent, true), action(action)
+    : Gtk::Dialog{"Edit Dependency Action", parent, true}, action{action}
 {
     assert(action != nullptr);
 
@@ -65,9 +65,9 @@ DependencyEditor::onResponse(int responseId)
 {
     if (responseId != Gtk::RESPONSE_OK)
         return;
-    std::string text = dependenciesBuffer->get_text();
+    std::string text{dependenciesBuffer->get_text()};
 
-    std::istringstream inputStream(text);
+    std::istringstream inputStream{text};
     std::string line;
     while (std::getline(inputStream, line)) {
         action->addDependency(line);

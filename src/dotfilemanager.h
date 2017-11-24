@@ -70,10 +70,10 @@ private:
      *
      * Returns true on success, false on failure.
      */
-    bool writeConfigFile(const std::string& directory, std::ostream&
-        outputStream) const;
+    bool writeConfigFile(
+        const std::string& directory, std::ostream& outputStream) const;
     TerminalWindow window;
 };
-} /* namespace 2016 */
+} // namespace dfm
 
 #endif /* DOT_FILE_MANAGER_H */

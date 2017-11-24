@@ -46,7 +46,7 @@ FileCheckAction::FileCheckAction()
 
 FileCheckAction::FileCheckAction(
     const std::string& sourcePath, const std::string& destinationPath)
-    : sourcePath(sourcePath), destinationPath(destinationPath)
+    : sourcePath{sourcePath}, destinationPath{destinationPath}
 {
     updateName();
 }
@@ -94,7 +94,7 @@ FileCheckAction::shouldUpdateRegularFile(
     if (sourcePath.length() == 0 || destinationPath.length() == 0)
         return false;
 
-    std::ifstream sourceReader(sourcePath.c_str());
+    std::ifstream sourceReader{sourcePath.c_str()};
     if (!sourceReader.is_open()) {
         return false;
     }
@@ -103,7 +103,7 @@ FileCheckAction::shouldUpdateRegularFile(
      * the file it is supposed to be a copy of but not the copied file, meaning
      * it needs to be updated.
      */
-    std::ifstream destinationReader(destinationPath.c_str());
+    std::ifstream destinationReader{destinationPath.c_str()};
     if (!destinationReader.is_open()) {
         sourceReader.close();
         return true;
@@ -113,6 +113,7 @@ FileCheckAction::shouldUpdateRegularFile(
     bool sourceReadStatus = false;
     bool destinationReadStatus = false;
 
+    // TODO: Figure out if there's a way to do this with simple C++ casting.
     sourceReadStatus = (std::getline(sourceReader, sourceLine)) ? true : false;
     destinationReadStatus =
         (std::getline(destinationReader, destinationLine)) ? true : false;
@@ -202,9 +203,9 @@ FileCheckAction::shouldUpdateDirectory(
             continue;
         if (strcmp(sourceEntry->d_name, destinationEntry->d_name) != 0)
             return true;
-        std::string sourceEntryPath = sourcePath + "/" + sourceEntry->d_name;
-        std::string destinationEntryPath =
-            destinationPath + "/" + destinationEntry->d_name;
+        std::string sourceEntryPath{sourcePath + "/" + sourceEntry->d_name};
+        std::string destinationEntryPath{
+            destinationPath + "/" + destinationEntry->d_name};
         if (shouldUpdateFile(sourceEntryPath, destinationEntryPath))
             return true;
     }

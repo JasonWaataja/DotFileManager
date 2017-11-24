@@ -31,5 +31,5 @@
 int
 main(int argc, char* argv[])
 {
-    return dfm::DotFileManager(argc, argv).run();
+    return dfm::DotFileManager{argc, argv}.run();
 }

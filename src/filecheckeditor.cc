@@ -33,7 +33,7 @@
 namespace dfm {
 
 FileCheckEditor::FileCheckEditor(Gtk::Window& parent, FileCheckAction* action)
-    : Gtk::Dialog("Edit File Check Action", parent, true), action(action)
+    : Gtk::Dialog{"Edit File Check Action", parent, true}, action{action}
 {
     assert(action != nullptr);
 
@@ -68,12 +68,12 @@ FileCheckEditor::onResponse(int responseId)
     if (responseId != Gtk::RESPONSE_OK)
         return;
 
-    std::string sourcePath = sourcePathEntry.get_text();
+    std::string sourcePath{sourcePathEntry.get_text()};
     if (sourcePath.length() == 0)
         return;
     action->setSourcePath(sourcePath);
 
-    std::string destinationPath = destinationPathEntry.get_text();
+    std::string destinationPath{destinationPathEntry.get_text()};
     if (destinationPath.length() > 0) {
         action->setDestinationPath(destinationPath);
         return;

@@ -33,8 +33,7 @@ ModuleFile::ModuleFile()
 {
 }
 
-ModuleFile::ModuleFile(const std::string& filename)
-    : ModuleFile(filename, "~", filename)
+ModuleFile::ModuleFile(const std::string& filename) : filename{filename}
 {
 }
 

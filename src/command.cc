@@ -34,15 +34,15 @@
 namespace dfm {
 
 Command::Command()
-    : createActionFunction(getDefaultAction()),
-      argumentCheckingType(NO_ARGUMENT_CKECK)
+    : createActionFunction{getDefaultAction()},
+      argumentCheckingType{NO_ARGUMENT_CKECK}
 {
 }
 
 Command::Command(const std::string& name)
-    : callableNames(1),
-      createActionFunction(getDefaultAction()),
-      argumentCheckingType(NO_ARGUMENT_CKECK)
+    : callableNames{1},
+      createActionFunction{getDefaultAction()},
+      argumentCheckingType{NO_ARGUMENT_CKECK}
 {
     callableNames.push_back(name);
 }
@@ -51,9 +51,9 @@ Command::Command(const std::string& name,
     std::function<std::shared_ptr<ModuleAction>(
         const std::vector<std::string>&, ReaderEnvironment&)>
         createActionFunction)
-    : callableNames(1),
-      createActionFunction(createActionFunction),
-      argumentCheckingType(NO_ARGUMENT_CKECK)
+    : callableNames{1},
+      createActionFunction{createActionFunction},
+      argumentCheckingType{NO_ARGUMENT_CKECK}
 {
     callableNames.push_back(name);
 }
@@ -137,10 +137,10 @@ Command::createAction(const std::vector<std::string>& arguments,
 {
     if (argumentCheckingType == EXACT_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountEqual(arguments, expectedArgumentCount))
-        return std::shared_ptr<ModuleAction>();
+        return std::shared_ptr<ModuleAction>{};
     if (argumentCheckingType == MINIMUM_COUNT_ARGUMENT_CHECK
         && !checkArgumentCountAtLeast(arguments, expectedArgumentCount))
-        return std::shared_ptr<ModuleAction>();
+        return std::shared_ptr<ModuleAction>{};
     return createActionFunction(arguments, environment);
 }
 
@@ -159,10 +159,11 @@ std::function<std::shared_ptr<ModuleAction>(
     const std::vector<std::string>&, ReaderEnvironment&)>
 Command::getDefaultAction()
 {
-    auto createActionFunction = [](const std::vector<std::string>&,
-        const ReaderEnvironment&) -> std::shared_ptr<ModuleAction> {
+    auto createActionFunction =
+        [](const std::vector<std::string>&,
+            const ReaderEnvironment&) -> std::shared_ptr<ModuleAction> {
         warnx("Calling command without behavior.");
-        return std::shared_ptr<ModuleAction>();
+        return std::shared_ptr<ModuleAction>{};
     };
     return createActionFunction;
 }

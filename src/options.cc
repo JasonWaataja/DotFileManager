@@ -60,16 +60,14 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
      * ClangFormat does a weird thing here, but I don't want to add a
      * suppression and I'll just leave it.
      */
-    struct option longOptions[] = { { "install", no_argument, NULL, 'i' },
-        { "uninstall", no_argument, NULL, 'u' },
-        { "all", no_argument, NULL, 'a' },
-        { "interactive", no_argument, NULL, 'I' },
-        { "check", no_argument, NULL, 'c' },
-        { "verbose", no_argument, NULL, 'v' },
-        { "generate-config-file", no_argument, NULL, 'g' },
-        { "dump-config-file", no_argument, NULL, 'G' },
-        { "print-modules", no_argument, NULL, 'p' },
-        { "directory", required_argument, NULL, 'd' }, { 0, 0, 0, 0 } };
+    struct option longOptions[] = {{"install", no_argument, NULL, 'i'},
+        {"uninstall", no_argument, NULL, 'u'}, {"all", no_argument, NULL, 'a'},
+        {"interactive", no_argument, NULL, 'I'},
+        {"check", no_argument, NULL, 'c'}, {"verbose", no_argument, NULL, 'v'},
+        {"generate-config-file", no_argument, NULL, 'g'},
+        {"dump-config-file", no_argument, NULL, 'G'},
+        {"print-modules", no_argument, NULL, 'p'},
+        {"directory", required_argument, NULL, 'd'}, {0, 0, 0, 0}};
 
     int getoptValue = getopt_long_only(
         argc, argv, GETOPT_SHORT_OPTIONS, longOptions, &optionIndex);

@@ -43,6 +43,6 @@ private:
 
     void onResponse(int responseId);
 };
-} /* namespace 2017 */
+} // namespace dfm
 
 #endif /* REMOVE_ACTION_EDITOR_H */
