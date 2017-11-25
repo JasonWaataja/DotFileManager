@@ -1,6 +1,10 @@
 # Change Log
 This project adheres to Semantic Versioning
 
+## [Unreleased]
+### Changed
+- Make generated config files look better and more efficient.
+
 ## [0.1.4] - 2017-11-24
 ### Added
 - Add GraphicalDotFileManager into this repository. That means there's now an
