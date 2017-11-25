@@ -28,11 +28,11 @@
 
 namespace dfm {
 
-ModuleAction::ModuleAction() : name(DEFAULT_ACTION_NAME)
+ModuleAction::ModuleAction() : name{DEFAULT_ACTION_NAME}
 {
 }
 
-ModuleAction::ModuleAction(const std::string& name) : name(name)
+ModuleAction::ModuleAction(const std::string& name) : name{name}
 {
 }
 
@@ -102,7 +102,7 @@ ModuleAction::updateName()
 std::vector<std::string>
 ModuleAction::createConfigLines() const
 {
-    return std::vector<std::string>();
+    return std::vector<std::string>{};
 }
 
 void

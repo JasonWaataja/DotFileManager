@@ -32,7 +32,7 @@
 namespace dfm {
 
 ShellEditor::ShellEditor(Gtk::Window& parent, ShellAction* action)
-    : Gtk::Dialog("Edit Shell Commands", parent, true), action(action)
+    : Gtk::Dialog{"Edit Shell Commands", parent, true}, action{action}
 {
     assert(action != nullptr);
 
@@ -63,7 +63,7 @@ ShellEditor::onResponse(int responseId)
         return;
 
     std::vector<std::string> commands;
-    std::istringstream reader(commandsBuffer->get_text());
+    std::istringstream reader{commandsBuffer->get_text()};
     std::string line;
     while (std::getline(reader, line))
         commands.push_back(line);

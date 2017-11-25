@@ -74,18 +74,18 @@ InstallActionEditor::onResponse(int responseId)
     if (responseId != Gtk::RESPONSE_OK)
         return;
 
-    std::string filename = filenameEntry.get_text();
+    std::string filename{filenameEntry.get_text()};
     if (filename.length() == 0)
         return;
     action->setFilename(filename);
 
-    std::string destinationDirectory = destinationEntry.get_text();
+    std::string destinationDirectory{destinationEntry.get_text()};
     if (destinationDirectory.length() > 0)
         action->setDestinationDirectory(destinationDirectory);
     else
         action->setDestinationDirectory(getHomeDirectory());
 
-    std::string installFilename = installFilenameEntry.get_text();
+    std::string installFilename{installFilenameEntry.get_text()};
     if (installFilename.length() > 0)
         action->setInstallFilename(installFilename);
     else

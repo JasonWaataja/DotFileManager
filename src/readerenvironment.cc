@@ -28,12 +28,12 @@
 
 namespace dfm {
 
-ReaderEnvironment::ReaderEnvironment() : directory(getCurrentDirectory())
+ReaderEnvironment::ReaderEnvironment() : directory{getCurrentDirectory()}
 {
 }
 
 ReaderEnvironment::ReaderEnvironment(std::shared_ptr<DfmOptions> options)
-    : options(options)
+    : options{options}
 {
     directory = (options->hasSourceDirectory) ? options->sourceDirectory
                                               : getCurrentDirectory();
@@ -87,7 +87,7 @@ std::string
 ReaderEnvironment::getVariable(const std::string& name)
 {
     if (!hasVariable(name))
-        throw std::runtime_error("Getting non-existent variable " + name);
+        throw std::runtime_error{"Getting non-existent variable " + name};
     return variables.at(name);
 }
 

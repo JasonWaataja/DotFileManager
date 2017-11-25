@@ -29,7 +29,7 @@
 namespace dfm {
 
 MessageEditor::MessageEditor(Gtk::Window& parent, MessageAction* action)
-    : Gtk::Dialog("Edit Message", parent, true), action(action)
+    : Gtk::Dialog{"Edit Message", parent, true}, action{action}
 {
     assert(action != nullptr);
 
@@ -56,7 +56,7 @@ MessageEditor::onResponse(int responseId)
 {
     if (responseId != Gtk::RESPONSE_OK)
         return;
-    std::string message = messageBuffer->get_text();
+    std::string message{messageBuffer->get_text()};
     if (message.length() > 0)
         action->setMessage(message);
 }

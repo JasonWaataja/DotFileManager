@@ -35,7 +35,7 @@ MessageAction::MessageAction()
 {
 }
 
-MessageAction::MessageAction(const std::string& message) : message(message)
+MessageAction::MessageAction(const std::string& message) : message{message}
 {
     updateName();
 }
@@ -82,8 +82,6 @@ MessageAction::createConfigLines() const
             outputStream << message[i];
     }
     std::string line = "message \"" + outputStream.str() + "\"";
-    std::vector<std::string> lines;
-    lines.push_back(line);
-    return lines;
+    return std::vector<std::string>{line};
 }
 } /* namespace dfm */

@@ -34,7 +34,7 @@
 
 namespace dfm {
 
-DependencyAction::DependencyAction() : dependencies()
+DependencyAction::DependencyAction()
 {
     updateName();
 }

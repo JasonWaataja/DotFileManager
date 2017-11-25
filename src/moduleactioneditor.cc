@@ -40,7 +40,7 @@
 namespace dfm {
 
 ModuleActionEditor::ModuleActionEditor(Gtk::Window& parent)
-    : Gtk::Dialog("Create a Module Action", parent, true)
+    : Gtk::Dialog{"Create a Module Action", parent, true}
 {
     typeBox.append("Message Action");
     typeBox.append("Shell Action");
@@ -64,45 +64,45 @@ ModuleActionEditor::ModuleActionEditor(Gtk::Window& parent)
 void
 ModuleActionEditor::onCreateActionButtonClicked()
 {
-    std::string selected = typeBox.get_active_text();
+    std::string selected{typeBox.get_active_text()};
     if (selected == "Message Action") {
-        std::shared_ptr<MessageAction> action(new MessageAction());
-        MessageEditor editor(*this, action.get());
+        std::shared_ptr<MessageAction> action{new MessageAction{}};
+        MessageEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);
         }
     } else if (selected == "Shell Action") {
-        std::shared_ptr<ShellAction> action(new ShellAction());
-        ShellEditor editor(*this, action.get());
+        std::shared_ptr<ShellAction> action{new ShellAction{}};
+        ShellEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);
         }
     } else if (selected == "Install Action") {
-        std::shared_ptr<InstallAction> action(new InstallAction());
-        InstallActionEditor editor(*this, action.get());
+        std::shared_ptr<InstallAction> action{new InstallAction{}};
+        InstallActionEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);
         }
     } else if (selected == "Remove Action") {
-        std::shared_ptr<RemoveAction> action(new RemoveAction());
-        RemoveActionEditor editor(*this, action.get());
+        std::shared_ptr<RemoveAction> action{new RemoveAction{}};
+        RemoveActionEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);
         }
     } else if (selected == "File Check Action") {
-        std::shared_ptr<FileCheckAction> action(new FileCheckAction());
-        FileCheckEditor editor(*this, action.get());
+        std::shared_ptr<FileCheckAction> action{new FileCheckAction()};
+        FileCheckEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);
         }
     } else if (selected == "Dependency Action") {
-        std::shared_ptr<DependencyAction> action(new DependencyAction);
-        DependencyEditor editor(*this, action.get());
+        std::shared_ptr<DependencyAction> action{new DependencyAction{}};
+        DependencyEditor editor{*this, action.get()};
         if (editor.run() == Gtk::RESPONSE_OK) {
             this->action = action;
             response(Gtk::RESPONSE_OK);

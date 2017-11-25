@@ -98,7 +98,7 @@ getCurrentDirectory()
             err(EXIT_FAILURE, "Failed to get current directory.");
         result = getcwd(currentDirectory, currentSize);
     }
-    std::string directoryString(currentDirectory);
+    std::string directoryString{currentDirectory};
     delete[] currentDirectory;
     return directoryString;
 }
@@ -112,11 +112,11 @@ shellExpandPath(const std::string& path)
         errx(EXIT_FAILURE, "Failed to expand path.");
     if (expr.we_wordc != 1)
         errx(EXIT_FAILURE, "Path expanded into multiple words.");
-    std::string expandedPath = expr.we_wordv[0];
+    std::string expandedPath{expr.we_wordv[0]};
     wordfree(&expr);
     return expandedPath;
 #else
-    std::string pathCopy = path;
+    std::string pathCopy{path};
     size_t charPosition = pathCopy.find("~");
     while (charPosition != std::string::npos) {
         pathCopy.replace(charPosition, 1, getHomeDirectory());
@@ -270,7 +270,7 @@ bool
 copyRegularFile(
     const std::string& sourcePath, const std::string& destinationPath)
 {
-    std::ifstream reader(sourcePath, std::ios::binary);
+    std::ifstream reader{sourcePath, std::ios::binary};
     if (!reader.is_open())
         return false;
     reader.seekg(0, std::ios::end);
@@ -284,7 +284,7 @@ copyRegularFile(
     reader.seekg(0, std::ios::beg);
     if (!ensureParentDirectoriesExist(destinationPath))
         return false;
-    std::ofstream writer(destinationPath, std::ios::binary);
+    std::ofstream writer{destinationPath, std::ios::binary};
     if (!writer.is_open()) {
         reader.close();
         return false;
@@ -324,11 +324,11 @@ copyDirectory(
         return false;
     }
     for (int i = 0; i < entryCount; i++) {
-        std::string entryName = entries[i]->d_name;
+        std::string entryName{entries[i]->d_name};
         if (entryName == "." || entryName == "..")
             continue;
-        std::string sourceEntryPath = sourcePath + "/" + entryName;
-        std::string destinationEntryPath = destinationPath + "/" + entryName;
+        std::string sourceEntryPath{sourcePath + "/" + entryName};
+        std::string destinationEntryPath{destinationPath + "/" + entryName};
         if (!copyFile(sourceEntryPath, destinationEntryPath)) {
             free(entries);
             return false;
@@ -363,7 +363,7 @@ getCanonicalPath(const std::string& path)
     char* realPath = realpath(path.c_str(), NULL);
     if (realPath == NULL)
         err(EXIT_FAILURE, NULL);
-    std::string asString(realPath);
+    std::string asString{realPath};
     free(realPath);
     return asString;
 }

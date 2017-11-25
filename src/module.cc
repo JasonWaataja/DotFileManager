@@ -28,11 +28,11 @@
 
 namespace dfm {
 
-Module::Module() : name(DEFAULT_MODULE_NAMES)
+Module::Module() : name{DEFAULT_MODULE_NAMES}
 {
 }
 
-Module::Module(const std::string& name) : name(name)
+Module::Module(const std::string& name) : name{name}
 {
 }
 
@@ -52,8 +52,8 @@ bool
 Module::install(const std::string& sourceDirectory) const
 {
     for (const auto& file : files) {
-        std::shared_ptr<InstallAction> installAction =
-            file.createInstallAction(sourceDirectory);
+        std::shared_ptr<InstallAction> installAction{
+            file.createInstallAction(sourceDirectory)};
         if (!installAction->performAction()) {
             warnx("Failed to perform install action \"%s\".",
                 installAction->getName().c_str());
@@ -74,8 +74,8 @@ bool
 Module::uninstall(const std::string& sourceDirectory) const
 {
     for (const auto& file : files) {
-        std::shared_ptr<RemoveAction> uninstallAction =
-            file.createUninstallAction();
+        std::shared_ptr<RemoveAction> uninstallAction{
+            file.createUninstallAction()};
         if (!uninstallAction->performAction()) {
             warnx("Failed to perform uninstall action \"%s\".",
                 uninstallAction->getName().c_str());
@@ -97,8 +97,8 @@ bool
 Module::update(const std::string& sourceDirectory) const
 {
     for (const auto& file : files) {
-        std::shared_ptr<FileCheckAction> updateAction =
-            file.createUpdateAction(sourceDirectory);
+        std::shared_ptr<FileCheckAction> updateAction{
+            file.createUpdateAction(sourceDirectory)};
         if (!updateAction->performAction()) {
             warnx("Failed to perform update action \"%s\".",
                 updateAction->getName().c_str());
@@ -154,14 +154,14 @@ Module::getUpdateActions() const
 void
 Module::addFile(const std::string& filename)
 {
-    files.push_back(ModuleFile(filename));
+    files.push_back(ModuleFile{filename});
 }
 
 void
 Module::addFile(
     const std::string& filename, const std::string& destinationDirectory)
 {
-    files.push_back(ModuleFile(filename, destinationDirectory));
+    files.push_back(ModuleFile{filename, destinationDirectory});
 }
 
 void
@@ -170,7 +170,7 @@ Module::addFile(const std::string& filename,
     const std::string& destinationFilename)
 {
     files.push_back(
-        ModuleFile(filename, destinationDirectory, destinationFilename));
+        ModuleFile{filename, destinationDirectory, destinationFilename});
 }
 
 const std::vector<ModuleFile>

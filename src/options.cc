@@ -39,16 +39,16 @@ namespace dfm {
  * constructors.
  */
 DfmOptions::DfmOptions()
-    : installModulesFlag(false),
-      uninstallModulesFlag(false),
-      updateModulesFlag(false),
-      allFlag(false),
-      verboseFlag(false),
-      interactiveFlag(false),
-      generateConfigFileFlag(false),
-      dumpConfigFileFlag(false),
-      printModulesFlag(false),
-      hasSourceDirectory(false)
+    : installModulesFlag{false},
+      uninstallModulesFlag{false},
+      updateModulesFlag{false},
+      allFlag{false},
+      verboseFlag{false},
+      interactiveFlag{false},
+      generateConfigFileFlag{false},
+      dumpConfigFileFlag{false},
+      printModulesFlag{false},
+      hasSourceDirectory{false}
 {
 }
 
@@ -129,7 +129,7 @@ DfmOptions::loadFromArguments(int argc, char* argv[])
             argc, argv, GETOPT_SHORT_OPTIONS, longOptions, &optionIndex);
     }
     for (int i = optind; i < argc; i++)
-        remainingArguments.push_back(std::string(argv[i]));
+        remainingArguments.push_back(std::string{argv[i]});
     return true;
 }
 

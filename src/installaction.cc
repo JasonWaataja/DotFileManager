@@ -34,29 +34,29 @@
 
 namespace dfm {
 
-InstallAction::InstallAction() : ModuleAction("generic install action")
+InstallAction::InstallAction() : ModuleAction{"generic install action"}
 {
 }
 
 InstallAction::InstallAction(const std::string& filename,
     const std::string& sourceDirectory,
     const std::string& destinationDirectory)
-    : ModuleAction(filename),
-      filename(filename),
-      sourceDirectory(sourceDirectory),
-      installFilename(filename),
-      destinationDirectory(destinationDirectory)
+    : ModuleAction{filename},
+      filename{filename},
+      sourceDirectory{sourceDirectory},
+      installFilename{filename},
+      destinationDirectory{destinationDirectory}
 {
 }
 
 InstallAction::InstallAction(const std::string& filename,
     const std::string& sourceDirectory, const std::string& installFilename,
     const std::string& destinationDirectory)
-    : ModuleAction(filename),
-      filename(filename),
-      sourceDirectory(sourceDirectory),
-      installFilename(installFilename),
-      destinationDirectory(destinationDirectory)
+    : ModuleAction{filename},
+      filename{filename},
+      sourceDirectory{sourceDirectory},
+      installFilename{installFilename},
+      destinationDirectory{destinationDirectory}
 {
 }
 
@@ -124,12 +124,12 @@ InstallAction::setInstallFilename(const std::string& installFilename)
 bool
 InstallAction::performAction()
 {
-    std::string sourcePath = shellExpandPath(getFilePath());
-    std::string destinationPath = shellExpandPath(getInstallationPath());
+    std::string sourcePath{shellExpandPath(getFilePath())};
+    std::string destinationPath{shellExpandPath(getInstallationPath())};
 
     if (isInteractive()) {
-        std::string prompt =
-            "Install " + sourcePath + " to " + destinationPath + "?";
+        std::string prompt{
+            "Install " + sourcePath + " to " + destinationPath + "?"};
         if (!getYesOrNo(prompt))
             return true;
         std::cout << std::endl;
@@ -142,7 +142,7 @@ InstallAction::performAction()
             "File %s doesn't exist, can't be installed.", sourcePath.c_str());
         return false;
     }
-    std::string installDir = shellExpandPath(destinationDirectory);
+    std::string installDir{shellExpandPath(destinationDirectory)};
     if (!ensureDirectoriesExist(installDir)) {
         warnx(
             "Failed to use destination directory %s, isn't directory or couldn't be created.",
@@ -160,14 +160,12 @@ InstallAction::updateName()
 std::vector<std::string>
 InstallAction::createConfigLines() const
 {
-    std::string line = "install";
+    std::string line{"install"};
     line += " " + filename;
     line += " " + sourceDirectory;
     line += " " + installFilename;
     line += " " + destinationDirectory;
-    std::vector<std::string> lines;
-    lines.push_back(line);
-    return lines;
+    return std::vector<std::string>{line};
 }
 
 void

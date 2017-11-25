@@ -33,13 +33,11 @@
 
 namespace dfm {
 
-ShellAction::ShellAction()
-    : ModuleAction(DEFAULT_SHELL_ACTION_NAME), shellCommands()
+ShellAction::ShellAction() : ModuleAction{DEFAULT_SHELL_ACTION_NAME}
 {
 }
 
-ShellAction::ShellAction(const std::string& name)
-    : ModuleAction(name), shellCommands()
+ShellAction::ShellAction(const std::string& name) : ModuleAction{name}
 {
 }
 
@@ -70,7 +68,7 @@ ShellAction::performAction()
                 std::cout << "\t" << commandName << std::endl;
         }
     }
-    std::string command = shellCommands[0];
+    std::string command{shellCommands[0]};
     for (std::vector<std::string>::size_type i = 1; i < shellCommands.size();
          i++)
         command += "; " + shellCommands[i];

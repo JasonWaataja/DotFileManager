@@ -39,7 +39,7 @@
 namespace dfm {
 
 ConfigFileReader::ConfigFileReader(const std::string& path)
-    : path(path), reader(path)
+    : path{path}, reader{path}
 {
     options = std::shared_ptr<DfmOptions>{new DfmOptions{}};
     environment = ReaderEnvironment{options};

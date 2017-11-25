@@ -30,7 +30,7 @@ namespace dfm {
 
 RemoveActionEditor::RemoveActionEditor(
     Gtk::Window& parent, RemoveAction* action)
-    : Gtk::Dialog("Edit Remove Action", parent, true), action(action)
+    : Gtk::Dialog{"Edit Remove Action", parent, true}, action(action)
 {
     assert(action != nullptr);
 
@@ -56,7 +56,7 @@ RemoveActionEditor::onResponse(int responseId)
     if (responseId != Gtk::RESPONSE_OK)
         return;
 
-    std::string filePath = pathEntry.get_text();
+    std::string filePath{pathEntry.get_text()};
     if (filePath.length() > 0)
         action->setFilePath(filePath);
 }

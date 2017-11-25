@@ -29,7 +29,7 @@
 namespace dfm {
 
 ModuleFileEditor::ModuleFileEditor(Gtk::Window& parent, ModuleFile* file)
-    : Gtk::Dialog("Edit File", parent, true), file(file)
+    : Gtk::Dialog{"Edit File", parent, true}, file{file}
 {
     assert(file != nullptr);
 
@@ -76,10 +76,10 @@ ModuleFileEditor::onResponse(int responseId)
 {
     if (responseId != Gtk::RESPONSE_OK)
         return;
-    std::string filename = filenameEntry.get_text();
+    std::string filename{filenameEntry.get_text()};
     if (filename.length() == 0)
         return;
-    std::string destinationDirectory = destinationDirectoryEntry.get_text();
+    std::string destinationDirectory{destinationDirectoryEntry.get_text()};
     if (destinationDirectory.length() == 0)
         destinationDirectory = "~";
     std::string destinationFilename = destinationFilenameEntry.get_text();

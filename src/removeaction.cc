@@ -36,18 +36,18 @@
 
 namespace dfm {
 
-RemoveAction::RemoveAction() : ModuleAction(DEFAULT_REMOVE_ACTION_NAME)
+RemoveAction::RemoveAction() : ModuleAction{DEFAULT_REMOVE_ACTION_NAME}
 {
 }
 
-RemoveAction::RemoveAction(const std::string& filePath) : filePath(filePath)
+RemoveAction::RemoveAction(const std::string& filePath) : filePath{filePath}
 {
     updateName();
 }
 
 RemoveAction::RemoveAction(
     const std::string& filename, const std::string& directory)
-    : filePath(directory + "/" + filename)
+    : filePath{directory + "/" + filename}
 {
     updateName();
 }
@@ -77,7 +77,7 @@ bool
 RemoveAction::performAction()
 {
     if (isInteractive()) {
-        std::string prompt = "Remove " + filePath + "?";
+        std::string prompt{"Remove " + filePath + "?"};
         if (!getYesOrNo(prompt))
             return true;
         std::cout << std::endl;
