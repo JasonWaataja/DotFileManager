@@ -230,6 +230,7 @@ GdfmWindow::loadDirectory(const std::string& path)
 void
 GdfmWindow::setModulesViewFromModules(const std::vector<Module>& modules)
 {
+    modulesStore->clear();
     for (const auto& module : modules) {
         appendModule(module);
     }

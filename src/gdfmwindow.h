@@ -206,8 +206,7 @@ private:
     void onMoveDownButtonClicked();
     void onModulesSelectionChanged();
     /*
-     * These signal handlers are specifically for the popup menu that can
-     * be
+     * These signal handlers are specifically for the popup menu that can be
      * created on the tree view.
      */
     void onAddModuleItemActivated();
