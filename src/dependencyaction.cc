@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "dependencyaction.h"
+#include "dependencyaction.hh"
 
 #include <err.h>
 #include <stdarg.h>
@@ -30,7 +30,7 @@
 
 #include <iostream>
 
-#include "abstractwindow.h"
+#include "abstractwindow.hh"
 
 namespace dfm {
 

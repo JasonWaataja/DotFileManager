@@ -23,7 +23,7 @@
 #ifndef MODULE_ACTION_H
 #define MODULE_ACTION_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <stdarg.h>
 

@@ -20,43 +20,34 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MODULE_ACTION_EDITOR_H
-#define MODULE_ACTION_EDITOR_H
+#ifndef INSTALL_ACTION_EDITOR_H
+#define INSTALL_ACTION_EDITOR_H
 
-#include "config.h"
-
-#include <memory>
+#include "config.hh"
 
 #include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "installaction.hh"
 
 namespace dfm {
 
-class ModuleActionEditor : public Gtk::Dialog {
+class InstallActionEditor : public Gtk::Dialog {
 public:
-    ModuleActionEditor(Gtk::Window& parent);
-
-    /*
-     * If the user has successfully created an action, then it returns a
-     * pointer to the newly created action.
-     *
-     * If the user has not completed one, though, or it is invalid, it returns
-     * a null smart pointer.
-     *
-     * Returns a smart pointer to a new ModuleAction created by the user if
-     * they did so, a null smart pointer otherwise.
-     */
-    std::shared_ptr<ModuleAction> getAction();
+    InstallActionEditor(Gtk::Window& window, InstallAction* action);
 
 private:
-    Gtk::ComboBoxText typeBox;
-    Gtk::Button createActionButton;
+    InstallAction* action;
 
-    std::shared_ptr<ModuleAction> action;
+    Gtk::Grid grid;
+    Gtk::Label filenameLabel;
+    Gtk::Entry filenameEntry;
+    Gtk::Label destinationLabel;
+    Gtk::Entry destinationEntry;
+    Gtk::Label installFilenameLabel;
+    Gtk::Entry installFilenameEntry;
 
-    void onCreateActionButtonClicked();
+    void onResponse(int responseId);
 };
-} /* namespace dfm */
+} // namespace dfm
 
-#endif /* MODULE_ACTION_EDITOR_H */
+#endif /* INSTALL_ACTION_EDITOR_H */

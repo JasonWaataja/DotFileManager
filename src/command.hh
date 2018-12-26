@@ -20,7 +20,7 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
 #ifndef COMMAND_H
 #define COMMAND_H
@@ -30,8 +30,8 @@
 #include <string>
 #include <vector>
 
-#include "module.h"
-#include "readerenvironment.h"
+#include "module.hh"
+#include "readerenvironment.hh"
 
 namespace dfm {
 

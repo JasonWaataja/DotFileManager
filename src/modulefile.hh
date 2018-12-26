@@ -23,14 +23,14 @@
 #ifndef MODULE_FILE_H
 #define MODULE_FILE_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <memory>
 #include <string>
 
-#include "filecheckaction.h"
-#include "installaction.h"
-#include "removeaction.h"
+#include "filecheckaction.hh"
+#include "installaction.hh"
+#include "removeaction.hh"
 
 namespace dfm {
 

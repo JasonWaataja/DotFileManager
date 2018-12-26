@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "gdfmwindow.h"
+#include "gdfmwindow.hh"
 
 #include <sys/stat.h>
 
@@ -34,19 +34,19 @@
 #include <algorithm>
 #include <iostream>
 
-#include "configfilereader.h"
-#include "configfilewriter.h"
-#include "createmoduledialog.h"
-#include "dependencyeditor.h"
-#include "filecheckeditor.h"
-#include "installactioneditor.h"
-#include "messageeditor.h"
-#include "moduleactioneditor.h"
-#include "modulefile.h"
-#include "modulefileeditor.h"
-#include "removeactioneditor.h"
-#include "shelleditor.h"
-#include "util.h"
+#include "configfilereader.hh"
+#include "configfilewriter.hh"
+#include "createmoduledialog.hh"
+#include "dependencyeditor.hh"
+#include "filecheckeditor.hh"
+#include "installactioneditor.hh"
+#include "messageeditor.hh"
+#include "moduleactioneditor.hh"
+#include "modulefile.hh"
+#include "modulefileeditor.hh"
+#include "removeactioneditor.hh"
+#include "shelleditor.hh"
+#include "util.hh"
 
 namespace dfm {
 

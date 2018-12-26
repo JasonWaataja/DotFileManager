@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "moduleaction.h"
+#include "moduleaction.hh"
 
 #include <stdio.h>
 

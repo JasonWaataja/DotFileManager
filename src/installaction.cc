@@ -20,17 +20,17 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "installaction.h"
+#include "installaction.hh"
 
 #include <dirent.h>
 #include <err.h>
 
 #include <iostream>
 
-#include "abstractwindow.h"
-#include "util.h"
+#include "abstractwindow.hh"
+#include "util.hh"
 
 namespace dfm {
 

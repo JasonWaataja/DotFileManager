@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "module.h"
+#include "module.hh"
 
 #include <err.h>
 

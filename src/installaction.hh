@@ -20,35 +20,48 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef REMOVE_ACTION_H
-#define REMOVE_ACTION_H
+#ifndef INSTALL_ACTION_H
+#define INSTALL_ACTION_H
 
-#include "config.h"
+#include "config.hh"
 
-#include "moduleaction.h"
+#include <string>
+
+#include "moduleaction.hh"
 
 namespace dfm {
 
-const char DEFAULT_REMOVE_ACTION_NAME[] = "remove action";
-
-class RemoveAction : public ModuleAction {
+class InstallAction : public ModuleAction {
 public:
-    RemoveAction();
-    RemoveAction(const std::string& filePath);
-    RemoveAction(const std::string& filename, const std::string& directory);
-    const std::string& getFilePath() const;
-    void setFilePath(const std::string& filePath);
-    void setFilePath(
-        const std::string& filename, const std::string& directory);
+    InstallAction();
+    InstallAction(const std::string& filename,
+        const std::string& sourceDirectory,
+        const std::string& destinationDirectory);
+    InstallAction(const std::string& filename,
+        const std::string& sourceDirectory, const std::string& installFilename,
+        const std::string& destinationDirectory);
     bool performAction() override;
+    std::string getFilePath() const;
+    std::string getInstallationPath() const;
+    const std::string& getFilename() const;
+    void setFilename(const std::string& filename);
+    const std::string& getSourceDirectory() const;
+    void setSourceDirectory(const std::string& sourceDirectory);
+    const std::string& getDestinationDirectory() const;
+    void setDestinationDirectory(const std::string& destinationDirectory);
+    const std::string& getInstallFilename() const;
+    void setInstallFilename(const std::string& installFilename);
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
     void graphicalEdit() override;
 
 private:
-    std::string filePath;
+    std::string filename;
+    std::string sourceDirectory;
+    std::string installFilename;
+    std::string destinationDirectory;
 };
 } /* namespace dfm */
 
-#endif /* REMOVE_ACTION_H */
+#endif /* INSTALL_ACTION_H */

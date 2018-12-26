@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "util.h"
+#include "util.hh"
 
 #include <sys/stat.h>
 

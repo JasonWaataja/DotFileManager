@@ -20,11 +20,11 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "readerenvironment.h"
+#include "readerenvironment.hh"
 
-#include "util.h"
+#include "util.hh"
 
 namespace dfm {
 

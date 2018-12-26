@@ -23,11 +23,11 @@
 #ifndef MODULE_FILE_EDITOR_H
 #define MODULE_FILE_EDITOR_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <gtkmm.h>
 
-#include "modulefile.h"
+#include "modulefile.hh"
 
 namespace dfm {
 

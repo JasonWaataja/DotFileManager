@@ -20,57 +20,35 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef FILE_CHECK_H
-#define FILE_CHECK_H
+#ifndef REMOVE_ACTION_H
+#define REMOVE_ACTION_H
 
-#include "config.h"
+#include "config.hh"
 
-#include <dirent.h>
-
-#include <memory>
-#include <string>
-#include <vector>
-
-#include "moduleaction.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-class FileCheckAction : public ModuleAction {
+const char DEFAULT_REMOVE_ACTION_NAME[] = "remove action";
+
+class RemoveAction : public ModuleAction {
 public:
-    FileCheckAction();
-    FileCheckAction(
-        const std::string& sourcePath, const std::string& destinationPath);
-
-    const std::string& getSourcePath() const;
-    void setSourcePath(const std::string& sourcePath);
-    const std::string& getDestinationPath() const;
-    void setDestinationPath(const std::string& destinationPath);
-
-    void setFiles(
-        const std::string& sourcePath, const std::string& destinationPath);
-
+    RemoveAction();
+    RemoveAction(const std::string& filePath);
+    RemoveAction(const std::string& filename, const std::string& directory);
+    const std::string& getFilePath() const;
+    void setFilePath(const std::string& filePath);
+    void setFilePath(
+        const std::string& filename, const std::string& directory);
     bool performAction() override;
-
-    bool shouldUpdate() const;
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
     void graphicalEdit() override;
 
 private:
-    /* Returns if neither path is a zero-length string. */
-    bool hasFiles() const;
-
-    bool shouldUpdateFile(const std::string& sourcePath,
-        const std::string& destinationPath) const;
-    bool shouldUpdateRegularFile(const std::string& sourcePath,
-        const std::string& destinationPath) const;
-    bool shouldUpdateDirectory(const std::string& sourcePath,
-        const std::string& destinationPath) const;
-
-    std::string sourcePath;
-    std::string destinationPath;
+    std::string filePath;
 };
-} // namespace dfm
+} /* namespace dfm */
 
-#endif /* FILE_CHECK_H */
+#endif /* REMOVE_ACTION_H */

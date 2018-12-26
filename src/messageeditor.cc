@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "messageeditor.h"
+#include "messageeditor.hh"
 
 #include <assert.h>
 

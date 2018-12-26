@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "dependencyeditor.h"
+#include "dependencyeditor.hh"
 
 #include <sstream>
 #include <string>

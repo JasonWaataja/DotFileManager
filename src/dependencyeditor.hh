@@ -20,51 +20,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef CREATE_MODULE_DIALOG_H
-#define CREATE_MODULE_DIALOG_H
+#ifndef DEPENDENCY_EDITOR_H
+#define DEPENDENCY_EDITOR_H
 
-#include "config.h"
-
-#include <memory>
+#include "config.hh"
 
 #include <gtkmm.h>
 
-#include "module.h"
+#include "dependencyaction.hh"
 
 namespace dfm {
 
-class CreateModuleDialog : public Gtk::Dialog {
+class DependencyEditor : public Gtk::Dialog {
 public:
-    CreateModuleDialog(Gtk::Window& parent);
-    virtual ~CreateModuleDialog();
-
-    std::shared_ptr<Module> getModule();
+    DependencyEditor(Gtk::Window& parent, DependencyAction* action);
 
 private:
-    Gtk::VBox* contentBox;
-    Gtk::HBox* nameBox;
-    Gtk::Label* nameLabel;
-    Gtk::Entry* nameEntry;
-    Gtk::HBox* filesBox;
-    Gtk::ScrolledWindow* scrollWindow;
-    Gtk::TreeView* filesView;
-    Gtk::VBox* actionBox;
-    Gtk::Entry* filenameEntry;
-    Gtk::Entry* destinationEntry;
-    Gtk::Button* addFileButton;
-    Gtk::Button* removeFileButton;
+    DependencyAction* action;
 
-    Glib::RefPtr<Gtk::TreeSelection> filesViewSelection;
-    Glib::RefPtr<Gtk::ListStore> filesList;
-    Gtk::TreeModelColumnRecord record;
-    Gtk::TreeModelColumn<Glib::ustring> filenameColumn;
-    Gtk::TreeModelColumn<Glib::ustring> destinationColumn;
+    Gtk::Label dependenciesLabel;
+    Gtk::ScrolledWindow scrolledWindow;
+    Gtk::TextView dependenciesView;
+    Glib::RefPtr<Gtk::TextBuffer> dependenciesBuffer;
 
-    /* Signal handlers. */
-    void onAddFileButtonClicked();
-    void onFilesViewSelectionChanged();
-    void onRemoveFileButtonClicked();
+    void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* CREATE_MODULE_DIALOG_H */
+#endif /* DEPENDENCY_EDITOR_H */

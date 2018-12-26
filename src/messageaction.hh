@@ -20,50 +20,32 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEPENDENCY_ACTION_H
-#define DEPENDENCY_ACTION_H
+#ifndef MESSAGE_ACTION_H
+#define MESSAGE_ACTION_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <string>
-#include <vector>
 
-#include "moduleaction.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-class DependencyAction : public ModuleAction {
+class MessageAction : public ModuleAction {
 public:
-    DependencyAction();
-    DependencyAction(const std::vector<std::string>& dependencies);
-    /* Constructor that takes a NULL terminated string of dependencies. */
-    DependencyAction(const char* firstDependency, ...);
-
-    const std::vector<std::string>& getDependencies() const;
-    void setDependencies(const std::vector<std::string>& dependencies);
-    /* Sets dependencies to the NULL terminated list of dependencies. */
-    void setDependencies(const char* firstDependency, ...);
-    void addDependency(const std::string& dependency);
-
+    MessageAction();
+    MessageAction(const std::string& message);
     bool performAction() override;
-
-    /*
-     * Creates a string of the dependencies for use with the prompt. Uses space
-     * by default.
-     *
-     * Returns a string of the dependencies separates by the delimiter, which
-     * is space by default.
-     */
-    std::string getDependenciesAsString() const;
-    std::string getDependenciesAsString(const std::string& delimiter) const;
+    const std::string& getMessage() const;
+    void setMessage(const std::string& message);
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
     void graphicalEdit() override;
 
 private:
-    std::vector<std::string> dependencies;
+    std::string message;
 };
-} // namespace dfm
+} /* namespace dfm */
 
-#endif /* DEPENDENCY_ACTION_H */
+#endif /* MESSAGE_ACTION_H */

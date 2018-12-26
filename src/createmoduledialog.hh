@@ -20,29 +20,51 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef REMOVE_ACTION_EDITOR_H
-#define REMOVE_ACTION_EDITOR_H
+#ifndef CREATE_MODULE_DIALOG_H
+#define CREATE_MODULE_DIALOG_H
 
-#include "config.h"
+#include "config.hh"
+
+#include <memory>
 
 #include <gtkmm.h>
 
-#include "removeaction.h"
+#include "module.hh"
 
 namespace dfm {
 
-class RemoveActionEditor : public Gtk::Dialog {
+class CreateModuleDialog : public Gtk::Dialog {
 public:
-    RemoveActionEditor(Gtk::Window& parent, RemoveAction* action);
+    CreateModuleDialog(Gtk::Window& parent);
+    virtual ~CreateModuleDialog();
+
+    std::shared_ptr<Module> getModule();
 
 private:
-    RemoveAction* action;
+    Gtk::VBox* contentBox;
+    Gtk::HBox* nameBox;
+    Gtk::Label* nameLabel;
+    Gtk::Entry* nameEntry;
+    Gtk::HBox* filesBox;
+    Gtk::ScrolledWindow* scrollWindow;
+    Gtk::TreeView* filesView;
+    Gtk::VBox* actionBox;
+    Gtk::Entry* filenameEntry;
+    Gtk::Entry* destinationEntry;
+    Gtk::Button* addFileButton;
+    Gtk::Button* removeFileButton;
 
-    Gtk::Label pathLabel;
-    Gtk::Entry pathEntry;
+    Glib::RefPtr<Gtk::TreeSelection> filesViewSelection;
+    Glib::RefPtr<Gtk::ListStore> filesList;
+    Gtk::TreeModelColumnRecord record;
+    Gtk::TreeModelColumn<Glib::ustring> filenameColumn;
+    Gtk::TreeModelColumn<Glib::ustring> destinationColumn;
 
-    void onResponse(int responseId);
+    /* Signal handlers. */
+    void onAddFileButtonClicked();
+    void onFilesViewSelectionChanged();
+    void onRemoveFileButtonClicked();
 };
-} // namespace dfm
+} /* namespace dfm */
 
-#endif /* REMOVE_ACTION_EDITOR_H */
+#endif /* CREATE_MODULE_DIALOG_H */

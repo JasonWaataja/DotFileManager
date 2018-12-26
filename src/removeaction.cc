@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "removeaction.h"
+#include "removeaction.hh"
 
 #include <err.h>
 #include <libgen.h>
@@ -31,8 +31,8 @@
 
 #include <iostream>
 
-#include "abstractwindow.h"
-#include "util.h"
+#include "abstractwindow.hh"
+#include "util.hh"
 
 namespace dfm {
 

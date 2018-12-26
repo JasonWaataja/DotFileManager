@@ -20,13 +20,13 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
 #include <stdlib.h>
 
 #include <iostream>
 
-#include "gdfmwindow.h"
+#include "gdfmwindow.hh"
 
 /*
  * GDFM is a graphical from end to DFM. It uses the same configuration file and

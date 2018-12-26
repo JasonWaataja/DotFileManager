@@ -23,7 +23,7 @@
 #ifndef CONFIG_FILE_READER_H
 #define CONFIG_FILE_READER_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <err.h>
 #include <stdarg.h>
@@ -34,14 +34,14 @@
 #include <string>
 #include <vector>
 
-#include "command.h"
-#include "installaction.h"
-#include "messageaction.h"
-#include "module.h"
-#include "options.h"
-#include "readerenvironment.h"
-#include "removeaction.h"
-#include "shellaction.h"
+#include "command.hh"
+#include "installaction.hh"
+#include "messageaction.hh"
+#include "module.hh"
+#include "options.hh"
+#include "readerenvironment.hh"
+#include "removeaction.hh"
+#include "shellaction.hh"
 
 namespace dfm {
 

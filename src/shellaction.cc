@@ -20,16 +20,16 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "shellaction.h"
+#include "shellaction.hh"
 
 #include <err.h>
 #include <stdio.h>
 
 #include <iostream>
 
-#include "abstractwindow.h"
+#include "abstractwindow.hh"
 
 namespace dfm {
 

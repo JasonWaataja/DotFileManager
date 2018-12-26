@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "configfilereader.h"
+#include "configfilereader.hh"
 
 #include <ctype.h>
 #include <stdarg.h>
@@ -31,10 +31,10 @@
 #include <exception>
 #include <regex>
 
-#include "dependencyaction.h"
-#include "filecheckaction.h"
-#include "removeaction.h"
-#include "util.h"
+#include "dependencyaction.hh"
+#include "filecheckaction.hh"
+#include "removeaction.hh"
+#include "util.hh"
 
 namespace dfm {
 

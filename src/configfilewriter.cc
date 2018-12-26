@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "configfilewriter.h"
+#include "configfilewriter.hh"
 
 #include <err.h>
 
