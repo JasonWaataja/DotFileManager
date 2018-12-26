@@ -20,13 +20,13 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "installactioneditor.h"
+#include "installactioneditor.hh"
 
 #include <assert.h>
 
-#include "util.h"
+#include "util.hh"
 
 namespace dfm {
 

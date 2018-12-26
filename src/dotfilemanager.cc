@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "dotfilemanager.h"
+#include "dotfilemanager.hh"
 
 #include <dirent.h>
 #include <err.h>
@@ -35,8 +35,8 @@
 #include <string>
 #include <vector>
 
-#include "configfilereader.h"
-#include "util.h"
+#include "configfilereader.hh"
+#include "util.hh"
 
 namespace dfm {
 

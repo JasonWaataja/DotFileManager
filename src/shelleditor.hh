@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Jason Waataja
+ * Copyright (c) 2017 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,32 +20,31 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_ACTION_H
-#define MESSAGE_ACTION_H
+#ifndef SHELL_EDITOR_H
+#define SHELL_EDITOR_H
 
-#include "config.h"
+#include "config.hh"
 
-#include <string>
+#include <gtkmm.h>
 
-#include "moduleaction.h"
+#include "shellaction.hh"
 
 namespace dfm {
 
-class MessageAction : public ModuleAction {
+class ShellEditor : public Gtk::Dialog {
 public:
-    MessageAction();
-    MessageAction(const std::string& message);
-    bool performAction() override;
-    const std::string& getMessage() const;
-    void setMessage(const std::string& message);
-
-    void updateName() override;
-    std::vector<std::string> createConfigLines() const override;
-    void graphicalEdit() override;
+    ShellEditor(Gtk::Window& parent, ShellAction* action);
 
 private:
-    std::string message;
+    ShellAction* action;
+
+    Gtk::Label commandsLabel;
+    Gtk::ScrolledWindow scrolledWindow;
+    Gtk::TextView commandsView;
+    Glib::RefPtr<Gtk::TextBuffer> commandsBuffer;
+
+    void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_ACTION_H */
+#endif /* SHELL_EDITOR_H */

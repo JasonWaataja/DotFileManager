@@ -15,8 +15,8 @@ if (HAS_GRAPHICS)
 endif (HAS_GRAPHICS)
 
 check_include_files (wordexp.h HAVE_WORDEXP_H)
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-	${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.hh.in
+	${CMAKE_CURRENT_BINARY_DIR}/config.hh)
 include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 set (COMMON_SOURCES module.cc moduleaction.cc installaction.cc removeaction.cc

@@ -20,22 +20,22 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "moduleactioneditor.h"
+#include "moduleactioneditor.hh"
 
-#include "dependencyaction.h"
-#include "dependencyeditor.h"
-#include "filecheckaction.h"
-#include "filecheckeditor.h"
-#include "installaction.h"
-#include "installactioneditor.h"
-#include "messageaction.h"
-#include "messageeditor.h"
-#include "removeaction.h"
-#include "removeactioneditor.h"
-#include "shellaction.h"
-#include "shelleditor.h"
+#include "dependencyaction.hh"
+#include "dependencyeditor.hh"
+#include "filecheckaction.hh"
+#include "filecheckeditor.hh"
+#include "installaction.hh"
+#include "installactioneditor.hh"
+#include "messageaction.hh"
+#include "messageeditor.hh"
+#include "removeaction.hh"
+#include "removeactioneditor.hh"
+#include "shellaction.hh"
+#include "shelleditor.hh"
 
 namespace dfm {
 

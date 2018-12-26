@@ -20,31 +20,34 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SHELL_EDITOR_H
-#define SHELL_EDITOR_H
+#ifndef MESSAGE_EDITOR_H
+#define MESSAGE_EDITOR_H
 
-#include "config.h"
+#include "config.hh"
+
+#include <memory>
 
 #include <gtkmm.h>
 
-#include "shellaction.h"
+#include "messageaction.hh"
 
 namespace dfm {
 
-class ShellEditor : public Gtk::Dialog {
+class MessageEditor : public Gtk::Dialog {
 public:
-    ShellEditor(Gtk::Window& parent, ShellAction* action);
+    MessageEditor(Gtk::Window& parent, MessageAction* action);
 
 private:
-    ShellAction* action;
+    MessageAction* action;
 
-    Gtk::Label commandsLabel;
+    Gtk::Label messageLabel;
     Gtk::ScrolledWindow scrolledWindow;
-    Gtk::TextView commandsView;
-    Glib::RefPtr<Gtk::TextBuffer> commandsBuffer;
+    Gtk::TextView messageView;
+
+    Glib::RefPtr<Gtk::TextBuffer> messageBuffer;
 
     void onResponse(int responseId);
 };
 } /* namespace dfm */
 
-#endif /* SHELL_EDITOR_H */
+#endif /* MESSAGE_EDITOR_H */

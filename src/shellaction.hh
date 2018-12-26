@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 Jason Waataja
+ * Copyright (c) 2016 Jason Waataja
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -20,32 +20,38 @@
  * IN THE SOFTWARE.
  */
 
+#ifndef SHELL_ACTION_H
+#define SHELL_ACTION_H
 
-#ifndef TERMINAL_WINDOW_H
-#define TERMINAL_WINDOW_H
+#include "config.hh"
 
-#include "config.h"
+#include <string>
+#include <vector>
 
-#include "abstractwindow.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-/*
- * TerminalWindow is an implementation of AbstractWindow that does nothing
- * except message to the terminal output. The command line version is not
- * expected to edit anything.
- */
-class TerminalWindow : public AbstractWindow {
+const char SHELL_PROCESS[] = "/usr/bin/env bash";
+const char DEFAULT_SHELL_ACTION_NAME[] = "shell command";
+
+class ShellAction : public ModuleAction {
 public:
-    void message(const std::string& message, MessageType type) override;
-    virtual void editMessage(MessageAction& action) override;
-    virtual void editDependency(DependencyAction& action) override;
-    virtual void editFileCheck(FileCheckAction& action) override;
-    virtual void editInstall(InstallAction& action) override;
-    virtual void editRemove(RemoveAction& action) override;
-    virtual void editShell(ShellAction& action) override;
-    virtual void editModuleFile(ModuleFile& moduleFile) override;
+    ShellAction();
+    ShellAction(const std::string& name);
+    const std::vector<std::string>& getShellCommands() const;
+    void setShellCommands(const std::vector<std::string>& shellCommands);
+
+    bool performAction() override;
+    void addCommand(const std::string& command);
+
+    void updateName() override;
+    std::vector<std::string> createConfigLines() const override;
+    void graphicalEdit() override;
+
+private:
+    std::vector<std::string> shellCommands;
 };
 } /* namespace dfm */
 
-#endif /* TERMINAL_WINDOW_H */
+#endif /* SHELL_ACTION_H */

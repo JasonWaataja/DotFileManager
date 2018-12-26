@@ -20,31 +20,32 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef DEPENDENCY_EDITOR_H
-#define DEPENDENCY_EDITOR_H
 
-#include "config.h"
+#ifndef TERMINAL_WINDOW_H
+#define TERMINAL_WINDOW_H
 
-#include <gtkmm.h>
+#include "config.hh"
 
-#include "dependencyaction.h"
+#include "abstractwindow.hh"
 
 namespace dfm {
 
-class DependencyEditor : public Gtk::Dialog {
+/*
+ * TerminalWindow is an implementation of AbstractWindow that does nothing
+ * except message to the terminal output. The command line version is not
+ * expected to edit anything.
+ */
+class TerminalWindow : public AbstractWindow {
 public:
-    DependencyEditor(Gtk::Window& parent, DependencyAction* action);
-
-private:
-    DependencyAction* action;
-
-    Gtk::Label dependenciesLabel;
-    Gtk::ScrolledWindow scrolledWindow;
-    Gtk::TextView dependenciesView;
-    Glib::RefPtr<Gtk::TextBuffer> dependenciesBuffer;
-
-    void onResponse(int responseId);
+    void message(const std::string& message, MessageType type) override;
+    virtual void editMessage(MessageAction& action) override;
+    virtual void editDependency(DependencyAction& action) override;
+    virtual void editFileCheck(FileCheckAction& action) override;
+    virtual void editInstall(InstallAction& action) override;
+    virtual void editRemove(RemoveAction& action) override;
+    virtual void editShell(ShellAction& action) override;
+    virtual void editModuleFile(ModuleFile& moduleFile) override;
 };
 } /* namespace dfm */
 
-#endif /* DEPENDENCY_EDITOR_H */
+#endif /* TERMINAL_WINDOW_H */

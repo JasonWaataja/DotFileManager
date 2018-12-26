@@ -20,38 +20,50 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef SHELL_ACTION_H
-#define SHELL_ACTION_H
+#ifndef DEPENDENCY_ACTION_H
+#define DEPENDENCY_ACTION_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <string>
 #include <vector>
 
-#include "moduleaction.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-const char SHELL_PROCESS[] = "/usr/bin/env bash";
-const char DEFAULT_SHELL_ACTION_NAME[] = "shell command";
-
-class ShellAction : public ModuleAction {
+class DependencyAction : public ModuleAction {
 public:
-    ShellAction();
-    ShellAction(const std::string& name);
-    const std::vector<std::string>& getShellCommands() const;
-    void setShellCommands(const std::vector<std::string>& shellCommands);
+    DependencyAction();
+    DependencyAction(const std::vector<std::string>& dependencies);
+    /* Constructor that takes a NULL terminated string of dependencies. */
+    DependencyAction(const char* firstDependency, ...);
+
+    const std::vector<std::string>& getDependencies() const;
+    void setDependencies(const std::vector<std::string>& dependencies);
+    /* Sets dependencies to the NULL terminated list of dependencies. */
+    void setDependencies(const char* firstDependency, ...);
+    void addDependency(const std::string& dependency);
 
     bool performAction() override;
-    void addCommand(const std::string& command);
+
+    /*
+     * Creates a string of the dependencies for use with the prompt. Uses space
+     * by default.
+     *
+     * Returns a string of the dependencies separates by the delimiter, which
+     * is space by default.
+     */
+    std::string getDependenciesAsString() const;
+    std::string getDependenciesAsString(const std::string& delimiter) const;
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
     void graphicalEdit() override;
 
 private:
-    std::vector<std::string> shellCommands;
+    std::vector<std::string> dependencies;
 };
-} /* namespace dfm */
+} // namespace dfm
 
-#endif /* SHELL_ACTION_H */
+#endif /* DEPENDENCY_ACTION_H */

@@ -20,19 +20,19 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "createmoduledialog.h"
+#include "createmoduledialog.hh"
 
 #include <err.h>
 #include <libgen.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "filecheckaction.h"
-#include "installaction.h"
-#include "removeaction.h"
-#include "util.h"
+#include "filecheckaction.hh"
+#include "installaction.hh"
+#include "removeaction.hh"
+#include "util.hh"
 
 namespace dfm {
 

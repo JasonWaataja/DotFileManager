@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "terminalwindow.h"
+#include "terminalwindow.hh"
 
 #include <iostream>
 

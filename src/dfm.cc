@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "dotfilemanager.h"
+#include "dotfilemanager.hh"
 
 /*
  * DFM is a program that manages configuration files for various programs. It

@@ -20,48 +20,57 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef INSTALL_ACTION_H
-#define INSTALL_ACTION_H
+#ifndef FILE_CHECK_H
+#define FILE_CHECK_H
 
-#include "config.h"
+#include "config.hh"
 
+#include <dirent.h>
+
+#include <memory>
 #include <string>
+#include <vector>
 
-#include "moduleaction.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-class InstallAction : public ModuleAction {
+class FileCheckAction : public ModuleAction {
 public:
-    InstallAction();
-    InstallAction(const std::string& filename,
-        const std::string& sourceDirectory,
-        const std::string& destinationDirectory);
-    InstallAction(const std::string& filename,
-        const std::string& sourceDirectory, const std::string& installFilename,
-        const std::string& destinationDirectory);
+    FileCheckAction();
+    FileCheckAction(
+        const std::string& sourcePath, const std::string& destinationPath);
+
+    const std::string& getSourcePath() const;
+    void setSourcePath(const std::string& sourcePath);
+    const std::string& getDestinationPath() const;
+    void setDestinationPath(const std::string& destinationPath);
+
+    void setFiles(
+        const std::string& sourcePath, const std::string& destinationPath);
+
     bool performAction() override;
-    std::string getFilePath() const;
-    std::string getInstallationPath() const;
-    const std::string& getFilename() const;
-    void setFilename(const std::string& filename);
-    const std::string& getSourceDirectory() const;
-    void setSourceDirectory(const std::string& sourceDirectory);
-    const std::string& getDestinationDirectory() const;
-    void setDestinationDirectory(const std::string& destinationDirectory);
-    const std::string& getInstallFilename() const;
-    void setInstallFilename(const std::string& installFilename);
+
+    bool shouldUpdate() const;
 
     void updateName() override;
     std::vector<std::string> createConfigLines() const override;
     void graphicalEdit() override;
 
 private:
-    std::string filename;
-    std::string sourceDirectory;
-    std::string installFilename;
-    std::string destinationDirectory;
-};
-} /* namespace dfm */
+    /* Returns if neither path is a zero-length string. */
+    bool hasFiles() const;
 
-#endif /* INSTALL_ACTION_H */
+    bool shouldUpdateFile(const std::string& sourcePath,
+        const std::string& destinationPath) const;
+    bool shouldUpdateRegularFile(const std::string& sourcePath,
+        const std::string& destinationPath) const;
+    bool shouldUpdateDirectory(const std::string& sourcePath,
+        const std::string& destinationPath) const;
+
+    std::string sourcePath;
+    std::string destinationPath;
+};
+} // namespace dfm
+
+#endif /* FILE_CHECK_H */

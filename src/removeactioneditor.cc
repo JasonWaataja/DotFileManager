@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "removeactioneditor.h"
+#include "removeactioneditor.hh"
 
 #include <assert.h>
 

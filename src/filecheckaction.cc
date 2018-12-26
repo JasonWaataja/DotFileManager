@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "filecheckaction.h"
+#include "filecheckaction.hh"
 
 #include <sys/stat.h>
 
@@ -34,9 +34,9 @@
 
 #include <fstream>
 
-#include "abstractwindow.h"
-#include "installaction.h"
-#include "util.h"
+#include "abstractwindow.hh"
+#include "installaction.hh"
+#include "util.hh"
 
 namespace dfm {
 

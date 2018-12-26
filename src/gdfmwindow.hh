@@ -23,7 +23,7 @@
 #ifndef GDFMWINDOW_H
 #define GDFMWINDOW_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <memory>
 #include <string>
@@ -31,8 +31,8 @@
 
 #include <gtkmm.h>
 
-#include "abstractwindow.h"
-#include "module.h"
+#include "abstractwindow.hh"
+#include "module.hh"
 
 namespace dfm {
 

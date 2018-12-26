@@ -23,12 +23,12 @@
 #ifndef READER_ENVIRONMENT_H
 #define READER_ENVIRONMENT_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <map>
 #include <memory>
 
-#include "options.h"
+#include "options.hh"
 
 namespace dfm {
 

@@ -20,9 +20,9 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "filecheckeditor.h"
+#include "filecheckeditor.hh"
 
 #include <assert.h>
 #include <err.h>

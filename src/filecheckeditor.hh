@@ -20,34 +20,32 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef INSTALL_ACTION_EDITOR_H
-#define INSTALL_ACTION_EDITOR_H
+#ifndef FILE_CHECK_EDITOR_H
+#define FILE_CHECK_EDITOR_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <gtkmm.h>
 
-#include "installaction.h"
+#include "filecheckaction.hh"
 
 namespace dfm {
 
-class InstallActionEditor : public Gtk::Dialog {
+class FileCheckEditor : public Gtk::Dialog {
 public:
-    InstallActionEditor(Gtk::Window& window, InstallAction* action);
+    FileCheckEditor(Gtk::Window& parent, FileCheckAction* action);
 
 private:
-    InstallAction* action;
+    FileCheckAction* action;
 
     Gtk::Grid grid;
-    Gtk::Label filenameLabel;
-    Gtk::Entry filenameEntry;
-    Gtk::Label destinationLabel;
-    Gtk::Entry destinationEntry;
-    Gtk::Label installFilenameLabel;
-    Gtk::Entry installFilenameEntry;
+    Gtk::Label sourcePathLabel;
+    Gtk::Entry sourcePathEntry;
+    Gtk::Label destinationPathLabel;
+    Gtk::Entry destinationPathEntry;
 
     void onResponse(int responseId);
 };
-} // namespace dfm
+} /* namespace dfm */
 
-#endif /* INSTALL_ACTION_EDITOR_H */
+#endif /* FILE_CHECK_EDITOR_H */

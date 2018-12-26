@@ -23,15 +23,15 @@
 #ifndef MODULE_H
 #define MODULE_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "abstractwindow.h"
-#include "moduleaction.h"
-#include "modulefile.h"
+#include "abstractwindow.hh"
+#include "moduleaction.hh"
+#include "modulefile.hh"
 
 namespace dfm {
 

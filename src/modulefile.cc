@@ -20,12 +20,12 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "modulefile.h"
+#include "modulefile.hh"
 
-#include "abstractwindow.h"
-#include "util.h"
+#include "abstractwindow.hh"
+#include "util.hh"
 
 namespace dfm {
 

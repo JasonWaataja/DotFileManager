@@ -23,15 +23,15 @@
 #ifndef ABSTRACT_WINDOW_H
 #define ABSTRACT_WINDOW_H
 
-#include "config.h"
+#include "config.hh"
 
-#include "dependencyaction.h"
-#include "filecheckaction.h"
-#include "installaction.h"
-#include "messageaction.h"
-#include "modulefile.h"
-#include "removeaction.h"
-#include "shellaction.h"
+#include "dependencyaction.hh"
+#include "filecheckaction.hh"
+#include "installaction.hh"
+#include "messageaction.hh"
+#include "modulefile.hh"
+#include "removeaction.hh"
+#include "shellaction.hh"
 
 namespace dfm {
 

@@ -20,16 +20,16 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "options.h"
+#include "options.hh"
 
 #include <err.h>
 #include <getopt.h>
 
 #include <iostream>
 
-#include "util.h"
+#include "util.hh"
 
 namespace dfm {
 

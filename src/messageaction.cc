@@ -20,14 +20,14 @@
  * IN THE SOFTWARE.
  */
 
-#include "config.h"
+#include "config.hh"
 
-#include "messageaction.h"
+#include "messageaction.hh"
 
 #include <iostream>
 #include <sstream>
 
-#include "abstractwindow.h"
+#include "abstractwindow.hh"
 
 namespace dfm {
 

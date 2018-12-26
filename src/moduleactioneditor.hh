@@ -20,34 +20,43 @@
  * IN THE SOFTWARE.
  */
 
-#ifndef MESSAGE_EDITOR_H
-#define MESSAGE_EDITOR_H
+#ifndef MODULE_ACTION_EDITOR_H
+#define MODULE_ACTION_EDITOR_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <memory>
 
 #include <gtkmm.h>
 
-#include "messageaction.h"
+#include "moduleaction.hh"
 
 namespace dfm {
 
-class MessageEditor : public Gtk::Dialog {
+class ModuleActionEditor : public Gtk::Dialog {
 public:
-    MessageEditor(Gtk::Window& parent, MessageAction* action);
+    ModuleActionEditor(Gtk::Window& parent);
+
+    /*
+     * If the user has successfully created an action, then it returns a
+     * pointer to the newly created action.
+     *
+     * If the user has not completed one, though, or it is invalid, it returns
+     * a null smart pointer.
+     *
+     * Returns a smart pointer to a new ModuleAction created by the user if
+     * they did so, a null smart pointer otherwise.
+     */
+    std::shared_ptr<ModuleAction> getAction();
 
 private:
-    MessageAction* action;
+    Gtk::ComboBoxText typeBox;
+    Gtk::Button createActionButton;
 
-    Gtk::Label messageLabel;
-    Gtk::ScrolledWindow scrolledWindow;
-    Gtk::TextView messageView;
+    std::shared_ptr<ModuleAction> action;
 
-    Glib::RefPtr<Gtk::TextBuffer> messageBuffer;
-
-    void onResponse(int responseId);
+    void onCreateActionButtonClicked();
 };
 } /* namespace dfm */
 
-#endif /* MESSAGE_EDITOR_H */
+#endif /* MODULE_ACTION_EDITOR_H */

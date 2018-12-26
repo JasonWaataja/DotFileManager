@@ -23,7 +23,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "config.h"
+#include "config.hh"
 
 #include <dirent.h>
 #include <ftw.h>
